@@ -1,0 +1,18 @@
+.mini-footer {
+    background: #f0f0f0;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px;
+}
+.mini-footer p {
+    margin: 0;
+    line-height: 26px;
+    font-size: 15px;
+    color: #999;
+}
+.mini-footer p a {
+    color: #5867dd;
+}
+.mini-footer p a:hover {
+    color: #34bfa3;
+}
