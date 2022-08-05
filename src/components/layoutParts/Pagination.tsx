@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router-dom';
+
 type Props = {
     lastPage: number;
     currentPage: number;
@@ -8,22 +10,36 @@ export default function Pagination({
     currentPage,
     setCurrentPage,
 }: Props) {
+    const [searchParams, setSearchParams] = useSearchParams();
+
     if (lastPage === 1) return null;
+    const searchParamsPage = searchParams.get('page');
+    if (searchParamsPage) {
+        const searchParamsPageInt = parseInt(searchParamsPage);
+        if (searchParamsPageInt && searchParamsPageInt !== currentPage)
+            setCurrentPage(searchParamsPageInt);
+    }
 
     const pageNumbers = [...Array.from(Array(lastPage + 1).keys())].slice(1);
 
-    const nextPage = () => {
-        if (currentPage !== lastPage) setCurrentPage(currentPage + 1);
-    };
-    const prevPage = () => {
-        if (currentPage !== 1) setCurrentPage(currentPage - 1);
-    };
     return (
         <nav>
             <ul className="pagination justify-content-center">
                 {currentPage > 1 ? (
                     <li className="page-item">
-                        <a className="page-link" onClick={prevPage} href="#">
+                        <a
+                            className="page-link"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                if (currentPage !== 1) {
+                                    setCurrentPage(currentPage - 1);
+                                    setSearchParams({
+                                        page: (currentPage - 1).toString(),
+                                    });
+                                }
+                            }}
+                            href={'?page=' + (currentPage - 1)}
+                        >
                             Previous
                         </a>
                     </li>
@@ -38,9 +54,15 @@ export default function Pagination({
                         } `}
                     >
                         <a
-                            onClick={() => setCurrentPage(pageNumber)}
+                            onClick={(event) => {
+                                event.preventDefault();
+                                setCurrentPage(pageNumber);
+                                setSearchParams({
+                                    page: pageNumber.toString(),
+                                });
+                            }}
                             className="page-link"
-                            href="#"
+                            href={'?page=' + pageNumber}
                         >
                             {pageNumber}
                         </a>
@@ -48,7 +70,19 @@ export default function Pagination({
                 ))}
                 {currentPage < lastPage ? (
                     <li className="page-item">
-                        <a className="page-link" onClick={nextPage} href="#">
+                        <a
+                            className="page-link"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                if (currentPage !== lastPage) {
+                                    setCurrentPage(currentPage + 1);
+                                    setSearchParams({
+                                        page: (currentPage + 1).toString(),
+                                    });
+                                }
+                            }}
+                            href={'?page=' + (currentPage + 1)}
+                        >
                             Next
                         </a>
                     </li>

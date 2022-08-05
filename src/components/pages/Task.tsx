@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
@@ -35,10 +35,8 @@ export default function Task() {
         onError: () => null,
     });
     useEffect(() => {
-        if (taskId) {
-            loadTask();
-        }
-    }, []);
+        loadTask();
+    }, [taskId]);
 
     if (loadingTask.loading) return <Loading />;
     const buttonLoading = updatingTask.loading || creatingTask.loading;
