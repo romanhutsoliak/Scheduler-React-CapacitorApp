@@ -16,3 +16,9 @@
 .mini-footer p a:hover {
     color: #34bfa3;
 }
+nav.navbar.navbar-light {
+    margin-bottom: 15px;
+}
+.htmlForm-label {
+    margin-bottom: 5px;
+}

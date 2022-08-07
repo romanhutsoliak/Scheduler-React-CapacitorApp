@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const QUERY_TASK = gql`
     query GetTask($id: ID!) {
@@ -12,12 +12,35 @@ export const QUERY_TASK = gql`
                 name
             }
             hasEvent
+            periodType
+            periodTypeTime
+            periodTypeWeekDays
+            periodTypeMonthDays
+            periodTypeMonths
         }
     }
 `;
 export const UPDATE_TASK = gql`
-    mutation UpdateTask($id: ID!, $name: String!, $description: String) {
-        updateTask(id: $id, name: $name, description: $description) {
+    mutation UpdateTask(
+        $id: ID!
+        $name: String!
+        $description: String
+        $periodType: String
+        $periodTypeTime: String
+        $periodTypeWeekDays: [String]
+        $periodTypeMonthDays: [String]
+        $periodTypeMonths: [String]
+    ) {
+        updateTask(
+            id: $id
+            name: $name
+            description: $description
+            periodType: $periodType
+            periodTypeTime: $periodTypeTime
+            periodTypeWeekDays: $periodTypeWeekDays
+            periodTypeMonthDays: $periodTypeMonthDays
+            periodTypeMonths: $periodTypeMonths
+        ) {
             name
             description
             startDateTime
@@ -30,6 +53,7 @@ export const UPDATE_TASK = gql`
         }
     }
 `;
+
 export const CREATE_TASK = gql`
     mutation CreateTask($name: String!, $description: String) {
         createTask(name: $name, description: $description) {
