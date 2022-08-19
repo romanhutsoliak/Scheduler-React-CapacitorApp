@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/index.css';
 import 'bootstrap/js/dist/dropdown.js';
 import 'bootstrap/js/dist/collapse.js';
+import 'bootstrap/js/dist/modal.js';
 import MainRouter from './MainRouter';
 import { CurrentUserContext, CurrentUserI } from './context/CurrentUserContext';
 import { CURRENT_USER } from './graphql/queries';

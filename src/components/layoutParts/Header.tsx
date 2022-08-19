@@ -53,18 +53,21 @@ export default function Header() {
                 </div>
                 <div className="btn-group">
                     <button
-                        className="btn btn-secondary dropdown-toggle"
+                        className="btn btn-link btn-link-topUser dropdown-toggle"
                         type="button"
-                        id="defaultDropdown"
+                        id="topUserMenuDropdown"
                         data-bs-toggle="dropdown"
                         data-bs-auto-close="true"
                         aria-expanded="false"
                     >
-                        <span>{currentUser ? currentUser.name : 'Guest'}</span>
+                        <span>
+                            <i className="bi bi-person-fill"></i>&nbsp;
+                            {currentUser ? currentUser.name : 'Guest'}
+                        </span>
                     </button>
                     <ul
                         className="dropdown-menu"
-                        aria-labelledby="defaultDropdown"
+                        aria-labelledby="topUserMenuDropdown"
                     >
                         <li>
                             <a

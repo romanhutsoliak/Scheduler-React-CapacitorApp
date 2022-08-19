@@ -25,7 +25,7 @@ const defaultOptions = {
     },
 };
 const httpLink = createHttpLink({
-    uri: 'http://api.scheduler.local/graphql',
+    uri: 'http://192.168.1.3/graphql',
 });
 const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists

@@ -5,6 +5,7 @@ import Loading from '../layoutParts/Loading';
 import { QUERY_TASK, UPDATE_TASK, CREATE_TASK } from '../../graphql/queries';
 import { useForm } from 'react-hook-form';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
+import { periodTypeMonthsArray, periodTypeWeekDaysArray } from '../../utils';
 
 type TaskFormValuesType = {
     name: string;
@@ -98,10 +99,7 @@ export default function Task() {
             });
         } else {
             responseData = await createTask({
-                variables: {
-                    name: data.name,
-                    description: data.description,
-                },
+                variables,
             });
             navigate('/tasks/' + responseData.data.createTask.id, {
                 // replace: true,
@@ -129,21 +127,6 @@ export default function Task() {
     }
 
     // render variables
-    const periodTypeWeekDaysArray = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Sn'];
-    const periodTypeMonthsArray = [
-        'Yan',
-        'Feb',
-        'May',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Agu',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Des',
-    ];
     let periodTypeMonthDaysArray = [];
     for (let i = 1; i <= 31; i++) periodTypeMonthDaysArray.push(i.toString());
 
@@ -242,7 +225,7 @@ export default function Task() {
                             >
                                 <option disabled>Select period</option>
                                 <option value="1">Daily</option>
-                                <option value="2">Weekly wee</option>
+                                <option value="2">Weekly</option>
                                 <option value="3">Monthly</option>
                                 <option value="4">Yearly</option>
                             </select>

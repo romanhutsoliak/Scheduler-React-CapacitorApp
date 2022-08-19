@@ -41,6 +41,7 @@ export const UPDATE_TASK = gql`
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
         ) {
+            id
             name
             description
             startDateTime
@@ -55,8 +56,24 @@ export const UPDATE_TASK = gql`
 `;
 
 export const CREATE_TASK = gql`
-    mutation CreateTask($name: String!, $description: String) {
-        createTask(name: $name, description: $description) {
+    mutation CreateTask(
+        $name: String!
+        $description: String
+        $periodType: String
+        $periodTypeTime: String
+        $periodTypeWeekDays: [String]
+        $periodTypeMonthDays: [String]
+        $periodTypeMonths: [String]
+    ) {
+        createTask(
+            name: $name
+            description: $description
+            periodType: $periodType
+            periodTypeTime: $periodTypeTime
+            periodTypeWeekDays: $periodTypeWeekDays
+            periodTypeMonthDays: $periodTypeMonthDays
+            periodTypeMonths: $periodTypeMonths
+        ) {
             id
             name
             description
@@ -67,6 +84,36 @@ export const CREATE_TASK = gql`
                 name
             }
             hasEvent
+        }
+    }
+`;
+
+export const COMPLETE_TASK = gql`
+    mutation CompleteTask($id: ID!, $notes: String) {
+        completeTask(id: $id, notes: $notes) {
+            id
+        }
+    }
+`;
+
+export const QUERY_TASK_WITH_HISTORY = gql`
+    query GetTaskWithHistory($id: ID!) {
+        task(id: $id) {
+            name
+            description
+            startDateTime
+            stopDateTime
+            nextRunDateTime
+            hasEvent
+            periodType
+            periodTypeTime
+            periodTypeWeekDays
+            periodTypeMonthDays
+            periodTypeMonths
+        }
+        taskHistory(taskId: $id, orderBy: [{ column: "id", order: DESC }]) {
+            notes
+            created_at
         }
     }
 `;
@@ -118,7 +165,11 @@ export const UPDATE_PROFILE = gql`
 
 export const GET_TASKS = gql`
     query GetTasks($recordsPerPage: Int, $currentPage: Int) {
-        tasks(first: $recordsPerPage, page: $currentPage) {
+        tasks(
+            first: $recordsPerPage
+            page: $currentPage
+            orderBy: [{ column: "nextRunDateTime", order: ASC }]
+        ) {
             data {
                 id
                 name

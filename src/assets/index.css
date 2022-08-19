@@ -22,3 +22,31 @@ nav.navbar.navbar-light {
 .htmlForm-label {
     margin-bottom: 5px;
 }
+.taskViewHistoryDiv,
+.taskViewDetailDiv {
+    border: 1px solid #f1f1f1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fdfafa;
+}
+h2 {
+    margin-bottom: 1rem;
+}
+#topUserMenuDropdown {
+    color: #555;
+    text-decoration: none;
+}
+h2 {
+    color: #b3b3b3;
+    font-size: 1.5rem;
+}
+.btn:active:focus,
+.btn:focus,
+.btn-check:active + .btn:focus,
+.btn-check:checked + .btn:focus,
+.btn.active:focus,
+.btn.show:focus,
+.btn:active:focus {
+    box-shadow: none;
+}
