@@ -6,6 +6,10 @@ import { QUERY_TASK, UPDATE_TASK, CREATE_TASK } from '../../graphql/queries';
 import { useForm } from 'react-hook-form';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
 import { periodTypeMonthsArray, periodTypeWeekDaysArray } from '../../utils';
+import BreadCrumbs, {
+    useMakePathArray,
+    updateBreadCrumbsPathArray,
+} from '../layoutParts/BreadCrumbs';
 
 type TaskFormValuesType = {
     name: string;
@@ -17,7 +21,7 @@ type TaskFormValuesType = {
     periodTypeMonths: number[] | null;
 };
 
-export default function Task() {
+export default function TaskEdit() {
     const {
         register,
         handleSubmit,
@@ -56,6 +60,11 @@ export default function Task() {
     useEffect(() => {
         loadTask();
     }, []);
+    const breadCrumbsPathArray = updateBreadCrumbsPathArray(
+        2,
+        { name: loadingTask.data?.task?.name },
+        useMakePathArray()
+    );
 
     if (loadingTask.loading) return <Loading />;
     else if (taskId && loadingTask.data?.task === null) return <>404</>;
@@ -132,6 +141,7 @@ export default function Task() {
 
     return (
         <>
+            <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray} />
             <form method="POST" onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
                     <div className="col-md-6">

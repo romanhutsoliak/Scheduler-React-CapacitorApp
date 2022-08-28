@@ -1,11 +1,12 @@
-import { TextareaHTMLAttributes, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { GET_TASKS, COMPLETE_TASK } from '../../graphql/queries';
 import Loading from '../layoutParts/Loading';
 import Pagination from '../layoutParts/Pagination';
 import Modal from '../layoutParts/Modal';
-import { DateFormateUtils } from '../../utils';
+import { DateFormateUtils, TimeToEventUtils } from '../../utils';
+import BreadCrumbs from '../layoutParts/BreadCrumbs';
 
 type GetTaskResponseType = {
     id?: number;
@@ -36,6 +37,14 @@ export default function Tasks() {
     if (loading) return <Loading />;
     if (error) return <p>Network error :(</p>;
 
+    const onClickDetailHandler = (
+        event: React.MouseEvent<HTMLElement>,
+        id: number | undefined
+    ) => {
+        event.preventDefault();
+        navigate('../tasks/' + id);
+    };
+
     return (
         <div>
             <Modal
@@ -64,19 +73,8 @@ export default function Tasks() {
                 }}
                 okButtonText="Complete"
             />
-            <div className="text-end">
-                <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        navigate('../tasks/create');
-                    }}
-                >
-                    <i className="bi bi-plus-circle"></i> Create new task
-                </button>
-            </div>
-            <div className="table-responsive">
+            <BreadCrumbs />
+            <div className="table-responsive tasksTableCont">
                 <table className="table table-responsive">
                     <thead>
                         <tr>
@@ -100,20 +98,38 @@ export default function Tasks() {
                                     index: number
                                 ) => (
                                     <tr key={id}>
-                                        <td>{index + 1}</td>
-                                        <td>{name}</td>
-                                        <td>
-                                            {DateFormateUtils(nextRunDateTime)}
+                                        <td className="tasksTableN">
+                                            {index + 1}
                                         </td>
-                                        <td className="text-end">
+                                        <td
+                                            className="tasksTableName"
+                                            onClick={(event) =>
+                                                onClickDetailHandler(event, id)
+                                            }
+                                        >
+                                            {name}
+                                        </td>
+                                        <td
+                                            className="tasksTableNextDate"
+                                            onClick={(event) =>
+                                                onClickDetailHandler(event, id)
+                                            }
+                                        >
+                                            {DateFormateUtils(nextRunDateTime)}{' '}
+                                            ({'in '}
+                                            {TimeToEventUtils(nextRunDateTime)})
+                                        </td>
+                                        <td className="text-lg-end tasksTableActions">
                                             <a
                                                 className="btn btn-link"
                                                 title="Details"
                                                 href={'/tasks/' + id}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    navigate('../tasks/' + id);
-                                                }}
+                                                onClick={(event) =>
+                                                    onClickDetailHandler(
+                                                        event,
+                                                        id
+                                                    )
+                                                }
                                             >
                                                 <i className="bi bi-eye"></i>
                                             </a>
@@ -160,6 +176,18 @@ export default function Tasks() {
             ) : (
                 ''
             )}
+            <div className="text-end">
+                <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        navigate('../tasks/create');
+                    }}
+                >
+                    <i className="bi bi-plus-circle"></i> Create new task
+                </button>
+            </div>
         </div>
     );
 }

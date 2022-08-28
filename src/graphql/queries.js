@@ -88,6 +88,33 @@ export const CREATE_TASK = gql`
     }
 `;
 
+export const CREATE_USER_DEVICE = gql`
+    mutation CreateUserDevice(
+        $deviceId: String
+        $platform: String
+        $manufacturer: String
+        $model: String
+        $appVersion: String
+        $notificationToken: String
+    ) {
+        createUserDevice(
+            deviceId: $deviceId
+            platform: $platform
+            manufacturer: $manufacturer
+            model: $model
+            appVersion: $appVersion
+            notificationToken: $notificationToken
+        ) {
+            deviceId
+            platform
+            manufacturer
+            model
+            appVersion
+            notificationToken
+        }
+    }
+`;
+
 export const COMPLETE_TASK = gql`
     mutation CompleteTask($id: ID!, $notes: String) {
         completeTask(id: $id, notes: $notes) {

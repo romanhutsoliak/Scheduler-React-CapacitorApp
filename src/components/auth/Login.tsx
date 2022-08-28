@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
-import { LOGIN } from '../../graphql/queries';
+import { LOGIN, CREATE_USER_DEVICE } from '../../graphql/queries';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     CurrentUserContext,
@@ -47,6 +47,9 @@ type ApiResponseErrorsType = ReadonlyArray<GraphQLError> & {
 
 export default function Login() {
     const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+    const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
+        onError: () => null,
+    });
 
     const {
         register,
@@ -86,6 +89,19 @@ export default function Login() {
                 responseData.data.login.token
             );
             setCurrentUser(responseData.data.login.user);
+
+            if (window.userDevice?.deviceId) {
+                createUserDevice({
+                    variables: {
+                        deviceId: window.userDevice.deviceId,
+                        platform: window.userDevice.platform,
+                        manufacturer: window.userDevice.manufacturer,
+                        model: window.userDevice.model,
+                        appVersion: window.userDevice.appVersion,
+                        notificationToken: window.userDevice.notificationToken,
+                    },
+                });
+            }
 
             let redirectTo = '/';
             if (locationState.referer?.pathname)

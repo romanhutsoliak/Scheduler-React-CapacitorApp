@@ -50,3 +50,72 @@ h2 {
 .btn:active:focus {
     box-shadow: none;
 }
+.breadCrumbsSpan {
+    margin-right: 5px;
+    opacity: 0.6;
+}
+.breadCrumbsSpan::after {
+    content: '>';
+    margin-left: 5px;
+}
+.breadCrumbs {
+    margin: 0 0 20px;
+}
+.breadCrumbs .breadCrumbsSpan:last-child::after {
+    display: none;
+}
+.taskViewDetailEditBtn {
+    float: right;
+}
+.dropdown-menu[data-bs-popper] {
+    left: auto;
+    right: 0;
+    min-width: 100%;
+}
+.tasksTableCont tr td.tasksTableName,
+.tasksTableCont tr td.tasksTableNextDate {
+    cursor: pointer;
+}
+@media (min-width: 992px) {
+    .topUserMenuDropdown_cont {
+        order: 2;
+    }
+}
+@media (max-width: 991px) {
+    .navbar-collapse ul {
+        margin-top: 20px;
+        border-top: 1px solid #eaeaea;
+    }
+
+    .tasksTableCont {
+        margin-top: 10px;
+    }
+    .tasksTableCont thead {
+        display: none;
+    }
+    .tasksTableCont td,
+    .tasksTableCont tr {
+        display: block;
+        width: 100%;
+        border: none;
+    }
+    .tasksTableCont tr td.tasksTableN {
+        display: none;
+    }
+    .tasksTableCont tr {
+        border-bottom: 1px solid #eee;
+    }
+    .tasksTableCont tr td.tasksTableName {
+        font-size: 1.2rem;
+    }
+    .tasksTableCont tr td.tasksTableNextDate {
+        color: #8e8d8d;
+    }
+    .tasksTableCont tr td {
+        padding-bottom: 0;
+    }
+    .tasksTableCont tr td.tasksTableActions a,
+    .tasksTableCont tr td.tasksTableActions button {
+        margin-right: 20px;
+    }
+}

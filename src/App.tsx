@@ -6,14 +6,17 @@ import 'bootstrap/js/dist/collapse.js';
 import 'bootstrap/js/dist/modal.js';
 import MainRouter from './MainRouter';
 import { CurrentUserContext, CurrentUserI } from './context/CurrentUserContext';
-import { CURRENT_USER } from './graphql/queries';
-import { useLazyQuery } from '@apollo/client';
+import { CURRENT_USER, CREATE_USER_DEVICE } from './graphql/queries';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Loading from './components/layoutParts/Loading';
 
 export default function App() {
     const [currentUser, setCurrentUser] = useState<CurrentUserI | null>(null);
     const [loadingCurrentUser, setLoadingCurrentUser] = useState<boolean>(true);
     const [loadCurrentUser] = useLazyQuery(CURRENT_USER);
+    const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
+        onError: () => null,
+    });
 
     useEffect(() => {
         const token = localStorage.getItem(
@@ -25,6 +28,37 @@ export default function App() {
                 await loadCurrentUser({
                     onCompleted: (data) => {
                         setCurrentUser(data.currentUser);
+                        setLoadingCurrentUser(false);
+
+                        if (data.currentUser) {
+                            let timerIdCount = 0;
+                            const timerId = setInterval(function () {
+                                if (window.userDevice?.deviceId) {
+                                    clearInterval(timerId);
+
+                                    createUserDevice({
+                                        variables: {
+                                            deviceId:
+                                                window.userDevice.deviceId,
+                                            platform:
+                                                window.userDevice.platform,
+                                            manufacturer:
+                                                window.userDevice.manufacturer,
+                                            model: window.userDevice.model,
+                                            appVersion:
+                                                window.userDevice.appVersion,
+                                            notificationToken:
+                                                window.userDevice
+                                                    .notificationToken,
+                                        },
+                                    });
+                                }
+                                if (timerIdCount >= 10) clearInterval(timerId);
+                                timerIdCount++;
+                            }, 2000);
+                        }
+                    },
+                    onError: (error) => {
                         setLoadingCurrentUser(false);
                     },
                 });

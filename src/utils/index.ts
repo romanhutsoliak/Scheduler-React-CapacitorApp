@@ -1,4 +1,5 @@
 export { default as DateFormateUtils } from './DateFormateUtils';
+export { default as TimeToEventUtils } from './TimeToEventUtils';
 export const periodTypeWeekDaysArray = [
     'Mo',
     'Tu',

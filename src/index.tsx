@@ -59,6 +59,25 @@ const client = new ApolloClient({
     defaultOptions: defaultOptions,
 });
 
+// webViewRef.current.injectJavaScript() it watches in App.tsx
+type UserDeviceType = {
+    deviceId: String;
+    platform: String;
+    manufacturer: String;
+    model: String;
+    appVersion: String;
+    notificationToken: String;
+};
+declare global {
+    interface Window {
+        userDevice: UserDeviceType | undefined;
+        sendUserDevice: (userDeviceString: string) => void;
+    }
+}
+window.sendUserDevice = (userDeviceString: string) => {
+    window.userDevice = JSON.parse(userDeviceString);
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
     <React.StrictMode>
