@@ -61,8 +61,8 @@ export default function TaskEdit() {
         loadTask();
     }, []);
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
-        2,
-        { name: loadingTask.data?.task?.name },
+        1,
+        { name: loadingTask.data?.task?.name ?? 'Create' },
         useMakePathArray()
     );
 
@@ -238,6 +238,7 @@ export default function TaskEdit() {
                                 <option value="2">Weekly</option>
                                 <option value="3">Monthly</option>
                                 <option value="4">Yearly</option>
+                                <option value="5">Once</option>
                             </select>
                             <p className="invalid-feedback">
                                 {errors.periodType && errors.periodType.message}
@@ -262,7 +263,8 @@ export default function TaskEdit() {
                                         required: 'Name is required.',
                                         pattern: {
                                             value: /^\d{2}\:\d{2}$/i,
-                                            message: 'Invalid time (H:i)',
+                                            message:
+                                                'Invalid time (example 15:30)',
                                         },
                                     })}
                                     placeholder="24:00"

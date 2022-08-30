@@ -3,11 +3,7 @@ import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { LOGIN, CREATE_USER_DEVICE } from '../../graphql/queries';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-    CurrentUserContext,
-    CurrentUserI,
-} from './../../context/CurrentUserContext';
-import { GraphQLError } from 'graphql';
+import { CurrentUserContext } from './../../context/CurrentUserContext';
 
 type LocationStateType = {
     referer: {
@@ -15,34 +11,9 @@ type LocationStateType = {
     };
 };
 
-type loginMutationVariablesType = {
-    email: string;
-    password: string;
-};
-type loginMutationResponseDataType = {
-    data?: {
-        login: {
-            token: string;
-            user: CurrentUserI;
-        };
-    };
-    errors?: ReadonlyArray<{
-        message: string;
-    }>;
-};
-
 type FormValuesType = {
     email: string;
     password: string;
-};
-type UseFormErrorsType = {
-    errors: {
-        name: { message: string };
-        password: { message: string };
-    };
-};
-type ApiResponseErrorsType = ReadonlyArray<GraphQLError> & {
-    message: string;
 };
 
 export default function Login() {
@@ -142,7 +113,7 @@ export default function Login() {
                             required: 'Email is required.',
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: 'invalid email address',
+                                message: 'Invalid email address',
                             },
                         })}
                     />
@@ -188,6 +159,21 @@ export default function Login() {
                     </button>
                 </div>
             </form>
+            <div className="loginOrRegister">
+                <i className="bi bi-person-fill"></i> Or register a{' '}
+                <a
+                    className=""
+                    title="Edit"
+                    href="/register"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        navigate('../register');
+                    }}
+                >
+                    new account
+                </a>{' '}
+                if you are new user
+            </div>
         </>
     );
 }

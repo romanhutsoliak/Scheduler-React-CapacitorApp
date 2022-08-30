@@ -157,6 +157,28 @@ export const LOGIN = gql`
         }
     }
 `;
+export const USER_REGISTRATION = gql`
+    mutation UserRegistration(
+        $name: String!
+        $email: String!
+        $password: String!
+        $password_confirmation: String!
+    ) {
+        userRegistration(
+            name: $name
+            email: $email
+            password: $password
+            password_confirmation: $password_confirmation
+        ) {
+            user {
+                id
+                name
+                email
+            }
+            token
+        }
+    }
+`;
 
 export const LOGOUT = gql`
     mutation Logout {

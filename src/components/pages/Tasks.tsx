@@ -6,7 +6,6 @@ import Loading from '../layoutParts/Loading';
 import Pagination from '../layoutParts/Pagination';
 import Modal from '../layoutParts/Modal';
 import { DateFormateUtils, TimeToEventUtils } from '../../utils';
-import BreadCrumbs from '../layoutParts/BreadCrumbs';
 
 type GetTaskResponseType = {
     id?: number;
@@ -73,7 +72,7 @@ export default function Tasks() {
                 }}
                 okButtonText="Complete"
             />
-            <BreadCrumbs />
+            <h1>Tasks</h1>
             <div className="table-responsive tasksTableCont">
                 <table className="table table-responsive">
                     <thead>

@@ -25,7 +25,7 @@ export default function TaskView() {
         variables: { id: taskId },
     });
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
-        2,
+        1,
         { name: task.data?.task?.name },
         useMakePathArray()
     );

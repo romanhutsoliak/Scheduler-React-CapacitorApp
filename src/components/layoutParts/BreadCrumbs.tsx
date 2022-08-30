@@ -10,17 +10,20 @@ export function useMakePathArray(): PathArrayType[] {
 
     let linkIteration = '';
     let name = '';
-    return location.pathname.split('/').map((item) => {
-        linkIteration += '/' + item;
-        linkIteration = linkIteration.replace('//', '/');
-        name = item.charAt(0).toUpperCase() + item.slice(1);
-        if (!name) name = 'Home';
+    return location.pathname
+        .replace(/^\//g, '')
+        .split('/')
+        .map((item, index) => {
+            linkIteration += '/' + item;
+            linkIteration = linkIteration.replace('//', '/');
+            name = item.charAt(0).toUpperCase() + item.slice(1);
+            if (!name) name = 'Home';
 
-        return {
-            name: name,
-            link: linkIteration,
-        };
-    });
+            return {
+                name: name,
+                link: linkIteration,
+            };
+        });
 }
 
 export function updateBreadCrumbsPathArray(

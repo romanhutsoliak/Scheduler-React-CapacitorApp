@@ -37,30 +37,61 @@ export default function Header() {
                         className="dropdown-menu"
                         aria-labelledby="topUserMenuDropdown"
                     >
-                        <li>
-                            <a
-                                className="dropdown-item"
-                                href="/profile"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    navigate('../profile');
-                                }}
-                            >
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="dropdown-item"
-                                href="/logout"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    navigate('../logout');
-                                }}
-                            >
-                                Logout
-                            </a>
-                        </li>
+                        {currentUser ? (
+                            <>
+                                <li>
+                                    <a
+                                        className="dropdown-item"
+                                        href="/profile"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('../profile');
+                                        }}
+                                    >
+                                        Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="dropdown-item"
+                                        href="/logout"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('../logout');
+                                        }}
+                                    >
+                                        Logout
+                                    </a>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li>
+                                    <a
+                                        className="dropdown-item"
+                                        href="/login"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('../login');
+                                        }}
+                                    >
+                                        Login
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="dropdown-item"
+                                        href="/register"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('../register');
+                                        }}
+                                    >
+                                        Registration
+                                    </a>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
                 <div

@@ -10,6 +10,7 @@ import TaskEdit from './components/pages/TaskEdit';
 import TaskView from './components/pages/TaskView';
 import PrivateRoute from './components/auth/PrivateRoute';
 import Home from './components/pages/Home';
+import Register from './components/auth/Register';
 
 export default function MainRouter() {
     return (
@@ -18,6 +19,7 @@ export default function MainRouter() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                     <Route path="/" element={<PrivateRoute />}>
                         <Route path="/tasks" element={<Tasks />} />
                         <Route path="/tasks/create" element={<TaskEdit />} />

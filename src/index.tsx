@@ -41,7 +41,7 @@ const authLink = setContext((_, { headers }) => {
     };
 });
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors)
+    if (graphQLErrors) {
         graphQLErrors.forEach(({ message, locations, path }) => {
             if (message === 'Unauthenticated.') {
                 window.location.replace('/login');
@@ -50,8 +50,28 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
                 `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
             );
         });
+    }
 
-    if (networkError) console.log(`[Network error]: ${networkError}`);
+    if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+
+        // Show Toast component
+        window.setTimeout(function () {
+            const toastCont = document.querySelector<HTMLElement>('.toast');
+            if (toastCont) {
+                toastCont.classList.add('toastError', 'show');
+                const toastBody =
+                    toastCont.querySelector<HTMLElement>('.toast-body');
+                if (toastBody) {
+                    toastBody.textContent =
+                        'Network error. Check your internet connection and try again';
+                }
+                window.setTimeout(function () {
+                    toastCont.classList.remove('toastError', 'show');
+                }, 10000);
+            }
+        }, 100);
+    }
 });
 const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),
