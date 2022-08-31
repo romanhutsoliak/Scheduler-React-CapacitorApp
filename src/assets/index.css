@@ -130,9 +130,19 @@ h1 {
     font-size: 2rem;
     color: #777;
 }
+.topLangMenuDropdown_cont .form-select {
+    padding: 0.175rem 1.25rem 0.175rem 0.25rem;
+    font-size: 1rem;
+    background-position: right 0.25rem center;
+    background-color: #fffbfb;
+}
 @media (min-width: 992px) {
-    .topUserMenuDropdown_cont {
+    .topLangMenuDropdown_cont {
         order: 2;
+        margin-right: 2rem;
+    }
+    .topUserMenuDropdown_cont {
+        order: 3;
     }
 }
 @media (max-width: 991px) {

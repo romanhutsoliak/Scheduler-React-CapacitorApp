@@ -6,23 +6,32 @@ import 'bootstrap/js/dist/collapse.js';
 import 'bootstrap/js/dist/modal.js';
 import MainRouter from './MainRouter';
 import { CurrentUserContext, CurrentUserI } from './context/CurrentUserContext';
-import { CURRENT_USER, CREATE_USER_DEVICE } from './graphql/queries';
+import { LanguageContext } from './context/LanguageContext';
+import {
+    CURRENT_USER,
+    CREATE_USER_DEVICE,
+    UPDATE_USER_TIMEZONE,
+} from './graphql/queries';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import Loading from './components/layoutParts/Loading';
 
 export default function App() {
     const [currentUser, setCurrentUser] = useState<CurrentUserI | null>(null);
+    const [language, setLanguage] = useState('en');
     const [loadingCurrentUser, setLoadingCurrentUser] = useState<boolean>(true);
     const [loadCurrentUser] = useLazyQuery(CURRENT_USER);
     const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
         onError: () => null,
     });
+    const [updateUserTimezone] = useMutation(UPDATE_USER_TIMEZONE, {
+        onError: () => null,
+    });
 
     useEffect(() => {
-        const token = localStorage.getItem(
+        const tokenLocalStorage = localStorage.getItem(
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
         );
-        if (token) {
+        if (tokenLocalStorage) {
             // declare the async data fetching function
             const fetchCurrentUser = async () => {
                 await loadCurrentUser({
@@ -56,6 +65,19 @@ export default function App() {
                                 if (timerIdCount >= 10) clearInterval(timerId);
                                 timerIdCount++;
                             }, 2000);
+
+                            const userTimezoneOffset =
+                                new Date().getTimezoneOffset();
+                            if (
+                                userTimezoneOffset !==
+                                data.currentUser.timezoneOffset
+                            ) {
+                                updateUserTimezone({
+                                    variables: {
+                                        timezoneOffset: userTimezoneOffset,
+                                    },
+                                });
+                            }
                         }
                     },
                     onError: (error) => {
@@ -67,15 +89,24 @@ export default function App() {
         } else {
             setLoadingCurrentUser(false);
         }
+
+        const languageLocalStorage = localStorage.getItem(
+            process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language'
+        );
+        if (languageLocalStorage) setLanguage(languageLocalStorage);
     }, []);
 
     return (
-        <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-            {loadingCurrentUser ? (
-                <Loading position="position-absolute" />
-            ) : (
-                <MainRouter />
-            )}
-        </CurrentUserContext.Provider>
+        <LanguageContext.Provider value={{ language, setLanguage }}>
+            <CurrentUserContext.Provider
+                value={{ currentUser, setCurrentUser }}
+            >
+                {loadingCurrentUser ? (
+                    <Loading position="position-absolute" />
+                ) : (
+                    <MainRouter />
+                )}
+            </CurrentUserContext.Provider>
+        </LanguageContext.Provider>
     );
 }

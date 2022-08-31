@@ -7,7 +7,7 @@ export default function Home() {
             <h1>App introduction</h1>
             <p>
                 This application will help you to memorize and do not skip
-                important events which you perform periodically.{' '}
+                important events which you perform periodically.
             </p>
             <p>To pay for services, taxes, ?????</p>
             <h2>Which is the difference from calendar ?</h2>

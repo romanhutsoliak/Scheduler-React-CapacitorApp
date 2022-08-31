@@ -1,14 +1,20 @@
-import { useContext } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from '../../context/CurrentUserContext';
 
 export default function PrivateRoute() {
     const prevLocation = useLocation();
-    const { currentUser } = useContext(CurrentUserContext); // determine if authorized, from context or however you're doing it
+    const { currentUser } = useContext(CurrentUserContext);
+    const navigate = useNavigate();
 
-    return currentUser ? (
-        <Outlet />
-    ) : (
-        <Navigate to="/login" state={{ referer: prevLocation }} />
-    );
+    useEffect(() => {
+        if (!currentUser) {
+            navigate('/login', {
+                replace: true,
+                state: { referer: prevLocation },
+            });
+        }
+    });
+
+    return <Outlet />;
 }

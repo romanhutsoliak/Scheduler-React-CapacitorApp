@@ -198,6 +198,7 @@ export const CURRENT_USER = gql`
             id
             name
             email
+            timezoneOffset
         }
     }
 `;
@@ -208,6 +209,17 @@ export const UPDATE_PROFILE = gql`
             id
             name
             email
+            timezoneOffset
+        }
+    }
+`;
+export const UPDATE_USER_TIMEZONE = gql`
+    mutation UpdateUserTimezone($timezoneOffset: Int!) {
+        updateUserTimezone(timezoneOffset: $timezoneOffset) {
+            id
+            name
+            email
+            timezoneOffset
         }
     }
 `;

@@ -58,7 +58,7 @@ export default function TaskEdit() {
         onError: () => null,
     });
     useEffect(() => {
-        loadTask();
+        if (taskId) loadTask();
     }, []);
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
         1,

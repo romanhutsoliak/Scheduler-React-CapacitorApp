@@ -75,7 +75,7 @@ export default function Login() {
             }
 
             let redirectTo = '/';
-            if (locationState.referer?.pathname)
+            if (locationState?.referer?.pathname)
                 redirectTo = locationState.referer.pathname;
 
             navigate(redirectTo, {

@@ -1,10 +1,21 @@
 import { useContext } from 'react';
 import { CurrentUserContext } from '../../context/CurrentUserContext';
+import { LanguageContext } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
     const { currentUser } = useContext(CurrentUserContext);
+    const { language, setLanguage } = useContext(LanguageContext);
     const navigate = useNavigate();
+
+    const languageChangeHandler = (languageValue: string) => {
+        localStorage.setItem(
+            process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
+            languageValue
+        );
+        setLanguage(languageValue);
+    };
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container container-fluid">
@@ -19,6 +30,19 @@ export default function Header() {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
+                <div className="topLangMenuDropdown_cont">
+                    <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        onChange={(e) => {
+                            languageChangeHandler(e.target.value);
+                        }}
+                        value={language}
+                    >
+                        <option value="en">Eng</option>
+                        <option value="ru">Rus</option>
+                    </select>
+                </div>
                 <div className="btn-group topUserMenuDropdown_cont">
                     <button
                         className="btn btn-link btn-link-topUser dropdown-toggle"
@@ -45,7 +69,7 @@ export default function Header() {
                                         href="/profile"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            navigate('../profile');
+                                            navigate('/profile');
                                         }}
                                     >
                                         Profile
@@ -57,7 +81,7 @@ export default function Header() {
                                         href="/logout"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            navigate('../logout');
+                                            navigate('/logout');
                                         }}
                                     >
                                         Logout
