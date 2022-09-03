@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../languages';
 
 export type PathArrayType = {
     name: string;
@@ -7,6 +8,7 @@ export type PathArrayType = {
 
 export function useMakePathArray(): PathArrayType[] {
     const location = useLocation();
+    const t = useLanguage();
 
     let linkIteration = '';
     let name = '';
@@ -17,10 +19,9 @@ export function useMakePathArray(): PathArrayType[] {
             linkIteration += '/' + item;
             linkIteration = linkIteration.replace('//', '/');
             name = item.charAt(0).toUpperCase() + item.slice(1);
-            if (!name) name = 'Home';
 
             return {
-                name: name,
+                name: t(name),
                 link: linkIteration,
             };
         });

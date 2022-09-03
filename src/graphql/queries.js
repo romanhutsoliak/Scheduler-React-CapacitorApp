@@ -114,6 +114,34 @@ export const CREATE_USER_DEVICE = gql`
         }
     }
 `;
+export const CREATE_USER_FROM_DEVICE = gql`
+    mutation CreateUserFromDevice(
+        $deviceId: String!
+        $platform: String
+        $manufacturer: String
+        $model: String
+        $appVersion: String!
+        $notificationToken: String
+        $timezoneOffset: Int
+    ) {
+        createUserFromDevice(
+            deviceId: $deviceId
+            platform: $platform
+            manufacturer: $manufacturer
+            model: $model
+            appVersion: $appVersion
+            notificationToken: $notificationToken
+            timezoneOffset: $timezoneOffset
+        ) {
+            user {
+                id
+                name
+                email
+            }
+            token
+        }
+    }
+`;
 
 export const COMPLETE_TASK = gql`
     mutation CompleteTask($id: ID!, $notes: String) {

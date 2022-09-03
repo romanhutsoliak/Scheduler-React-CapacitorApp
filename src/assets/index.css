@@ -131,7 +131,7 @@ h1 {
     color: #777;
 }
 .topLangMenuDropdown_cont .form-select {
-    padding: 0.175rem 1.25rem 0.175rem 0.25rem;
+    padding: 0.155rem 1.25rem 0.2rem 0.5rem;
     font-size: 1rem;
     background-position: right 0.25rem center;
     background-color: #fffbfb;

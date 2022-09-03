@@ -25,7 +25,7 @@ const defaultOptions = {
     },
 };
 const httpLink = createHttpLink({
-    uri: 'http://192.168.1.3/graphql',
+    uri: process.env.REACT_APP_SERVER_GRAPHQL_URL,
 });
 const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
@@ -81,30 +81,31 @@ const client = new ApolloClient({
 
 // webViewRef.current.injectJavaScript() it watches in App.tsx
 type UserDeviceType = {
-    deviceId: String;
-    platform: String;
-    manufacturer: String;
-    model: String;
-    appVersion: String;
-    notificationToken: String;
+    deviceId: string;
+    platform: string;
+    manufacturer: string;
+    model: string;
+    appVersion: string;
+    notificationToken: string;
+    locale: string;
 };
 declare global {
     interface Window {
         userDevice: UserDeviceType | undefined;
         sendUserDevice: (userDeviceString: string) => void;
+        ReactNativeWebView: any;
     }
 }
 window.sendUserDevice = (userDeviceString: string) => {
     window.userDevice = JSON.parse(userDeviceString);
 };
 
+// <React.StrictMode>
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
-    <React.StrictMode>
-        <ApolloProvider client={client}>
-            <App />
-        </ApolloProvider>
-    </React.StrictMode>
+    <ApolloProvider client={client}>
+        <App />
+    </ApolloProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

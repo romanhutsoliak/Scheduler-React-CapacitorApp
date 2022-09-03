@@ -5,6 +5,7 @@ import { USER_REGISTRATION, CREATE_USER_DEVICE } from '../../graphql/queries';
 import { useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from './../../context/CurrentUserContext';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
+import { useLanguage } from '../../languages';
 
 type FormValuesType = {
     name: string;
@@ -31,6 +32,7 @@ export default function Register() {
     });
 
     const navigate = useNavigate();
+    const t = useLanguage();
 
     async function onSubmit(data: FormValuesType) {
         const responseData = await registration({
@@ -93,11 +95,11 @@ export default function Register() {
 
     return (
         <>
-            <h1>Registration</h1>
+            <h1>{t('Registration')}</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">
-                        Email address
+                        {t('Email')}
                     </label>
                     <input
                         type="email"
@@ -107,18 +109,20 @@ export default function Register() {
                         id="email"
                         placeholder="name@example.com"
                         {...register('email', {
-                            required: 'Email is required.',
+                            required: t('Email is required'),
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: 'Invalid email address',
+                                message: t('Invalid email address'),
                             },
                         })}
                     />
-                    <p className="invalid-feedback">{errors?.email?.message}</p>
+                    <p className="invalid-feedback">
+                        {errors?.email && t(errors?.email?.message as string)}
+                    </p>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="password" className="form-label">
-                        Password
+                        {t('Password')}
                     </label>
                     <div className="position-relative passwordEye">
                         <input
@@ -128,9 +132,9 @@ export default function Register() {
                                 (errors.password && 'is-invalid')
                             }
                             id="password"
-                            placeholder="Your password"
+                            placeholder={t('Your password')}
                             {...register('password', {
-                                required: 'Password is required.',
+                                required: t('Password is required'),
                             })}
                         />
                         <i
@@ -162,7 +166,8 @@ export default function Register() {
                             }}
                         ></i>
                         <p className="invalid-feedback">
-                            {errors?.password?.message}
+                            {errors?.password &&
+                                t(errors?.password?.message as string)}
                         </p>
                     </div>
                 </div>
@@ -171,7 +176,7 @@ export default function Register() {
                         htmlFor="password_confirmation"
                         className="form-label"
                     >
-                        Password confirmation
+                        {t('Password confirmation')}
                     </label>
                     <input
                         type="password"
@@ -180,19 +185,20 @@ export default function Register() {
                             (errors.password_confirmation && 'is-invalid')
                         }
                         id="password_confirmation"
-                        placeholder="Just type the same password"
+                        placeholder={t('Just type the same password')}
                         {...register('password_confirmation', {
-                            required: 'Password confirmation is required.',
+                            required: t('Password confirmation is required'),
                         })}
                     />
 
                     <p className="invalid-feedback">
-                        {errors?.password_confirmation?.message}
+                        {errors?.password_confirmation &&
+                            t(errors?.password_confirmation?.message as string)}
                     </p>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">
-                        Your name (optional)
+                        {t('Your name (optional)')}
                     </label>
                     <input
                         type="name"
@@ -200,10 +206,12 @@ export default function Register() {
                             'form-control ' + (errors.name && 'is-invalid')
                         }
                         id="name"
-                        placeholder="Karl Carson"
+                        placeholder={t('Karl')}
                         {...register('name')}
                     />
-                    <p className="invalid-feedback">{errors?.name?.message}</p>
+                    <p className="invalid-feedback">
+                        {errors?.name && t(errors?.name?.message as string)}
+                    </p>
                 </div>
                 <div className="col-auto">
                     <button
@@ -218,16 +226,17 @@ export default function Register() {
                                     role="status"
                                     aria-hidden="true"
                                 ></span>
-                                &nbsp; Registering ...
+                                &nbsp; {t('Registering')} ...
                             </>
                         ) : (
-                            'Submit'
+                            t('Submit')
                         )}
                     </button>
                 </div>
             </form>
             <div className="loginOrRegister">
-                <i className="bi bi-person-fill"></i> If you have an account{' '}
+                <i className="bi bi-person-fill"></i>
+                {t(' If you have an account ')}
                 <a
                     className=""
                     title="Edit"
@@ -237,7 +246,7 @@ export default function Register() {
                         navigate('../login');
                     }}
                 >
-                    login
+                    {t('login')}
                 </a>
             </div>
         </>

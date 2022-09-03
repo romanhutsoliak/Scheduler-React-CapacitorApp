@@ -6,6 +6,7 @@ import Loading from '../layoutParts/Loading';
 import Pagination from '../layoutParts/Pagination';
 import Modal from '../layoutParts/Modal';
 import { DateFormateUtils, TimeToEventUtils } from '../../utils';
+import { useLanguage } from '../../languages';
 
 type GetTaskResponseType = {
     id?: number;
@@ -21,6 +22,7 @@ export default function Tasks() {
     const completeNotesRef = useRef<HTMLTextAreaElement>(null);
 
     const navigate = useNavigate();
+    const t = useLanguage();
 
     const [completeTask] = useMutation(COMPLETE_TASK, {
         onError: () => null,
@@ -47,17 +49,15 @@ export default function Tasks() {
     return (
         <div>
             <Modal
-                title="Complete task"
+                title={t('Do you want to complete the task ?')}
                 body={
                     <>
-                        <div>Do you want to complete the task ?</div>
-                        <br />
                         <div className="mb-3">
                             <textarea
                                 ref={completeNotesRef}
                                 className="form-control"
                                 rows={3}
-                                placeholder="Complete notes (optional)"
+                                placeholder={t('Complete notes (optional)')}
                             ></textarea>
                         </div>
                     </>
@@ -70,16 +70,16 @@ export default function Tasks() {
                         },
                     });
                 }}
-                okButtonText="Complete"
+                okButtonText={t('Complete')}
             />
-            <h1>Tasks</h1>
+            <h1>{t('Tasks')}</h1>
             <div className="table-responsive tasksTableCont">
                 <table className="table table-responsive">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Next run time</th>
+                            <th scope="col">{t('TaskName')}</th>
+                            <th scope="col">{t('Next run time')}</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -115,13 +115,17 @@ export default function Tasks() {
                                             }
                                         >
                                             {DateFormateUtils(nextRunDateTime)}{' '}
-                                            ({'in '}
-                                            {TimeToEventUtils(nextRunDateTime)})
+                                            (
+                                            {TimeToEventUtils(
+                                                nextRunDateTime,
+                                                t
+                                            )}
+                                            )
                                         </td>
                                         <td className="text-lg-end tasksTableActions">
                                             <a
                                                 className="btn btn-link"
-                                                title="Details"
+                                                title={t('Details')}
                                                 href={'/tasks/' + id}
                                                 onClick={(event) =>
                                                     onClickDetailHandler(
@@ -134,7 +138,7 @@ export default function Tasks() {
                                             </a>
                                             <button
                                                 className="btn btn-link"
-                                                title="Complete"
+                                                title={t('Complete')}
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#globalModal"
@@ -146,7 +150,7 @@ export default function Tasks() {
                                             </button>
                                             <a
                                                 className="btn btn-link"
-                                                title="Edit"
+                                                title={t('Edit')}
                                                 href={'/tasks/' + id + '/edit'}
                                                 onClick={(e) => {
                                                     e.preventDefault();
@@ -184,7 +188,7 @@ export default function Tasks() {
                         navigate('../tasks/create');
                     }}
                 >
-                    <i className="bi bi-plus-circle"></i> Create new task
+                    <i className="bi bi-plus-circle"></i> {t('Create new task')}
                 </button>
             </div>
         </div>

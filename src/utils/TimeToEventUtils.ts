@@ -1,26 +1,116 @@
-export default function TimeToEventUtils(timeFromDB: string): string {
+export default function TimeToEventUtils(
+    timeFromDB: string,
+    t: (text: string) => string
+): string {
     const seconds = Math.floor((Date.parse(timeFromDB) - Date.now()) / 1000);
 
     let interval = seconds / 31536000;
+    const inTime = t('in_time') + ' ';
 
     if (interval > 1) {
-        return Math.floor(interval) + ' years';
+        return (
+            inTime +
+            Math.floor(interval) +
+            ' ' +
+            t(
+                declOfNum(
+                    Math.floor(interval),
+                    [t('years1'), t('years2'), t('years3')],
+                    'years'
+                )
+            )
+        );
     }
     interval = seconds / 2592000;
     if (interval > 1) {
-        return Math.floor(interval) + ' months';
+        return (
+            inTime +
+            Math.floor(interval) +
+            ' ' +
+            t(
+                declOfNum(
+                    Math.floor(interval),
+                    [t('months1'), t('months2'), t('months3')],
+                    'months'
+                )
+            )
+        );
     }
     interval = seconds / 86400;
     if (interval > 1) {
-        return Math.floor(interval) + ' days';
+        return (
+            inTime +
+            Math.floor(interval) +
+            ' ' +
+            t(
+                declOfNum(
+                    Math.floor(interval),
+                    [t('days1'), t('days2'), t('days3')],
+                    'days'
+                )
+            )
+        );
     }
     interval = seconds / 3600;
     if (interval > 1) {
-        return Math.floor(interval) + ' hours';
+        return (
+            inTime +
+            Math.floor(interval) +
+            ' ' +
+            t(
+                declOfNum(
+                    Math.floor(interval),
+                    [t('hours1'), t('hours2'), t('hours3')],
+                    'hours'
+                )
+            )
+        );
     }
     interval = seconds / 60;
     if (interval > 1) {
-        return Math.floor(interval) + ' minutes';
+        return (
+            inTime +
+            Math.floor(interval) +
+            ' ' +
+            t(
+                declOfNum(
+                    Math.floor(interval),
+                    [t('minutes1'), t('minutes2'), t('minutes3')],
+                    'minutes'
+                )
+            )
+        );
     }
-    return Math.floor(seconds) + ' seconds';
+    return (
+        inTime +
+        Math.floor(seconds) +
+        ' ' +
+        t(
+            declOfNum(
+                Math.floor(interval),
+                [t('seconds1'), t('seconds2'), t('seconds3')],
+                'seconds'
+            )
+        )
+    );
+}
+
+function declOfNum(
+    number: number,
+    verbArray: string[],
+    rootOfVerb: string
+): string {
+    const cases = [2, 0, 1, 1, 1, 2];
+    const verb =
+        verbArray[
+            number % 100 > 4 && number % 100 < 20
+                ? 2
+                : cases[number % 10 < 5 ? number % 10 : 5]
+        ];
+
+    if (verb) {
+        if (verb.indexOf(rootOfVerb) === 0) return rootOfVerb;
+        return verb;
+    }
+    return '';
 }

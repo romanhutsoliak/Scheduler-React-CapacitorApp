@@ -10,6 +10,7 @@ import BreadCrumbs, {
     useMakePathArray,
     updateBreadCrumbsPathArray,
 } from '../layoutParts/BreadCrumbs';
+import { useLanguage } from '../../languages';
 
 type TaskFormValuesType = {
     name: string;
@@ -20,6 +21,32 @@ type TaskFormValuesType = {
     periodTypeMonthDays: number[] | null;
     periodTypeMonths: number[] | null;
 };
+
+function SaveButton({ buttonLoading }: { buttonLoading: boolean }) {
+    const t = useLanguage();
+    return (
+        <div className="text-start">
+            <button
+                type="submit"
+                className="btn btn-primary mb-3"
+                disabled={buttonLoading ? true : false}
+            >
+                {buttonLoading ? (
+                    <>
+                        <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                        ></span>
+                        &nbsp; {t('Saving')}...
+                    </>
+                ) : (
+                    t('Save')
+                )}
+            </button>
+        </div>
+    );
+}
 
 export default function TaskEdit() {
     const {
@@ -32,6 +59,7 @@ export default function TaskEdit() {
     const [periodTypeState, setPeriodTypeState] = useState(1);
     const navigate = useNavigate();
     const { taskId } = useParams();
+    const t = useLanguage();
     const [loadTask, loadingTask] = useLazyQuery(QUERY_TASK, {
         variables: { id: taskId },
         onCompleted: (data) => {
@@ -62,7 +90,7 @@ export default function TaskEdit() {
     }, []);
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
         1,
-        { name: loadingTask.data?.task?.name ?? 'Create' },
+        { name: loadingTask.data?.task?.name ?? t('Create') },
         useMakePathArray()
     );
 
@@ -145,27 +173,28 @@ export default function TaskEdit() {
             <form method="POST" onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
                     <div className="col-md-6">
-                        <h2>Task details</h2>
+                        <h2>{t('Task details')}</h2>
                         <div className="mb-3">
                             <label
                                 htmlFor="inputName"
                                 className="htmlForm-label"
                             >
-                                Name
+                                {t('Name')}
                             </label>
                             <input
-                                type="name"
+                                type="text"
                                 className={
                                     'form-control ' +
                                     (errors.name && 'is-invalid')
                                 }
                                 id="inputName"
+                                placeholder={t('Go shopping')}
                                 {...register('name', {
-                                    required: 'Name is required.',
+                                    required: t('Name is required.'),
                                 })}
                             />
                             <p className="invalid-feedback">
-                                {errors.name && errors.name.message}
+                                {t(errors?.name?.message as string)}
                             </p>
                         </div>
                         <div className="mb-3">
@@ -173,7 +202,7 @@ export default function TaskEdit() {
                                 htmlFor="inputDescription"
                                 className="htmlForm-label"
                             >
-                                Description
+                                {t('Description')}
                             </label>
                             <textarea
                                 className={
@@ -181,42 +210,26 @@ export default function TaskEdit() {
                                     (errors.description && 'is-invalid')
                                 }
                                 id="inputDescription"
+                                placeholder={t('Shopping list')}
                                 rows={3}
                                 {...register('description')}
                             ></textarea>
                             <p className="invalid-feedback">
-                                {errors.description &&
-                                    errors.description.message}
+                                {t(errors?.description?.message as string)}
                             </p>
                         </div>
-
-                        <button
-                            type="submit"
-                            className="btn btn-primary mb-3"
-                            disabled={buttonLoading ? true : false}
-                        >
-                            {buttonLoading ? (
-                                <>
-                                    <span
-                                        className="spinner-border spinner-border-sm"
-                                        role="status"
-                                        aria-hidden="true"
-                                    ></span>
-                                    &nbsp; Saving...
-                                </>
-                            ) : (
-                                'Save'
-                            )}
-                        </button>
+                        <div className="text-start d-none d-md-block">
+                            <SaveButton buttonLoading={buttonLoading} />
+                        </div>
                     </div>
                     <div className="col-md-6">
-                        <h2>Schedule</h2>
+                        <h2>{t('Schedule')}</h2>
                         <div className="mb-3">
                             <label
                                 htmlFor="inputPeriodType"
                                 className="htmlForm-label"
                             >
-                                Period type
+                                {t('Period type')}
                             </label>
                             <select
                                 className={
@@ -225,7 +238,7 @@ export default function TaskEdit() {
                                 }
                                 aria-label="Default select example"
                                 {...register('periodType', {
-                                    required: 'Period type is required.',
+                                    required: t('Period type is required.'),
                                     onChange: (e) => {
                                         setPeriodTypeState(
                                             parseInt(e.target.value)
@@ -233,15 +246,16 @@ export default function TaskEdit() {
                                     },
                                 })}
                             >
-                                <option disabled>Select period</option>
-                                <option value="1">Daily</option>
-                                <option value="2">Weekly</option>
-                                <option value="3">Monthly</option>
-                                <option value="4">Yearly</option>
-                                <option value="5">Once</option>
+                                <option disabled>{t('Select period')}</option>
+                                <option value="1">{t('Daily')}</option>
+                                <option value="2">{t('Weekly')}</option>
+                                <option value="3">{t('Monthly')}</option>
+                                <option value="4">{t('Yearly')}</option>
+                                <option value="5">{t('Once')}</option>
                             </select>
                             <p className="invalid-feedback">
-                                {errors.periodType && errors.periodType.message}
+                                {errors?.periodType &&
+                                    t(errors?.periodType?.message as string)}
                             </p>
                         </div>
                         <div className="periodTypeContainer">
@@ -250,28 +264,32 @@ export default function TaskEdit() {
                                     htmlFor="inputPeriodTypeTime"
                                     className="htmlForm-label"
                                 >
-                                    Time
+                                    {t('Time')}
                                 </label>
                                 <input
-                                    type="name"
+                                    type="text"
                                     className={
                                         'form-control ' +
                                         (errors.periodTypeTime && 'is-invalid')
                                     }
                                     id="inputPeriodType"
                                     {...register('periodTypeTime', {
-                                        required: 'Name is required.',
+                                        required: 'Time is required.',
                                         pattern: {
                                             value: /^\d{2}\:\d{2}$/i,
-                                            message:
-                                                'Invalid time (example 15:30)',
+                                            message: t(
+                                                'Invalid time (example 15:30)'
+                                            ),
                                         },
                                     })}
                                     placeholder="24:00"
                                 />
                                 <p className="invalid-feedback">
-                                    {errors.periodTypeTime &&
-                                        errors.periodTypeTime.message}
+                                    {errors?.periodTypeTime &&
+                                        t(
+                                            errors?.periodTypeTime
+                                                ?.message as string
+                                        )}
                                 </p>
                             </div>
                             {periodTypeState === 2 ? (
@@ -297,14 +315,15 @@ export default function TaskEdit() {
                                                                     'is-invalid')
                                                             }
                                                             id={
-                                                                'inputPeriodTypeWeekDay' +
+                                                                'periodTypeWeekDaysArray' +
                                                                 i
                                                             }
                                                             {...register(
                                                                 'periodTypeWeekDays',
                                                                 {
-                                                                    required:
-                                                                        'Name is required.',
+                                                                    required: t(
+                                                                        'Week day is required.'
+                                                                    ),
                                                                 }
                                                             )}
                                                             value={i + 1}
@@ -312,11 +331,11 @@ export default function TaskEdit() {
                                                         <label
                                                             className="form-check-label"
                                                             htmlFor={
-                                                                'inputPeriodTypeWeekDay' +
+                                                                'periodTypeWeekDaysArray' +
                                                                 i
                                                             }
                                                         >
-                                                            {weekDay}
+                                                            {t(weekDay)}
                                                         </label>
                                                     </div>
                                                 );
@@ -324,8 +343,10 @@ export default function TaskEdit() {
                                         )}
                                     </div>
                                     <p className="invalid-feedback">
-                                        {errors.periodTypeWeekDays &&
-                                            errors.periodTypeWeekDays.message}
+                                        {t(
+                                            errors?.periodTypeWeekDays
+                                                ?.message as string
+                                        )}
                                     </p>
                                 </div>
                             ) : (
@@ -349,14 +370,15 @@ export default function TaskEdit() {
                                                                     'is-invalid')
                                                             }
                                                             id={
-                                                                'periodTypeMonthDay' +
+                                                                'periodTypeMonthDaysArray' +
                                                                 i
                                                             }
                                                             {...register(
                                                                 'periodTypeMonthDays',
                                                                 {
-                                                                    required:
-                                                                        'Name is required.',
+                                                                    required: t(
+                                                                        'Month day is required.'
+                                                                    ),
                                                                 }
                                                             )}
                                                             value={i + 1}
@@ -364,7 +386,7 @@ export default function TaskEdit() {
                                                         <label
                                                             className="form-check-label"
                                                             htmlFor={
-                                                                'inputPeriodTypeMonthDay' +
+                                                                'periodTypeMonthDaysArray' +
                                                                 i
                                                             }
                                                         >
@@ -378,9 +400,10 @@ export default function TaskEdit() {
                                             }
                                         )}
                                         <p className="invalid-feedback">
-                                            {errors.periodTypeMonthDays &&
-                                                errors.periodTypeMonthDays
-                                                    .message}
+                                            {t(
+                                                errors?.periodTypeMonthDays
+                                                    ?.message as string
+                                            )}
                                         </p>
                                     </div>
                                 </div>
@@ -412,7 +435,9 @@ export default function TaskEdit() {
                                                                 'periodTypeMonths',
                                                                 {
                                                                     required:
-                                                                        'Name is required.',
+                                                                        t(
+                                                                            'Month is required.'
+                                                                        ),
                                                                 }
                                                             )}
                                                             value={i + 1}
@@ -420,11 +445,11 @@ export default function TaskEdit() {
                                                         <label
                                                             className="form-check-label"
                                                             htmlFor={
-                                                                'inputPeriodTypeMonthDay' +
+                                                                'periodTypeMonths' +
                                                                 i
                                                             }
                                                         >
-                                                            {month}
+                                                            {t(month)}
                                                         </label>
                                                     </div>
                                                 );
@@ -436,6 +461,9 @@ export default function TaskEdit() {
                                 ''
                             )}
                         </div>
+                    </div>
+                    <div className="text-start d-md-none">
+                        <SaveButton buttonLoading={buttonLoading} />
                     </div>
                 </div>
             </form>

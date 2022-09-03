@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { LOGIN, CREATE_USER_DEVICE } from '../../graphql/queries';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from './../../context/CurrentUserContext';
+import { useLanguage } from '../../languages';
 
 type LocationStateType = {
     referer: {
@@ -32,7 +33,7 @@ export default function Login() {
     const [login, logged] = useMutation(LOGIN, {
         onError: () => null,
     });
-
+    const t = useLanguage();
     const location = useLocation();
     const locationState = location.state as LocationStateType;
 
@@ -96,11 +97,11 @@ export default function Login() {
 
     return (
         <>
-            <h1>Sign in</h1>
+            <h1>{t('Sign in')}</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">
-                        Email address
+                        {t('Email')}
                     </label>
                     <input
                         type="email"
@@ -113,15 +114,17 @@ export default function Login() {
                             required: 'Email is required.',
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: 'Invalid email address',
+                                message: t('Invalid email address'),
                             },
                         })}
                     />
-                    <p className="invalid-feedback">{errors?.email?.message}</p>
+                    <p className="invalid-feedback">
+                        {errors?.email && t(errors?.email?.message as string)}
+                    </p>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="password" className="form-label">
-                        Password
+                        {t('Password')}
                     </label>
                     <input
                         type="password"
@@ -131,11 +134,12 @@ export default function Login() {
                         id="password"
                         placeholder="Your password"
                         {...register('password', {
-                            required: 'Password is required.',
+                            required: t('Password is required'),
                         })}
                     />
                     <p className="invalid-feedback">
-                        {errors?.password?.message}
+                        {errors?.password &&
+                            t(errors?.password?.message as string)}
                     </p>
                 </div>
                 <div className="col-auto">
@@ -151,16 +155,16 @@ export default function Login() {
                                     role="status"
                                     aria-hidden="true"
                                 ></span>
-                                &nbsp; Logging in...
+                                &nbsp; {t('Logging in')}...
                             </>
                         ) : (
-                            'Submit'
+                            t('Submit')
                         )}
                     </button>
                 </div>
             </form>
             <div className="loginOrRegister">
-                <i className="bi bi-person-fill"></i> Or register a{' '}
+                <i className="bi bi-person-fill"></i> {t('Create a ')}
                 <a
                     className=""
                     title="Edit"
@@ -170,9 +174,9 @@ export default function Login() {
                         navigate('../register');
                     }}
                 >
-                    new account
-                </a>{' '}
-                if you are new user
+                    {t('new account')}
+                </a>
+                {t(' if you are new')}
             </div>
         </>
     );

@@ -12,6 +12,7 @@ import BreadCrumbs, {
     useMakePathArray,
     updateBreadCrumbsPathArray,
 } from '../layoutParts/BreadCrumbs';
+import { useLanguage } from '../../languages';
 
 type TaskHistory = {
     created_at: String;
@@ -20,6 +21,7 @@ type TaskHistory = {
 export default function TaskView() {
     const navigate = useNavigate();
     const { taskId } = useParams();
+    const t = useLanguage();
 
     const task = useQuery(QUERY_TASK_WITH_HISTORY, {
         variables: { id: taskId },
@@ -35,29 +37,29 @@ export default function TaskView() {
 
     let periodText = '';
     if (task.data.task.periodType == 1) {
-        periodText = 'Daily';
+        periodText = t('Daily');
     } else if (task.data.task.periodType == 2) {
         const periodTypeWeekDaysNames = task.data.task.periodTypeWeekDays?.map(
             (day: string) => {
-                return periodTypeWeekDaysArray[parseInt(day) - 1];
+                return t(periodTypeWeekDaysArray[parseInt(day) - 1]);
             }
         );
-        periodText = 'Weekly on ' + periodTypeWeekDaysNames.join(', ');
+        periodText = t('Weekly on ') + periodTypeWeekDaysNames.join(', ');
     } else if (task.data.task.periodType == 3) {
         periodText =
-            'Monthly each ' +
-            task.data.task.periodTypeMonthDays.join('th, ') +
-            'th';
+            t('Monthly each ') +
+            task.data.task.periodTypeMonthDays.join(t('th') + ', ') +
+            t('th');
     } else if (task.data.task.periodType == 4) {
         const periodTypeMonthsNames = task.data.task.periodTypeMonths?.map(
             (month: string) => {
-                return periodTypeMonthsArray[parseInt(month) - 1];
+                return t(periodTypeMonthsArray[parseInt(month) - 1]);
             }
         );
         periodText =
-            'Yearly each ' +
-            task.data.task.periodTypeMonthDays.join('th, ') +
-            'th of ' +
+            t('Yearly each ') +
+            task.data.task.periodTypeMonthDays.join(t('th') + ', ') +
+            t('th of ') +
             periodTypeMonthsNames.join(', ');
     }
     return (
@@ -68,7 +70,7 @@ export default function TaskView() {
                     <div className="taskViewDetail">
                         <a
                             className="btn btn-link taskViewDetailEditBtn"
-                            title="Edit"
+                            title={t('Edit')}
                             href={'/tasks/' + taskId + '/edit'}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -77,27 +79,29 @@ export default function TaskView() {
                         >
                             <i className="bi bi-pencil-fill"></i>
                         </a>
-                        <h2>Task details</h2>
+                        <h2>{t('Task details')}</h2>
                         <div className="taskViewDetailDiv">
                             <h3 className="mb-3">{task.data.task.name}</h3>
                             {task.data.task.description && (
                                 <div className="mb-3">
-                                    Description: {task.data.task.description}
+                                    {t('Description')}:{' '}
+                                    {task.data.task.description}
                                 </div>
                             )}
                             <div className="mb-3">
-                                Next event:{' '}
+                                {t('Next event')}:{' '}
                                 {DateFormateUtils(
                                     task.data.task.nextRunDateTime
                                 )}{' '}
-                                ({'in '}
+                                (
                                 {TimeToEventUtils(
-                                    task.data.task.nextRunDateTime
+                                    task.data.task.nextRunDateTime,
+                                    t
                                 )}
                                 )
                             </div>
                             <div className="mb-3">
-                                Period: {periodText} at{' '}
+                                {t('Period')}: {periodText} {t('at')}{' '}
                                 {task.data.task.periodTypeTime}
                             </div>
                         </div>
@@ -105,9 +109,8 @@ export default function TaskView() {
                 </div>
                 <div className="col-md-6">
                     <div className="taskViewHistory">
-                        <h2>Event history</h2>
-                        {task.data.taskHistory &&
-                        task.data.taskHistory.length ? (
+                        <h2>{t('Event history')}</h2>
+                        {task?.data?.taskHistory?.length ? (
                             task.data.taskHistory.map(
                                 (history: TaskHistory) => {
                                     return (
@@ -131,7 +134,7 @@ export default function TaskView() {
                             )
                         ) : (
                             <div className="taskViewHistoryDiv">
-                                No records found
+                                {t('No records found')}
                             </div>
                         )}
                     </div>

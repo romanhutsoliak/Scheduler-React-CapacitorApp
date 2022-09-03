@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../languages';
 
 type Props = {
     title?: String | undefined;
@@ -13,6 +14,7 @@ export default function Modal({
     onSuccessFn,
 }: Props) {
     const [buttonLoading, setButtonLoading] = useState(false);
+    const t = useLanguage();
     const onClickHandler = async () => {
         if (typeof onSuccessFn == 'function') {
             setButtonLoading(true);
@@ -53,7 +55,7 @@ export default function Modal({
                             className="btn btn-secondary"
                             data-bs-dismiss="modal"
                         >
-                            Close
+                            {t('Close')}
                         </button>
                         <button
                             type="button"
@@ -68,10 +70,10 @@ export default function Modal({
                                         role="status"
                                         aria-hidden="true"
                                     ></span>
-                                    &nbsp; Processing...
+                                    &nbsp; {t('Processing')}...
                                 </>
                             ) : (
-                                <>{okButtonText ?? 'Ok'}</>
+                                <>{okButtonText ?? t('Ok')}</>
                             )}
                         </button>
                     </div>

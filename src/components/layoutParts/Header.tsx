@@ -2,11 +2,13 @@ import { useContext } from 'react';
 import { CurrentUserContext } from '../../context/CurrentUserContext';
 import { LanguageContext } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../languages';
 
 export default function Header() {
     const { currentUser } = useContext(CurrentUserContext);
     const { language, setLanguage } = useContext(LanguageContext);
     const navigate = useNavigate();
+    const t = useLanguage();
 
     const languageChangeHandler = (languageValue: string) => {
         localStorage.setItem(
@@ -40,7 +42,8 @@ export default function Header() {
                         value={language}
                     >
                         <option value="en">Eng</option>
-                        <option value="ru">Rus</option>
+                        <option value="ua">Укр</option>
+                        <option value="ru">Рус</option>
                     </select>
                 </div>
                 <div className="btn-group topUserMenuDropdown_cont">
@@ -54,7 +57,7 @@ export default function Header() {
                     >
                         <span>
                             <i className="bi bi-person-fill"></i>&nbsp;
-                            {currentUser ? currentUser.name : 'Guest'}
+                            {currentUser ? currentUser.name : t('Guest')}
                         </span>
                     </button>
                     <ul
@@ -62,32 +65,49 @@ export default function Header() {
                         aria-labelledby="topUserMenuDropdown"
                     >
                         {currentUser ? (
-                            <>
-                                <li>
-                                    <a
-                                        className="dropdown-item"
-                                        href="/profile"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('/profile');
-                                        }}
-                                    >
-                                        Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        className="dropdown-item"
-                                        href="/logout"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('/logout');
-                                        }}
-                                    >
-                                        Logout
-                                    </a>
-                                </li>
-                            </>
+                            currentUser.email ? (
+                                <>
+                                    <li>
+                                        <a
+                                            className="dropdown-item"
+                                            href="/profile"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate('/profile');
+                                            }}
+                                        >
+                                            {t('Profile')}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            className="dropdown-item"
+                                            href="/logout"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate('/logout');
+                                            }}
+                                        >
+                                            {t('Logout')}
+                                        </a>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li>
+                                        <a
+                                            className="dropdown-item"
+                                            href="/register"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate('../register');
+                                            }}
+                                        >
+                                            {t('Complete registration')}
+                                        </a>
+                                    </li>
+                                </>
+                            )
                         ) : (
                             <>
                                 <li>
@@ -99,7 +119,7 @@ export default function Header() {
                                             navigate('../login');
                                         }}
                                     >
-                                        Login
+                                        {t('Login')}
                                     </a>
                                 </li>
                                 <li>
@@ -111,7 +131,7 @@ export default function Header() {
                                             navigate('../register');
                                         }}
                                     >
-                                        Registration
+                                        {t('Registration')}
                                     </a>
                                 </li>
                             </>
@@ -135,7 +155,7 @@ export default function Header() {
                                     navigate('../');
                                 }}
                             >
-                                Home
+                                {t('Home')}
                             </a>
                         </li>
                         <li className="nav-item">
@@ -149,7 +169,7 @@ export default function Header() {
                                     navigate('../tasks');
                                 }}
                             >
-                                Tasks
+                                {t('Tasks')}
                             </a>
                         </li>
                     </ul>

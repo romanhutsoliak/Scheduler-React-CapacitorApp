@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
 import { UPDATE_PROFILE } from '../../graphql/queries';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
+import { useLanguage } from '../../languages';
 
 type ProfileFormValuesType = {
     email: string;
@@ -23,7 +24,7 @@ export default function Profile() {
     const [saveProfile, savedProfile] = useMutation(UPDATE_PROFILE, {
         onError: () => null,
     });
-
+    const t = useLanguage();
     useEffect(() => {
         setValue('name', currentUser?.name ?? '');
         setValue('email', currentUser?.email ?? '');
@@ -61,11 +62,11 @@ export default function Profile() {
 
     return (
         <>
-            <h1>Profile</h1>
+            <h1>{t('Profile')}</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">
-                        Name
+                        {t('Name')}
                     </label>
                     <input
                         type="name"
@@ -75,16 +76,16 @@ export default function Profile() {
                         id="name"
                         placeholder=""
                         {...register('name', {
-                            required: 'Name is required.',
+                            required: t('Name is required.'),
                         })}
                     />
                     <p className="invalid-feedback">
-                        {errors.name && errors.name.message}
+                        {errors?.name && t(errors?.name?.message as string)}
                     </p>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">
-                        Email address
+                        {t('Email')}
                     </label>
                     <input
                         type="email"
@@ -94,15 +95,15 @@ export default function Profile() {
                         id="email"
                         placeholder="name@example.com"
                         {...register('email', {
-                            required: 'Email is required.',
+                            required: t('Email is required.'),
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: 'invalid email address',
+                                message: t('invalid email address'),
                             },
                         })}
                     />
                     <p className="invalid-feedback">
-                        {errors.email && errors.email.message}
+                        {errors?.email && t(errors?.email?.message as string)}
                     </p>
                 </div>
                 {/* <div className="mb-3">
@@ -137,10 +138,10 @@ export default function Profile() {
                                     role="status"
                                     aria-hidden="true"
                                 ></span>
-                                &nbsp; Saving...
+                                &nbsp; {t('Saving')}...
                             </>
                         ) : (
-                            'Save'
+                            t('Save')
                         )}
                     </button>
                 </div>
