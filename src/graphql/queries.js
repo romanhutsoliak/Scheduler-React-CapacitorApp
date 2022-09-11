@@ -8,9 +8,7 @@ export const QUERY_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            user {
-                name
-            }
+            mustBeCompleted
             hasEvent
             periodType
             periodTypeTime
@@ -47,9 +45,6 @@ export const UPDATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            user {
-                name
-            }
             hasEvent
         }
     }
@@ -80,9 +75,6 @@ export const CREATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            user {
-                name
-            }
             hasEvent
         }
     }
@@ -111,6 +103,7 @@ export const CREATE_USER_DEVICE = gql`
             model
             appVersion
             notificationToken
+            updated_at
         }
     }
 `;
@@ -134,7 +127,6 @@ export const CREATE_USER_FROM_DEVICE = gql`
             timezoneOffset: $timezoneOffset
         ) {
             user {
-                id
                 name
                 email
             }
@@ -156,6 +148,7 @@ export const QUERY_TASK_WITH_HISTORY = gql`
         task(id: $id) {
             name
             description
+            mustBeCompleted
             startDateTime
             stopDateTime
             nextRunDateTime
@@ -177,9 +170,9 @@ export const LOGIN = gql`
     mutation Login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
             user {
-                id
                 name
                 email
+                timezoneOffset
             }
             token
         }
@@ -199,9 +192,9 @@ export const USER_REGISTRATION = gql`
             password_confirmation: $password_confirmation
         ) {
             user {
-                id
                 name
                 email
+                timezoneOffset
             }
             token
         }
@@ -212,7 +205,6 @@ export const LOGOUT = gql`
     mutation Logout {
         logout {
             user {
-                id
                 name
                 email
             }
@@ -223,7 +215,6 @@ export const LOGOUT = gql`
 export const CURRENT_USER = gql`
     query CurrentUser {
         currentUser {
-            id
             name
             email
             timezoneOffset
@@ -232,9 +223,18 @@ export const CURRENT_USER = gql`
 `;
 
 export const UPDATE_PROFILE = gql`
-    mutation UpdateProfile($id: ID!, $email: String!, $name: String!) {
-        updateProfile(id: $id, email: $email, name: $name) {
-            id
+    mutation UpdateProfile(
+        $email: String!
+        $name: String
+        $password: String
+        $password_confirmation: String
+    ) {
+        updateProfile(
+            email: $email
+            name: $name
+            password: $password
+            password_confirmation: $password_confirmation
+        ) {
             name
             email
             timezoneOffset
@@ -244,7 +244,6 @@ export const UPDATE_PROFILE = gql`
 export const UPDATE_USER_TIMEZONE = gql`
     mutation UpdateUserTimezone($timezoneOffset: Int!) {
         updateUserTimezone(timezoneOffset: $timezoneOffset) {
-            id
             name
             email
             timezoneOffset

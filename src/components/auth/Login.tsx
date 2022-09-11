@@ -62,19 +62,6 @@ export default function Login() {
             );
             setCurrentUser(responseData.data.login.user);
 
-            if (window.userDevice?.deviceId) {
-                createUserDevice({
-                    variables: {
-                        deviceId: window.userDevice.deviceId,
-                        platform: window.userDevice.platform,
-                        manufacturer: window.userDevice.manufacturer,
-                        model: window.userDevice.model,
-                        appVersion: window.userDevice.appVersion,
-                        notificationToken: window.userDevice.notificationToken,
-                    },
-                });
-            }
-
             let redirectTo = '/';
             if (locationState?.referer?.pathname)
                 redirectTo = locationState.referer.pathname;

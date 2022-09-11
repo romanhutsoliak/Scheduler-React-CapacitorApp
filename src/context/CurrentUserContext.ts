@@ -4,7 +4,7 @@ export interface CurrentUserI {
     id?: number;
     name: string;
     email: string;
-    // age: number;
+    timezoneOffset: number;
 }
 interface CurrentUserContextI {
     currentUser: CurrentUserI | null;

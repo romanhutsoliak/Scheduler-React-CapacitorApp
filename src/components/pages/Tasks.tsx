@@ -47,7 +47,7 @@ export default function Tasks() {
     };
 
     return (
-        <div>
+        <>
             <Modal
                 title={t('Do you want to complete the task ?')}
                 body={
@@ -191,6 +191,6 @@ export default function Tasks() {
                     <i className="bi bi-plus-circle"></i> {t('Create new task')}
                 </button>
             </div>
-        </div>
+        </>
     );
 }

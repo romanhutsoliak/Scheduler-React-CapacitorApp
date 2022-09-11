@@ -16,6 +16,7 @@ type TaskFormValuesType = {
     name: string;
     description: string;
     periodType: string;
+    mustBeCompleted: boolean;
     periodTypeTime: string;
     periodTypeWeekDays: number[] | null;
     periodTypeMonthDays: number[] | null;
@@ -66,6 +67,7 @@ export default function TaskEdit() {
             if (data.task) {
                 setValue('name', data.task.name);
                 setValue('description', data.task.description);
+                setValue('mustBeCompleted', data.task.mustBeCompleted);
                 setValue('periodType', data.task.periodType);
                 setValue('periodTypeTime', data.task.periodTypeTime);
                 setValue('periodTypeWeekDays', data.task.periodTypeWeekDays);
@@ -106,6 +108,7 @@ export default function TaskEdit() {
             description: data.description,
             periodType: data.periodType,
             periodTypeTime: data.periodTypeTime,
+            mustBeCompleted: data.mustBeCompleted,
             periodTypeWeekDays: null,
             periodTypeMonthDays: null,
             periodTypeMonths: null,
@@ -185,7 +188,7 @@ export default function TaskEdit() {
                                 type="text"
                                 className={
                                     'form-control ' +
-                                    (errors.name && 'is-invalid')
+                                    (errors.name ? 'is-invalid' : '')
                                 }
                                 id="inputName"
                                 placeholder={t('Go shopping')}
@@ -207,7 +210,7 @@ export default function TaskEdit() {
                             <textarea
                                 className={
                                     'form-control ' +
-                                    (errors.description && 'is-invalid')
+                                    (errors.description ? 'is-invalid' : '')
                                 }
                                 id="inputDescription"
                                 placeholder={t('Shopping list')}
@@ -216,6 +219,32 @@ export default function TaskEdit() {
                             ></textarea>
                             <p className="invalid-feedback">
                                 {t(errors?.description?.message as string)}
+                            </p>
+                        </div>
+                        <div className="mb-3">
+                            <input
+                                type="checkbox"
+                                className={
+                                    'form-check-input ' +
+                                    (errors.mustBeCompleted ? 'is-invalid' : '')
+                                }
+                                id="inputMustBeCompleted"
+                                {...register('mustBeCompleted')}
+                                onChange={(e) => {
+                                    setValue(
+                                        'mustBeCompleted',
+                                        e.target.checked ? true : false
+                                    );
+                                }}
+                            />{' '}
+                            <label
+                                htmlFor="inputMustBeCompleted"
+                                className="htmlForm-label"
+                            >
+                                {t('Must be completed')}
+                            </label>
+                            <p className="invalid-feedback">
+                                {t(errors?.mustBeCompleted?.message as string)}
                             </p>
                         </div>
                         <div className="text-start d-none d-md-block">
@@ -234,7 +263,7 @@ export default function TaskEdit() {
                             <select
                                 className={
                                     'form-select ' +
-                                    (errors.periodType && 'is-invalid')
+                                    (errors.periodType ? 'is-invalid' : '')
                                 }
                                 aria-label="Default select example"
                                 {...register('periodType', {
@@ -270,7 +299,9 @@ export default function TaskEdit() {
                                     type="text"
                                     className={
                                         'form-control ' +
-                                        (errors.periodTypeTime && 'is-invalid')
+                                        (errors.periodTypeTime
+                                            ? 'is-invalid'
+                                            : '')
                                     }
                                     id="inputPeriodType"
                                     {...register('periodTypeTime', {
@@ -311,8 +342,9 @@ export default function TaskEdit() {
                                                             type="checkbox"
                                                             className={
                                                                 'form-check-input ' +
-                                                                (errors.periodTypeWeekDays &&
-                                                                    'is-invalid')
+                                                                (errors.periodTypeWeekDays
+                                                                    ? 'is-invalid'
+                                                                    : '')
                                                             }
                                                             id={
                                                                 'periodTypeWeekDaysArray' +
@@ -366,8 +398,9 @@ export default function TaskEdit() {
                                                             type="checkbox"
                                                             className={
                                                                 'form-check-input ' +
-                                                                (errors.periodTypeMonthDays &&
-                                                                    'is-invalid')
+                                                                (errors.periodTypeMonthDays
+                                                                    ? 'is-invalid'
+                                                                    : '')
                                                             }
                                                             id={
                                                                 'periodTypeMonthDaysArray' +
@@ -424,8 +457,9 @@ export default function TaskEdit() {
                                                             type="checkbox"
                                                             className={
                                                                 'form-check-input ' +
-                                                                (errors.periodTypeMonths &&
-                                                                    'is-invalid')
+                                                                (errors.periodTypeMonths
+                                                                    ? 'is-invalid'
+                                                                    : '')
                                                             }
                                                             id={
                                                                 'periodTypeMonths' +

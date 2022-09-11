@@ -1,7 +1,7 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
-import { QUERY_TASK_WITH_HISTORY } from '../../graphql/queries';
+import { QUERY_TASK_WITH_HISTORY, COMPLETE_TASK } from '../../graphql/queries';
 import {
     periodTypeMonthsArray,
     periodTypeWeekDaysArray,
@@ -13,6 +13,8 @@ import BreadCrumbs, {
     updateBreadCrumbsPathArray,
 } from '../layoutParts/BreadCrumbs';
 import { useLanguage } from '../../languages';
+import Modal from '../layoutParts/Modal';
+import { useRef, useState } from 'react';
 
 type TaskHistory = {
     created_at: String;
@@ -22,7 +24,13 @@ export default function TaskView() {
     const navigate = useNavigate();
     const { taskId } = useParams();
     const t = useLanguage();
+    const completeNotesRef = useRef<HTMLTextAreaElement>(null);
 
+    const [completeTask] = useMutation(COMPLETE_TASK, {
+        onError: () => null,
+        onCompleted: (data) => {},
+        refetchQueries: ['GetTaskWithHistory'],
+    });
     const task = useQuery(QUERY_TASK_WITH_HISTORY, {
         variables: { id: taskId },
     });
@@ -65,6 +73,30 @@ export default function TaskView() {
     return (
         <>
             <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray} />
+            <Modal
+                title={t('Do you want to complete the task ?')}
+                body={
+                    <>
+                        <div className="mb-3">
+                            <textarea
+                                ref={completeNotesRef}
+                                className="form-control"
+                                rows={3}
+                                placeholder={t('Complete notes (optional)')}
+                            ></textarea>
+                        </div>
+                    </>
+                }
+                onSuccessFn={async () => {
+                    await completeTask({
+                        variables: {
+                            id: taskId,
+                            notes: completeNotesRef.current?.value ?? '',
+                        },
+                    });
+                }}
+                okButtonText={t('Complete')}
+            />
             <div className="row">
                 <div className="col-md-6">
                     <div className="taskViewDetail">
@@ -79,6 +111,15 @@ export default function TaskView() {
                         >
                             <i className="bi bi-pencil-fill"></i>
                         </a>
+                        <button
+                            className="btn btn-link taskViewDetailEditBtn"
+                            title={t('Complete')}
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalModal"
+                        >
+                            <i className="bi bi-check-circle"></i>
+                        </button>
                         <h2>{t('Task details')}</h2>
                         <div className="taskViewDetailDiv">
                             <h3 className="mb-3">{task.data.task.name}</h3>
@@ -103,6 +144,12 @@ export default function TaskView() {
                             <div className="mb-3">
                                 {t('Period')}: {periodText} {t('at')}{' '}
                                 {task.data.task.periodTypeTime}
+                            </div>
+                            <div className="mb-3">
+                                {t('Must be completed')}:{' '}
+                                {task.data.task.mustBeCompleted
+                                    ? t('Yes')
+                                    : t('No')}
                             </div>
                         </div>
                     </div>

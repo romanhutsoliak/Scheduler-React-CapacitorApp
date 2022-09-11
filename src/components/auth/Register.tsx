@@ -55,19 +55,6 @@ export default function Register() {
             );
             setCurrentUser(responseData.data.userRegistration.user);
 
-            if (window.userDevice?.deviceId) {
-                createUserDevice({
-                    variables: {
-                        deviceId: window.userDevice.deviceId,
-                        platform: window.userDevice.platform,
-                        manufacturer: window.userDevice.manufacturer,
-                        model: window.userDevice.model,
-                        appVersion: window.userDevice.appVersion,
-                        notificationToken: window.userDevice.notificationToken,
-                    },
-                });
-            }
-
             navigate('/', {
                 replace: true,
             });

@@ -65,49 +65,20 @@ export default function Header() {
                         aria-labelledby="topUserMenuDropdown"
                     >
                         {currentUser ? (
-                            currentUser.email ? (
-                                <>
-                                    <li>
-                                        <a
-                                            className="dropdown-item"
-                                            href="/profile"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/profile');
-                                            }}
-                                        >
-                                            {t('Profile')}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            className="dropdown-item"
-                                            href="/logout"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/logout');
-                                            }}
-                                        >
-                                            {t('Logout')}
-                                        </a>
-                                    </li>
-                                </>
-                            ) : (
-                                <>
-                                    <li>
-                                        <a
-                                            className="dropdown-item"
-                                            href="/register"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('../register');
-                                            }}
-                                        >
-                                            {t('Complete registration')}
-                                        </a>
-                                    </li>
-                                </>
-                            )
+                            <>
+                                <li>
+                                    <a
+                                        className="dropdown-item"
+                                        href="/profile"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('/profile');
+                                        }}
+                                    >
+                                        {t('Profile')}
+                                    </a>
+                                </li>
+                            </>
                         ) : (
                             <>
                                 <li>
