@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import {
@@ -79,10 +78,21 @@ const client = new ApolloClient({
     defaultOptions: defaultOptions,
 });
 
+export type UserDeviceType = {
+    deviceId?: string;
+    platform?: string;
+    manufacturer?: string;
+    model?: string;
+    appVersion?: string;
+    notificationToken?: string;
+    locale?: string;
+    updated_at?: string;
+};
 declare global {
     interface Window {
         ReactNativeWebView: any;
         isNativeApp: boolean | undefined;
+        userDevice: UserDeviceType | undefined;
     }
 }
 

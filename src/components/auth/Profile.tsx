@@ -57,6 +57,13 @@ export default function Profile() {
                 return false;
             }
         }
+        if (currentUser && !currentUser?.email && !data.password) {
+            setError('password', {
+                type: 'custom',
+                message: t('Password is required'),
+            });
+            return false;
+        }
         let variables: ProfileFormValuesType = {
             email: data.email,
             name: data.name,
@@ -74,6 +81,8 @@ export default function Profile() {
 
         if (responseData?.data?.updateProfile) {
             setCurrentUser(responseData.data.updateProfile);
+            setValue('password', '');
+            setValue('password_confirmation', '');
         } else if (responseData.errors) {
             const responseDataErrors: any = responseData.errors;
             responseDataErrors.graphQLErrors.forEach(
@@ -152,6 +161,7 @@ export default function Profile() {
                             }
                             id="password"
                             placeholder="Your password"
+                            autoComplete="new-password"
                             {...register('password')}
                         />
                         <i
@@ -202,6 +212,7 @@ export default function Profile() {
                         }
                         id="password_confirmation"
                         placeholder={t('Just type the same password')}
+                        autoComplete="new-password"
                         {...register('password_confirmation')}
                     />
 

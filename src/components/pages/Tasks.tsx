@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { GET_TASKS, COMPLETE_TASK } from '../../graphql/queries';
 import Loading from '../layoutParts/Loading';
 import Pagination from '../layoutParts/Pagination';
@@ -16,7 +16,9 @@ type GetTaskResponseType = {
 };
 
 export default function Tasks() {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams] = useSearchParams();
+    const searchParamsPage = searchParams.get('page');
+    const [currentPage, setCurrentPage] = useState(searchParamsPage ? parseInt(searchParamsPage) : 1);
     const [recordsPerPage] = useState(10); // , setRecordsPerPage
     const completeTaskId = useRef<number | undefined>();
     const completeNotesRef = useRef<HTMLTextAreaElement>(null);
@@ -28,12 +30,36 @@ export default function Tasks() {
         onError: () => null,
         onCompleted: (data) => {},
     });
+
+    // add new task (+) fixed button 
+    const scrollEventHandler = () => {
+        const taskButtonC = document.getElementsByClassName('addTaskButtonC')[0] as HTMLElement | null;
+        // for mobile devices only
+        if (taskButtonC && window.innerWidth < 992) {
+            console.log(taskButtonC.offsetTop+' > '+window.innerHeight+' && '+(window.scrollY + window.innerHeight)+' < '+taskButtonC.offsetTop)
+            if (taskButtonC.offsetTop > window.innerHeight && (window.scrollY + window.innerHeight) < taskButtonC.offsetTop) {
+                taskButtonC.classList.add('addTaskButtonCFixed');
+            } else {
+                taskButtonC.classList.remove('addTaskButtonCFixed');
+            }
+        }
+    };
+    useEffect(() => {
+        document.addEventListener('scroll', scrollEventHandler);
+
+        return () => {
+            document.removeEventListener('scroll', scrollEventHandler);
+        };
+    }, []);
+
     const { loading, error, data } = useQuery(GET_TASKS, {
         variables: {
             recordsPerPage,
             currentPage,
         },
-        onCompleted: (data) => {},
+        onCompleted: (data) => {
+            scrollEventHandler();
+        },
     });
     if (loading) return <Loading />;
     if (error) return <p>Network error :(</p>;
@@ -109,12 +135,22 @@ export default function Tasks() {
                                             {name}
                                         </td>
                                         <td
-                                            className="tasksTableNextDate"
+                                            className={
+                                                'tasksTableNextDate ' +
+                                                (Date.parse(nextRunDateTime) <
+                                                Date.now()
+                                                    ? 'tasksTableNextDate_passed'
+                                                    : '')
+                                            }
                                             onClick={(event) =>
                                                 onClickDetailHandler(event, id)
                                             }
                                         >
-                                            {DateFormateUtils(nextRunDateTime)}{' '}
+                                            {DateFormateUtils(
+                                                nextRunDateTime,
+                                                false
+                                            )}{' '}
+                                            <br className="d-block d-sm-none" />
                                             (
                                             {TimeToEventUtils(
                                                 nextRunDateTime,
@@ -179,16 +215,17 @@ export default function Tasks() {
             ) : (
                 ''
             )}
-            <div className="text-end">
+            <div className="text-end addTaskButtonC addTaskButtonCFixed">
                 <button
                     type="button"
-                    className="btn btn-primary btn-sm"
+                    className="btn btn-primary btn-sm addTaskButton"
                     onClick={(e) => {
                         e.preventDefault();
                         navigate('../tasks/create');
                     }}
+                    title={t('Create new task')}
                 >
-                    <i className="bi bi-plus-circle"></i> {t('Create new task')}
+                    <i className="bi bi-plus-circle"></i><span className="addTaskButtonSpan"> {t('Create new task')}</span>
                 </button>
             </div>
         </>

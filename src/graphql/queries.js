@@ -28,6 +28,7 @@ export const UPDATE_TASK = gql`
         $periodTypeWeekDays: [String]
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
+        $mustBeCompleted: Boolean
     ) {
         updateTask(
             id: $id
@@ -38,6 +39,7 @@ export const UPDATE_TASK = gql`
             periodTypeWeekDays: $periodTypeWeekDays
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
+            mustBeCompleted: $mustBeCompleted
         ) {
             id
             name
@@ -45,7 +47,7 @@ export const UPDATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            hasEvent
+            mustBeCompleted
         }
     }
 `;
@@ -59,6 +61,7 @@ export const CREATE_TASK = gql`
         $periodTypeWeekDays: [String]
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
+        $mustBeCompleted: Boolean
     ) {
         createTask(
             name: $name
@@ -68,6 +71,7 @@ export const CREATE_TASK = gql`
             periodTypeWeekDays: $periodTypeWeekDays
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
+            mustBeCompleted: $mustBeCompleted
         ) {
             id
             name
@@ -75,7 +79,7 @@ export const CREATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            hasEvent
+            mustBeCompleted
         }
     }
 `;
@@ -108,22 +112,9 @@ export const CREATE_USER_DEVICE = gql`
     }
 `;
 export const CREATE_USER_FROM_DEVICE = gql`
-    mutation CreateUserFromDevice(
-        $deviceId: String!
-        $platform: String
-        $manufacturer: String
-        $model: String
-        $appVersion: String!
-        $notificationToken: String
-        $timezoneOffset: Int
-    ) {
+    mutation CreateUserFromDevice($deviceId: String!, $timezoneOffset: Int) {
         createUserFromDevice(
             deviceId: $deviceId
-            platform: $platform
-            manufacturer: $manufacturer
-            model: $model
-            appVersion: $appVersion
-            notificationToken: $notificationToken
             timezoneOffset: $timezoneOffset
         ) {
             user {

@@ -28,7 +28,7 @@ nav.navbar.navbar-light {
     padding: 8px 12px;
     border-radius: 5px;
     margin-bottom: 10px;
-    background-color: #fdfafa;
+    background-color: #f8f9fa;
 }
 h2 {
     margin-bottom: 1rem;
@@ -72,8 +72,8 @@ h2 {
     right: 0;
     min-width: 100%;
 }
-.tasksTableCont tr td.tasksTableName,
-.tasksTableCont tr td.tasksTableNextDate {
+.tasksTableName,
+.tasksTableNextDate {
     cursor: pointer;
 }
 .toast {
@@ -136,6 +136,9 @@ h1 {
     background-position: right 0.25rem center;
     background-color: #fffbfb;
 }
+.tasksTableNextDate.tasksTableNextDate_passed, .tasksDetailNextDate_passed {
+    color: red;
+}
 @media (min-width: 992px) {
     .topLangMenuDropdown_cont {
         order: 2;
@@ -163,16 +166,16 @@ h1 {
         width: 100%;
         border: none;
     }
-    .tasksTableCont tr td.tasksTableN {
+    .tasksTableCont .tasksTableN {
         display: none;
     }
     .tasksTableCont tr {
         border-bottom: 1px solid #eee;
     }
-    .tasksTableCont tr td.tasksTableName {
+    .tasksTableName {
         font-size: 1.2rem;
     }
-    .tasksTableCont tr td.tasksTableNextDate {
+    .tasksTableNextDate {
         color: #8e8d8d;
     }
     .tasksTableCont tr td {
@@ -181,5 +184,17 @@ h1 {
     .tasksTableCont tr td.tasksTableActions a,
     .tasksTableCont tr td.tasksTableActions button {
         margin-right: 20px;
+    }
+    .addTaskButtonCFixed .addTaskButton {
+        position: fixed;
+        bottom: 50px;
+        padding: 10px;
+        border-radius: 50px;
+        width: 50px;
+        height: 50px;
+        right: 30px;
+    }
+    .addTaskButtonCFixed .addTaskButtonSpan {
+        display: none;
     }
 }

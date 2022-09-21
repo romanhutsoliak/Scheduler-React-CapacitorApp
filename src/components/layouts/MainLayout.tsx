@@ -11,8 +11,8 @@ export default function MainLayout(props: Props) {
         <>
             <Header />
             <div className="container">{props.children}</div>
-            <Footer />
             <Toasts />
+            <Footer />
         </>
     );
 }

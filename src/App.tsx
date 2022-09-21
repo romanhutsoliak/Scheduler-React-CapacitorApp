@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './assets/index.css';
 import 'bootstrap/js/dist/dropdown.js';
 import 'bootstrap/js/dist/collapse.js';
@@ -18,22 +18,9 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/client';
 import Loading from './components/layoutParts/Loading';
 
-// webViewRef.current.injectJavaScript() it watches in App.tsx
-type UserDeviceType = {
-    deviceId?: string;
-    platform?: string;
-    manufacturer?: string;
-    model?: string;
-    appVersion?: string;
-    notificationToken?: string;
-    locale?: string;
-    updated_at?: string;
-};
-
 export default function App() {
     const [currentUser, setCurrentUser] = useState<CurrentUserI | null>(null);
     const [language, setLanguage] = useState('en');
-    const userDevice = useRef<UserDeviceType | null>(null);
     const [loadingCurrentUser, setLoadingCurrentUser] = useState<boolean>(true);
     const [loadCurrentUser] = useLazyQuery(CURRENT_USER);
     const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
@@ -48,28 +35,9 @@ export default function App() {
     const userTimezoneOffset = new Date().getTimezoneOffset();
 
     const handleMessageFromReactNative = (message: CustomEvent) => {
-        if (message.detail.action === 'userDevice') {
-            userDevice.current = userDevice.current
-                ? {
-                      ...userDevice.current,
-                      ...message.detail.data,
-                  }
-                : message.detail.data;
-
-            if (message.detail.data.locale) {
-                const locale = message.detail.data.locale.replace(/\-.+$/, '');
-                if (AVAILABLE_LANGUAGES.includes(locale)) {
-                    localStorage.setItem(
-                        process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
-                        locale
-                    );
-                    setLanguage(locale);
-                }
-            }
-        }
         if (message.detail.action === 'notificationToken') {
-            userDevice.current = {
-                ...userDevice.current,
+            window.userDevice = {
+                ...window.userDevice,
                 notificationToken: message.detail.data as string,
             };
         }
@@ -107,44 +75,37 @@ export default function App() {
                 window.ReactNativeWebView?.postMessage(error);
             });
         }
-        clog(window.isNativeApp ? 'isNativeApp' : 'not isNativeApp');
         if (
-            window.isNativeApp &&
+            window.userDevice?.deviceId &&
             !currentUser &&
-            (!tokenLocalStorage || !loadingCurrentUser)
+            (!tokenLocalStorage || loadingCurrentUser === false)
         ) {
-            window.ReactNativeWebView?.postMessage('ReactNativeWebView');
-
-            let timerIdCount = 0;
-            const intervalId = setInterval(async () => {
-                if (userDevice.current?.deviceId) {
-                    clearInterval(intervalId);
-
-                    await createUserFromDevice({
-                        variables: {
-                            ...userDevice.current,
-                            timezoneOffset: userTimezoneOffset,
-                        },
-                        onCompleted: (data) => {
+            // clog('window.userDevice?.deviceId');
+            const fetchCreateUserFromDevice = async () => {
+                await createUserFromDevice({
+                    variables: {
+                        deviceId: window.userDevice?.deviceId,
+                        timezoneOffset: userTimezoneOffset,
+                    },
+                    onCompleted: (data) => {
+                        if (data.createUserFromDevice.token) {
                             localStorage.setItem(
                                 process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
                                     'token',
                                 data.createUserFromDevice.token
                             );
                             setCurrentUser(data.createUserFromDevice.user);
-                            setLoadingCurrentUser(false);
-                        },
-                        onError: (error) => {
-                            setLoadingCurrentUser(false);
-                        },
-                    });
-                }
-                if (timerIdCount >= 10) clearInterval(intervalId);
-                timerIdCount++;
-            }, 1000);
-            if (timerIdCount >= 5) {
-                setLoadingCurrentUser(false);
-            }
+                        }
+                        setLoadingCurrentUser(false);
+                    },
+                    onError: (error) => {
+                        setLoadingCurrentUser(false);
+                    },
+                });
+            };
+            fetchCreateUserFromDevice().catch((error) => {
+                window.ReactNativeWebView?.postMessage(error);
+            });
         }
         if (!tokenLocalStorage && !window.isNativeApp) {
             setLoadingCurrentUser(false);
@@ -161,6 +122,16 @@ export default function App() {
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language'
         );
         if (languageLocalStorage) setLanguage(languageLocalStorage);
+        else if (window.userDevice?.locale) {
+            const locale = window.userDevice?.locale.replace(/\-.+$/, '');
+            if (AVAILABLE_LANGUAGES.includes(locale)) {
+                localStorage.setItem(
+                    process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
+                    locale
+                );
+                setLanguage(locale);
+            }
+        }
 
         return () => {
             window.removeEventListener(
@@ -176,14 +147,13 @@ export default function App() {
             window.setTimeout(function () {
                 if (
                     window.isNativeApp &&
-                    userDevice.current &&
-                    userDevice.current.deviceId
+                    window.userDevice &&
+                    window.userDevice.deviceId
                 ) {
                     createUserDevice({
-                        variables: userDevice.current,
+                        variables: window.userDevice,
                         onCompleted(data) {
-                            userDevice.current =
-                                data.createUserDevice as UserDeviceType;
+                            window.userDevice = data.createUserDevice;
                         },
                     });
                 }

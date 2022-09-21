@@ -1,6 +1,14 @@
-export default function DateFormateUtils(timeFromDB: String): String {
-    return timeFromDB.replace(
-        /^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)$/g,
-        '$3.$2.$1 $4:$5'
-    );
+export default function DateFormateUtils(
+    timeFromDB: string,
+    withTimeOffset = true
+) {
+    const date = new Date(timeFromDB);
+    if (withTimeOffset) {
+        const offset = new Date().getTimezoneOffset();
+        date.setTime(date.getTime() - offset * 60 * 1000);
+    }
+    return date.toLocaleString(navigator.language, {
+        dateStyle: 'short',
+        timeStyle: 'short',
+    });
 }

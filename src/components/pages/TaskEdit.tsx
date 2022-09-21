@@ -55,6 +55,7 @@ export default function TaskEdit() {
         handleSubmit,
         formState: { errors },
         setError,
+        getValues,
         setValue,
     } = useForm<TaskFormValuesType>();
     const [periodTypeState, setPeriodTypeState] = useState(1);
@@ -89,6 +90,9 @@ export default function TaskEdit() {
     });
     useEffect(() => {
         if (taskId) loadTask();
+        else {
+            setValue('mustBeCompleted', true);
+        }
     }, []);
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
         1,
@@ -169,6 +173,37 @@ export default function TaskEdit() {
     // render variables
     let periodTypeMonthDaysArray = [];
     for (let i = 1; i <= 31; i++) periodTypeMonthDaysArray.push(i.toString());
+
+    // format 24:00 input
+    function periodTypeTimeInputFormat(
+        currentValue: string,
+        prevValue: string
+    ): string | null {
+        let periodTypeTimeRes = currentValue.replace(/[^\d\:]+/, '');
+        if (periodTypeTimeRes != currentValue) return periodTypeTimeRes;
+
+        periodTypeTimeRes = periodTypeTimeRes.replace(
+            /^(\d{2})\:?(\d{0,2})$/,
+            '$1:$2'
+        );
+        const matchArray = /^(\d+)\:(\d+)$/.exec(periodTypeTimeRes);
+        if (matchArray && matchArray[1] && matchArray[2]) {
+            matchArray[1] = matchArray[1].slice(0, 2);
+            matchArray[2] = matchArray[2].slice(0, 2);
+            if (parseInt(matchArray[1]) > 24) matchArray[1] = '24';
+            if (parseInt(matchArray[2]) > 59) matchArray[2] = '59';
+            periodTypeTimeRes = matchArray[1] + ':' + matchArray[2];
+        }
+        if (
+            !(
+                prevValue == periodTypeTimeRes &&
+                periodTypeTimeRes.slice(-1) == ':'
+            )
+        ) {
+            return periodTypeTimeRes;
+        }
+        return null;
+    }
 
     return (
         <>
@@ -313,6 +348,23 @@ export default function TaskEdit() {
                                             ),
                                         },
                                     })}
+                                    onChange={(e) => {
+                                        const prevValue =
+                                            getValues('periodTypeTime');
+
+                                        const periodTypeTimeValue =
+                                            periodTypeTimeInputFormat(
+                                                e.target.value,
+                                                prevValue
+                                            );
+
+                                        if (periodTypeTimeValue !== null) {
+                                            setValue(
+                                                'periodTypeTime',
+                                                periodTypeTimeValue
+                                            );
+                                        }
+                                    }}
                                     placeholder="24:00"
                                 />
                                 <p className="invalid-feedback">

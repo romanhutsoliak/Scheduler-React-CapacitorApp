@@ -14,11 +14,11 @@ import BreadCrumbs, {
 } from '../layoutParts/BreadCrumbs';
 import { useLanguage } from '../../languages';
 import Modal from '../layoutParts/Modal';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 type TaskHistory = {
-    created_at: String;
-    notes: String;
+    created_at: string;
+    notes: string;
 };
 export default function TaskView() {
     const navigate = useNavigate();
@@ -44,21 +44,21 @@ export default function TaskView() {
     else if (taskId && task.data?.task === null) return <>404</>;
 
     let periodText = '';
-    if (task.data.task.periodType == 1) {
+    if (task.data.task.periodType === 1) {
         periodText = t('Daily');
-    } else if (task.data.task.periodType == 2) {
+    } else if (task.data.task.periodType === 2) {
         const periodTypeWeekDaysNames = task.data.task.periodTypeWeekDays?.map(
             (day: string) => {
                 return t(periodTypeWeekDaysArray[parseInt(day) - 1]);
             }
         );
         periodText = t('Weekly on ') + periodTypeWeekDaysNames.join(', ');
-    } else if (task.data.task.periodType == 3) {
+    } else if (task.data.task.periodType === 3) {
         periodText =
             t('Monthly each ') +
             task.data.task.periodTypeMonthDays.join(t('th') + ', ') +
             t('th');
-    } else if (task.data.task.periodType == 4) {
+    } else if (task.data.task.periodType === 4) {
         const periodTypeMonthsNames = task.data.task.periodTypeMonths?.map(
             (month: string) => {
                 return t(periodTypeMonthsArray[parseInt(month) - 1]);
@@ -131,15 +131,22 @@ export default function TaskView() {
                             )}
                             <div className="mb-3">
                                 {t('Next event')}:{' '}
-                                {DateFormateUtils(
-                                    task.data.task.nextRunDateTime
-                                )}{' '}
-                                (
-                                {TimeToEventUtils(
-                                    task.data.task.nextRunDateTime,
-                                    t
-                                )}
-                                )
+                                <span className={
+                                    (Date.parse(task.data.task.nextRunDateTime) <
+                                    Date.now()
+                                        ? 'tasksDetailNextDate_passed'
+                                        : '')
+                                }>
+                                    {DateFormateUtils(
+                                        task.data.task.nextRunDateTime,
+                                        false
+                                    )}{' '}
+                                    (
+                                    {TimeToEventUtils(
+                                        task.data.task.nextRunDateTime,
+                                        t
+                                    )})           
+                                </span>
                             </div>
                             <div className="mb-3">
                                 {t('Period')}: {periodText} {t('at')}{' '}

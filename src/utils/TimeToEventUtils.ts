@@ -2,11 +2,19 @@ export default function TimeToEventUtils(
     timeFromDB: string,
     t: (text: string) => string
 ): string {
-    const seconds = Math.floor((Date.parse(timeFromDB) - Date.now()) / 1000);
+    let seconds = Math.floor((Date.parse(timeFromDB) - Date.now()) / 1000);
+
+    let eventTineHasPassed = false;
+    if (seconds < 0) eventTineHasPassed = true;
+
+    let inTime = '';
+    let timeAgo = '';
+    if (!eventTineHasPassed) inTime = t('in_time') + ' ';
+    else timeAgo = ' ' + t('time_ago');
+
+    seconds = Math.abs(seconds);
 
     let interval = seconds / 31536000;
-    const inTime = t('in_time') + ' ';
-
     if (interval > 1) {
         return (
             inTime +
@@ -18,7 +26,8 @@ export default function TimeToEventUtils(
                     [t('years1'), t('years2'), t('years3')],
                     'years'
                 )
-            )
+            ) +
+            timeAgo
         );
     }
     interval = seconds / 2592000;
@@ -33,7 +42,8 @@ export default function TimeToEventUtils(
                     [t('months1'), t('months2'), t('months3')],
                     'months'
                 )
-            )
+            ) +
+            timeAgo
         );
     }
     interval = seconds / 86400;
@@ -48,7 +58,8 @@ export default function TimeToEventUtils(
                     [t('days1'), t('days2'), t('days3')],
                     'days'
                 )
-            )
+            ) +
+            timeAgo
         );
     }
     interval = seconds / 3600;
@@ -63,7 +74,8 @@ export default function TimeToEventUtils(
                     [t('hours1'), t('hours2'), t('hours3')],
                     'hours'
                 )
-            )
+            ) +
+            timeAgo
         );
     }
     interval = seconds / 60;
@@ -78,7 +90,8 @@ export default function TimeToEventUtils(
                     [t('minutes1'), t('minutes2'), t('minutes3')],
                     'minutes'
                 )
-            )
+            ) +
+            timeAgo
         );
     }
     return (
@@ -91,7 +104,8 @@ export default function TimeToEventUtils(
                 [t('seconds1'), t('seconds2'), t('seconds3')],
                 'seconds'
             )
-        )
+        ) +
+        timeAgo
     );
 }
 
