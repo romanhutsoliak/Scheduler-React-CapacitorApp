@@ -280,3 +280,15 @@ export const GET_TASKS = gql`
         }
     }
 `;
+
+export const CREATE_MISSED_LANGUAGE = gql`
+    mutation CreateMissedLanguage(
+        $language: String
+        $text: String
+        $url: String
+    ) {
+        createMissedLanguage(language: $language, text: $text, url: $url) {
+            result
+        }
+    }
+`;
