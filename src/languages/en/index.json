@@ -1,5 +1,6 @@
 {
     "in_time": "in",
     "time_ago": "ago",
-    "TaskName": "Name"
+    "TaskName": "Name",
+    "TaskOnce": "Once"
 }

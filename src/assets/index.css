@@ -136,8 +136,22 @@ h1 {
     background-position: right 0.25rem center;
     background-color: #fffbfb;
 }
-.tasksTableNextDate.tasksTableNextDate_passed, .tasksDetailNextDate_passed {
+.tasksTableNextDate.tasksTableNextDate_passed,
+.tasksDetailNextDate_passed {
     color: red;
+}
+.topUserMenuDropdown_cont {
+    max-width: calc(100% - 135px);
+}
+#topUserMenuDropdown {
+    width: 100%;
+}
+.topUserMenuDropdown_span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: middle;
 }
 @media (min-width: 992px) {
     .topLangMenuDropdown_cont {
@@ -196,5 +210,10 @@ h1 {
     }
     .addTaskButtonCFixed .addTaskButtonSpan {
         display: none;
+    }
+}
+@media (max-width: 360px) {
+    .mini-footer p {
+        font-size: 0.8rem;
     }
 }

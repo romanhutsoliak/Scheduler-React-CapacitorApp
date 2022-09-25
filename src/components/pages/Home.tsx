@@ -1,9 +1,25 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../languages';
 
 export default function Home() {
     const navigate = useNavigate();
     const t = useLanguage();
+    const userHasTasksLocalStorage = localStorage.getItem(
+        process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
+    );
+
+    useEffect(() => {
+        if (
+            window.appStartTimestamp &&
+            Date.now() - window.appStartTimestamp < 2000 &&
+            userHasTasksLocalStorage &&
+            userHasTasksLocalStorage === 'true'
+        ) {
+            navigate('/tasks');
+        }
+    }, []);
+
     return (
         <>
             <h1>{t('App introduction')}</h1>
@@ -23,18 +39,21 @@ export default function Home() {
                 one list. You don't need to search calendar to find your event
                 walking by months.
             </p>
-            <div className="mainPageLoginOrRegister">
-                <button
-                    className="btn btn-primary"
-                    title="Edit"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/tasks/create');
-                    }}
-                >
-                    {t('Create your first task')}
-                </button>
-            </div>
+            {(!userHasTasksLocalStorage ||
+                userHasTasksLocalStorage !== 'true') ?? (
+                <div className="mainPageLoginOrRegister">
+                    <button
+                        className="btn btn-primary"
+                        title="Edit"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/tasks/create');
+                        }}
+                    >
+                        {t('Create your first task')}
+                    </button>
+                </div>
+            )}
         </>
     );
 }

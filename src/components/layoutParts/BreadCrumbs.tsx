@@ -49,8 +49,8 @@ export default function BreadCrumbs({
     const navigate = useNavigate();
     const breadCrumbsPathArrayDefault = useMakePathArray();
 
-    if (location.pathname == '/') return null;
-    if (breadCrumbsPathArray == undefined) {
+    if (location.pathname === '/') return null;
+    if (breadCrumbsPathArray === undefined) {
         breadCrumbsPathArray = breadCrumbsPathArrayDefault;
     }
 

@@ -106,5 +106,16 @@
     " If you have an account ": " Если у Вас есть акаунт ",
     "login": "войдите",
     "Guest": "Гость",
+    "Yes": "Да",
+    "No": "Нет",
+    "Must be completed": "Должно быть завершено",
+    "Go shopping": "Пойти за покупками",
+    "Shopping list": "Список покупок",
+    "Create your first task": "Создать первую задачу",
+    "About": "Описание",
+    "Change password": "Сменить пароль",
+    "Are you sure ?": "Вы уверены?",
+    "Logging in": "Входим",
+    "TaskOnce": "Единоразово",
     "Login": "Войти"
 }

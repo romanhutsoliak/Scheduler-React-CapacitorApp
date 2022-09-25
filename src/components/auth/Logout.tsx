@@ -6,7 +6,7 @@ import { CurrentUserContext } from '../../context/CurrentUserContext';
 import Loading from '../layoutParts/Loading';
 
 export default function Logout() {
-    const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+    const { setCurrentUser } = useContext(CurrentUserContext);
     const logoutLoading = useRef(false);
     const navigate = useNavigate();
 

@@ -55,7 +55,7 @@ export default function Header() {
                         data-bs-auto-close="true"
                         aria-expanded="false"
                     >
-                        <span>
+                        <span className="topUserMenuDropdown_span">
                             <i className="bi bi-person-fill"></i>&nbsp;
                             {currentUser ? currentUser.name : t('Guest')}
                         </span>
@@ -117,30 +117,30 @@ export default function Header() {
                         <li className="nav-item">
                             <a
                                 className="nav-link"
+                                href="/tasks"
+                                data-bs-toggle="collapse"
+                                data-bs-target=".navbar-collapse.show"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    navigate('/tasks');
+                                }}
+                            >
+                                {t('Tasks')}
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a
+                                className="nav-link"
                                 aria-current="page"
                                 href="/"
                                 data-bs-toggle="collapse"
                                 data-bs-target=".navbar-collapse.show"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    navigate('../');
+                                    navigate('/');
                                 }}
                             >
-                                {t('Home')}
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a
-                                className="nav-link"
-                                href="/tasks"
-                                data-bs-toggle="collapse"
-                                data-bs-target=".navbar-collapse.show"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    navigate('../tasks');
-                                }}
-                            >
-                                {t('Tasks')}
+                                {t('About')}
                             </a>
                         </li>
                     </ul>

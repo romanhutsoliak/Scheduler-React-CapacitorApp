@@ -93,8 +93,11 @@ declare global {
         ReactNativeWebView: any;
         isNativeApp: boolean | undefined;
         userDevice: UserDeviceType | undefined;
+        appStartTimestamp: number | undefined;
     }
 }
+
+window.appStartTimestamp = Date.now();
 
 // <React.StrictMode>
 const root = ReactDOM.createRoot(document.getElementById('root')!);

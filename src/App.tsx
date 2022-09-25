@@ -123,7 +123,7 @@ export default function App() {
         );
         if (languageLocalStorage) setLanguage(languageLocalStorage);
         else if (window.userDevice?.locale) {
-            const locale = window.userDevice?.locale.replace(/\-.+$/, '');
+            const locale = window.userDevice?.locale.replace(/-.+$/, '');
             if (AVAILABLE_LANGUAGES.includes(locale)) {
                 localStorage.setItem(
                     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
@@ -159,7 +159,7 @@ export default function App() {
                 }
             }, 5000);
             if (
-                typeof currentUser.timezoneOffset != undefined &&
+                typeof currentUser.timezoneOffset !== undefined &&
                 userTimezoneOffset !== currentUser.timezoneOffset
             ) {
                 updateUserTimezone({
@@ -172,18 +172,20 @@ export default function App() {
     }, [currentUser]);
 
     return (
-        <LanguageContext.Provider value={{ language, setLanguage }}>
+        <>
             <CurrentUserContext.Provider
                 value={{ currentUser, setCurrentUser }}
             >
-                {loadingCurrentUser ? (
-                    <Loading position="position-absolute" />
-                ) : (
-                    <MainRouter />
-                )}
+                <LanguageContext.Provider value={{ language, setLanguage }}>
+                    {loadingCurrentUser ? (
+                        <Loading position="position-absolute" />
+                    ) : (
+                        <MainRouter />
+                    )}
+                </LanguageContext.Provider>
             </CurrentUserContext.Provider>
             <div id="mess"></div>
-        </LanguageContext.Provider>
+        </>
     );
 }
 

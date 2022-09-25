@@ -49,7 +49,7 @@ export default function Profile() {
                     message: t('Password confirmation is required'),
                 });
                 return false;
-            } else if (data.password != data.password_confirmation) {
+            } else if (data.password !== data.password_confirmation) {
                 setError('password', {
                     type: 'custom',
                     message: t("Password and confirmation don't match"),
@@ -119,10 +119,10 @@ export default function Profile() {
                         id="email"
                         placeholder="name@example.com"
                         {...register('email', {
-                            required: t('Email is required.'),
+                            required: t('Email is required'),
                             pattern: {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: t('invalid email address'),
+                                message: t('Invalid email address'),
                             },
                         })}
                     />
@@ -147,10 +147,10 @@ export default function Profile() {
                         {errors?.name && t(errors?.name?.message as string)}
                     </p>
                 </div>
-                <h3>Change password</h3>
+                <h3>{t('Change password')}</h3>
                 <div className="mb-3">
                     <label htmlFor="password" className="form-label">
-                        Password
+                        {t('Password')}
                     </label>
                     <div className="position-relative passwordEye">
                         <input
@@ -160,7 +160,7 @@ export default function Profile() {
                                 (errors.password && 'is-invalid')
                             }
                             id="password"
-                            placeholder="Your password"
+                            placeholder={t('Your password')}
                             autoComplete="new-password"
                             {...register('password')}
                         />
@@ -177,7 +177,7 @@ export default function Profile() {
                                 if (passwordInput) {
                                     passwordInput.setAttribute(
                                         'type',
-                                        passwordInput.type == 'text'
+                                        passwordInput.type === 'text'
                                             ? 'password'
                                             : 'text'
                                     );
@@ -185,7 +185,8 @@ export default function Profile() {
                                 if (passwordConfirmationInput) {
                                     passwordConfirmationInput.setAttribute(
                                         'type',
-                                        passwordConfirmationInput.type == 'text'
+                                        passwordConfirmationInput.type ===
+                                            'text'
                                             ? 'password'
                                             : 'text'
                                     );

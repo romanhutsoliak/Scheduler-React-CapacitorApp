@@ -106,5 +106,16 @@
     " If you have an account ": " Якщо у Вас є акаунт ",
     "login": "ввійдіть",
     "Guest": "Гість",
+    "Yes": "Так",
+    "No": "Ні",
+    "Must be completed": "Має бути завершеним",
+    "Go shopping": "Піти за покупками",
+    "Shopping list": "Список покупок",
+    "Create your first task": "Створити першу задачу",
+    "About": "Опис",
+    "Change password": "Змінити пароль",
+    "Are you sure ?": "Ви впевнені?",
+    "Logging in": "Авторизація",
+    "TaskOnce": "Одноразово",
     "Login": "Ввійти"
 }

@@ -18,26 +18,42 @@ type GetTaskResponseType = {
 export default function Tasks() {
     const [searchParams] = useSearchParams();
     const searchParamsPage = searchParams.get('page');
-    const [currentPage, setCurrentPage] = useState(searchParamsPage ? parseInt(searchParamsPage) : 1);
+    const [currentPage, setCurrentPage] = useState(
+        searchParamsPage ? parseInt(searchParamsPage) : 1
+    );
     const [recordsPerPage] = useState(10); // , setRecordsPerPage
     const completeTaskId = useRef<number | undefined>();
     const completeNotesRef = useRef<HTMLTextAreaElement>(null);
-
     const navigate = useNavigate();
     const t = useLanguage();
-
     const [completeTask] = useMutation(COMPLETE_TASK, {
         onError: () => null,
         onCompleted: (data) => {},
     });
+    const userHasTasksLocalStorage = localStorage.getItem(
+        process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
+    );
 
-    // add new task (+) fixed button 
+    // add new task (+) fixed button
     const scrollEventHandler = () => {
-        const taskButtonC = document.getElementsByClassName('addTaskButtonC')[0] as HTMLElement | null;
+        const taskButtonC = document.getElementsByClassName(
+            'addTaskButtonC'
+        )[0] as HTMLElement | null;
         // for mobile devices only
         if (taskButtonC && window.innerWidth < 992) {
-            console.log(taskButtonC.offsetTop+' > '+window.innerHeight+' && '+(window.scrollY + window.innerHeight)+' < '+taskButtonC.offsetTop)
-            if (taskButtonC.offsetTop > window.innerHeight && (window.scrollY + window.innerHeight) < taskButtonC.offsetTop) {
+            console.log(
+                taskButtonC.offsetTop +
+                    ' > ' +
+                    window.innerHeight +
+                    ' && ' +
+                    (window.scrollY + window.innerHeight) +
+                    ' < ' +
+                    taskButtonC.offsetTop
+            );
+            if (
+                taskButtonC.offsetTop > window.innerHeight &&
+                window.scrollY + window.innerHeight < taskButtonC.offsetTop
+            ) {
                 taskButtonC.classList.add('addTaskButtonCFixed');
             } else {
                 taskButtonC.classList.remove('addTaskButtonCFixed');
@@ -59,6 +75,13 @@ export default function Tasks() {
         },
         onCompleted: (data) => {
             scrollEventHandler();
+
+            if (!userHasTasksLocalStorage && data.tasks.data) {
+                localStorage.setItem(
+                    process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks',
+                    data.tasks.data.length ? 'true' : 'false'
+                );
+            }
         },
     });
     if (loading) return <Loading />;
@@ -225,7 +248,11 @@ export default function Tasks() {
                     }}
                     title={t('Create new task')}
                 >
-                    <i className="bi bi-plus-circle"></i><span className="addTaskButtonSpan"> {t('Create new task')}</span>
+                    <i className="bi bi-plus-circle"></i>
+                    <span className="addTaskButtonSpan">
+                        {' '}
+                        {t('Create new task')}
+                    </span>
                 </button>
             </div>
         </>

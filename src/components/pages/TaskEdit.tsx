@@ -76,7 +76,7 @@ export default function TaskEdit() {
                 setValue('periodTypeMonths', data.task.periodTypeMonths);
                 if (
                     data.task.periodType &&
-                    parseInt(data.task.periodType) != periodTypeState
+                    parseInt(data.task.periodType) !== periodTypeState
                 )
                     setPeriodTypeState(parseInt(data.task.periodType));
             }
@@ -179,14 +179,14 @@ export default function TaskEdit() {
         currentValue: string,
         prevValue: string
     ): string | null {
-        let periodTypeTimeRes = currentValue.replace(/[^\d\:]+/, '');
-        if (periodTypeTimeRes != currentValue) return periodTypeTimeRes;
+        let periodTypeTimeRes = currentValue.replace(/[^\d:]+/, '');
+        if (periodTypeTimeRes !== currentValue) return periodTypeTimeRes;
 
         periodTypeTimeRes = periodTypeTimeRes.replace(
             /^(\d{2})\:?(\d{0,2})$/,
             '$1:$2'
         );
-        const matchArray = /^(\d+)\:(\d+)$/.exec(periodTypeTimeRes);
+        const matchArray = /^(\d+):(\d+)$/.exec(periodTypeTimeRes);
         if (matchArray && matchArray[1] && matchArray[2]) {
             matchArray[1] = matchArray[1].slice(0, 2);
             matchArray[2] = matchArray[2].slice(0, 2);
@@ -196,8 +196,8 @@ export default function TaskEdit() {
         }
         if (
             !(
-                prevValue == periodTypeTimeRes &&
-                periodTypeTimeRes.slice(-1) == ':'
+                prevValue === periodTypeTimeRes &&
+                periodTypeTimeRes.slice(-1) === ':'
             )
         ) {
             return periodTypeTimeRes;
@@ -342,7 +342,7 @@ export default function TaskEdit() {
                                     {...register('periodTypeTime', {
                                         required: 'Time is required.',
                                         pattern: {
-                                            value: /^\d{2}\:\d{2}$/i,
+                                            value: /^\d{2}:\d{2}$/i,
                                             message: t(
                                                 'Invalid time (example 15:30)'
                                             ),

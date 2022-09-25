@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
-import { USER_REGISTRATION, CREATE_USER_DEVICE } from '../../graphql/queries';
+import { USER_REGISTRATION } from '../../graphql/queries';
 import { useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from './../../context/CurrentUserContext';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
@@ -16,10 +16,6 @@ type FormValuesType = {
 
 export default function Register() {
     const { setCurrentUser } = useContext(CurrentUserContext);
-    const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
-        onError: () => null,
-    });
-
     const {
         register,
         handleSubmit,
@@ -137,7 +133,7 @@ export default function Register() {
                                 if (passwordInput) {
                                     passwordInput.setAttribute(
                                         'type',
-                                        passwordInput.type == 'text'
+                                        passwordInput.type === 'text'
                                             ? 'password'
                                             : 'text'
                                     );
@@ -145,7 +141,8 @@ export default function Register() {
                                 if (passwordConfirmationInput) {
                                     passwordConfirmationInput.setAttribute(
                                         'type',
-                                        passwordConfirmationInput.type == 'text'
+                                        passwordConfirmationInput.type ===
+                                            'text'
                                             ? 'password'
                                             : 'text'
                                     );

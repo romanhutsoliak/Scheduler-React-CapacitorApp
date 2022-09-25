@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
-import { LOGIN, CREATE_USER_DEVICE } from '../../graphql/queries';
+import { LOGIN } from '../../graphql/queries';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from './../../context/CurrentUserContext';
 import { useLanguage } from '../../languages';
@@ -19,10 +19,6 @@ type FormValuesType = {
 
 export default function Login() {
     const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
-    const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
-        onError: () => null,
-    });
-
     const {
         register,
         handleSubmit,
@@ -119,7 +115,7 @@ export default function Login() {
                             'form-control ' + (errors.password && 'is-invalid')
                         }
                         id="password"
-                        placeholder="Your password"
+                        placeholder={t('Your password')}
                         {...register('password', {
                             required: t('Password is required'),
                         })}
