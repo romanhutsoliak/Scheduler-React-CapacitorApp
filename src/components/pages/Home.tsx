@@ -39,8 +39,8 @@ export default function Home() {
                 one list. You don't need to search calendar to find your event
                 walking by months.
             </p>
-            {(!userHasTasksLocalStorage ||
-                userHasTasksLocalStorage !== 'true') ?? (
+            {!userHasTasksLocalStorage ||
+            userHasTasksLocalStorage !== 'true' ? (
                 <div className="mainPageLoginOrRegister">
                     <button
                         className="btn btn-primary"
@@ -50,9 +50,12 @@ export default function Home() {
                             navigate('/tasks/create');
                         }}
                     >
+                        <i className="bi bi-plus-circle"></i>{' '}
                         {t('Create your first task')}
                     </button>
                 </div>
+            ) : (
+                ''
             )}
         </>
     );

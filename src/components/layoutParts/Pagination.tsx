@@ -23,7 +23,7 @@ export default function Pagination({
     const pageNumbers = [...Array.from(Array(lastPage + 1).keys())].slice(1);
 
     return (
-        <nav>
+        <nav className="paginationC">
             <ul className="pagination justify-content-center">
                 {currentPage > 1 ? (
                     <li className="page-item">

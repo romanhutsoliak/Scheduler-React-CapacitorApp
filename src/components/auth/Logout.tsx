@@ -18,6 +18,9 @@ export default function Logout() {
                 localStorage.removeItem(
                     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
                 );
+                localStorage.removeItem(
+                    process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
+                );
                 setCurrentUser(null);
                 logoutLoading.current = false;
                 navigate('/login', {
@@ -29,7 +32,11 @@ export default function Logout() {
 
     useEffect(() => {
         if (!logoutLoading.current) {
-            logout();
+            logout({
+                variables: {
+                    deviceId: window.userDevice?.deviceId ?? null,
+                },
+            });
             logoutLoading.current = true;
         }
     }, []);

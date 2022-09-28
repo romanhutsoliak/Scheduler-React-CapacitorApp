@@ -238,10 +238,10 @@ export default function Tasks() {
             ) : (
                 ''
             )}
-            <div className="text-end addTaskButtonC addTaskButtonCFixed">
+            <div className="addTaskButtonC">
                 <button
                     type="button"
-                    className="btn btn-primary btn-sm addTaskButton"
+                    className="btn btn-primary addTaskButton"
                     onClick={(e) => {
                         e.preventDefault();
                         navigate('../tasks/create');

@@ -153,6 +153,15 @@ h1 {
     max-width: 100%;
     vertical-align: middle;
 }
+.paginationC {
+    float: right;
+}
+.page-link {
+    padding: 0.175rem 0.6rem;
+}
+.addTaskButton {
+    padding: 0.175rem 0.6rem;
+}
 @media (min-width: 992px) {
     .topLangMenuDropdown_cont {
         order: 2;

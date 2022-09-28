@@ -193,12 +193,9 @@ export const USER_REGISTRATION = gql`
 `;
 
 export const LOGOUT = gql`
-    mutation Logout {
-        logout {
-            user {
-                name
-                email
-            }
+    mutation logout($deviceId: String) {
+        logout(deviceId: $deviceId) {
+            result
         }
     }
 `;

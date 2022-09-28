@@ -223,23 +223,21 @@ export default function Profile() {
                     </p>
                 </div>
                 <div className="col-auto">
-                    {currentUser?.email && (
-                        <div className="float-end">
-                            <button
-                                type="button"
-                                className="btn btn-link mb-3 text-danger"
-                                onClick={(e) => {
-                                    e.preventDefault();
+                    <div className="float-end">
+                        <button
+                            type="button"
+                            className="btn btn-link mb-3 text-danger"
+                            onClick={(e) => {
+                                e.preventDefault();
 
-                                    if (window.confirm(t('Are you sure ?'))) {
-                                        navigate('/logout');
-                                    }
-                                }}
-                            >
-                                {t('Logout')}
-                            </button>
-                        </div>
-                    )}
+                                if (window.confirm(t('Are you sure ?'))) {
+                                    navigate('/logout');
+                                }
+                            }}
+                        >
+                            {t('Logout')}
+                        </button>
+                    </div>
                     <button
                         type="submit"
                         className="btn btn-primary mb-3"
