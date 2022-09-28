@@ -253,9 +253,6 @@ export const GET_TASKS = gql`
                 startDateTime
                 stopDateTime
                 nextRunDateTime
-                user {
-                    name
-                }
                 hasEvent
             }
             paginatorInfo {
