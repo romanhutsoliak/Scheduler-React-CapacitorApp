@@ -162,6 +162,9 @@ h1 {
 .addTaskButton {
     padding: 0.175rem 0.6rem;
 }
+.spinner-border {
+    opacity: 0.3;
+}
 @media (min-width: 992px) {
     .topLangMenuDropdown_cont {
         order: 2;
