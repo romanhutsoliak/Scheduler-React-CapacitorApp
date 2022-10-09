@@ -17,6 +17,7 @@ type TaskFormValuesType = {
     description: string;
     periodType: string;
     mustBeCompleted: boolean;
+    isActive: boolean;
     periodTypeTime: string;
     periodTypeWeekDays: number[] | null;
     periodTypeMonthDays: number[] | null;
@@ -68,6 +69,7 @@ export default function TaskEdit() {
             if (data.task) {
                 setValue('name', data.task.name);
                 setValue('description', data.task.description);
+                setValue('isActive', data.task.isActive);
                 setValue('mustBeCompleted', data.task.mustBeCompleted);
                 setValue('periodType', data.task.periodType);
                 setValue('periodTypeTime', data.task.periodTypeTime);
@@ -91,6 +93,7 @@ export default function TaskEdit() {
     useEffect(() => {
         if (taskId) loadTask();
         else {
+            setValue('isActive', true);
             setValue('mustBeCompleted', true);
         }
     }, []);
@@ -113,6 +116,7 @@ export default function TaskEdit() {
             periodType: data.periodType,
             periodTypeTime: data.periodTypeTime,
             mustBeCompleted: data.mustBeCompleted,
+            isActive: data.isActive,
             periodTypeWeekDays: null,
             periodTypeMonthDays: null,
             periodTypeMonths: null,
@@ -254,6 +258,32 @@ export default function TaskEdit() {
                             ></textarea>
                             <p className="invalid-feedback">
                                 {t(errors?.description?.message as string)}
+                            </p>
+                        </div>
+                        <div className="mb-3">
+                            <input
+                                type="checkbox"
+                                className={
+                                    'form-check-input ' +
+                                    (errors.isActive ? 'is-invalid' : '')
+                                }
+                                id="inputIsActive"
+                                {...register('isActive')}
+                                onChange={(e) => {
+                                    setValue(
+                                        'isActive',
+                                        e.target.checked ? true : false
+                                    );
+                                }}
+                            />{' '}
+                            <label
+                                htmlFor="inputIsActive"
+                                className="htmlForm-label"
+                            >
+                                {t('Is active')}
+                            </label>
+                            <p className="invalid-feedback">
+                                {t(errors?.isActive?.message as string)}
                             </p>
                         </div>
                         <div className="mb-3">

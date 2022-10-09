@@ -9,6 +9,7 @@ export const QUERY_TASK = gql`
             stopDateTime
             nextRunDateTime
             mustBeCompleted
+            isActive
             hasEvent
             periodType
             periodTypeTime
@@ -29,6 +30,7 @@ export const UPDATE_TASK = gql`
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
         $mustBeCompleted: Boolean
+        $isActive: Boolean
     ) {
         updateTask(
             id: $id
@@ -40,6 +42,7 @@ export const UPDATE_TASK = gql`
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
             mustBeCompleted: $mustBeCompleted
+            isActive: $isActive
         ) {
             id
             name
@@ -48,6 +51,7 @@ export const UPDATE_TASK = gql`
             stopDateTime
             nextRunDateTime
             mustBeCompleted
+            isActive
         }
     }
 `;
@@ -62,6 +66,7 @@ export const CREATE_TASK = gql`
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
         $mustBeCompleted: Boolean
+        $isActive: Boolean
     ) {
         createTask(
             name: $name
@@ -72,6 +77,7 @@ export const CREATE_TASK = gql`
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
             mustBeCompleted: $mustBeCompleted
+            isActive: $isActive
         ) {
             id
             name
@@ -80,6 +86,79 @@ export const CREATE_TASK = gql`
             stopDateTime
             nextRunDateTime
             mustBeCompleted
+            isActive
+        }
+    }
+`;
+
+export const COMPLETE_TASK = gql`
+    mutation CompleteTask($id: ID!, $notes: String) {
+        completeTask(id: $id, notes: $notes) {
+            id
+        }
+    }
+`;
+
+export const QUERY_TASK_WITH_HISTORY = gql`
+    query GetTaskWithHistory($id: ID!) {
+        task(id: $id) {
+            name
+            description
+            mustBeCompleted
+            startDateTime
+            stopDateTime
+            nextRunDateTime
+            hasEvent
+            periodType
+            periodTypeTime
+            periodTypeWeekDays
+            periodTypeMonthDays
+            periodTypeMonths
+            isActive
+        }
+        taskHistory(taskId: $id, orderBy: [{ column: "id", order: DESC }]) {
+            notes
+            created_at
+        }
+    }
+`;
+
+export const GET_TASKS = gql`
+    query GetTasks($recordsPerPage: Int, $currentPage: Int) {
+        tasks(
+            first: $recordsPerPage
+            page: $currentPage
+            orderBy: [
+                { column: "isActive", order: DESC }
+                { column: "nextRunDateTime", order: ASC }
+            ]
+        ) {
+            data {
+                id
+                name
+                description
+                startDateTime
+                stopDateTime
+                nextRunDateTime
+                hasEvent
+                isActive
+            }
+            paginatorInfo {
+                # hasMorePages
+                # count
+                # total
+                # currentPage
+                # perPage
+
+                count
+                currentPage
+                firstItem
+                hasMorePages
+                lastItem
+                lastPage
+                perPage
+                total
+            }
         }
     }
 `;
@@ -111,6 +190,7 @@ export const CREATE_USER_DEVICE = gql`
         }
     }
 `;
+
 export const CREATE_USER_FROM_DEVICE = gql`
     mutation CreateUserFromDevice($deviceId: String!, $timezoneOffset: Int) {
         createUserFromDevice(
@@ -122,37 +202,6 @@ export const CREATE_USER_FROM_DEVICE = gql`
                 email
             }
             token
-        }
-    }
-`;
-
-export const COMPLETE_TASK = gql`
-    mutation CompleteTask($id: ID!, $notes: String) {
-        completeTask(id: $id, notes: $notes) {
-            id
-        }
-    }
-`;
-
-export const QUERY_TASK_WITH_HISTORY = gql`
-    query GetTaskWithHistory($id: ID!) {
-        task(id: $id) {
-            name
-            description
-            mustBeCompleted
-            startDateTime
-            stopDateTime
-            nextRunDateTime
-            hasEvent
-            periodType
-            periodTypeTime
-            periodTypeWeekDays
-            periodTypeMonthDays
-            periodTypeMonths
-        }
-        taskHistory(taskId: $id, orderBy: [{ column: "id", order: DESC }]) {
-            notes
-            created_at
         }
     }
 `;
@@ -235,42 +284,6 @@ export const UPDATE_USER_TIMEZONE = gql`
             name
             email
             timezoneOffset
-        }
-    }
-`;
-
-export const GET_TASKS = gql`
-    query GetTasks($recordsPerPage: Int, $currentPage: Int) {
-        tasks(
-            first: $recordsPerPage
-            page: $currentPage
-            orderBy: [{ column: "nextRunDateTime", order: ASC }]
-        ) {
-            data {
-                id
-                name
-                description
-                startDateTime
-                stopDateTime
-                nextRunDateTime
-                hasEvent
-            }
-            paginatorInfo {
-                # hasMorePages
-                # count
-                # total
-                # currentPage
-                # perPage
-
-                count
-                currentPage
-                firstItem
-                hasMorePages
-                lastItem
-                lastPage
-                perPage
-                total
-            }
         }
     }
 `;

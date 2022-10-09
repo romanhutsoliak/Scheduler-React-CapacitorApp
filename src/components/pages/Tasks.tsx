@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { GET_TASKS, COMPLETE_TASK } from '../../graphql/queries';
 import Loading from '../layoutParts/Loading';
@@ -12,8 +12,23 @@ type GetTaskResponseType = {
     id?: number;
     name: string;
     nextRunDateTime: string;
-    hasEvent: boolean;
+    isActive: boolean;
 };
+
+function clog(message: any) {
+    if (typeof message !== 'string') message = JSON.stringify(message);
+    const node = document.createElement('div');
+    const textNode = document.createTextNode('--- ' + message);
+    node.appendChild(textNode);
+    let clog = document.getElementById('clog');
+    if (!clog) {
+        const newClog = document.createElement('div');
+        newClog.setAttribute('id', 'clog');
+        document.getElementById('root')?.before(newClog);
+        clog = document.getElementById('clog');
+    }
+    clog?.appendChild(node);
+}
 
 export default function Tasks() {
     const [searchParams] = useSearchParams();
@@ -33,6 +48,22 @@ export default function Tasks() {
     const userHasTasksLocalStorage = localStorage.getItem(
         process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
     );
+    const [loadTasks, { loading, error, data }] = useLazyQuery(GET_TASKS, {
+        variables: {
+            recordsPerPage,
+            currentPage,
+        },
+        onCompleted: (data) => {
+            scrollEventHandler();
+
+            if (!userHasTasksLocalStorage && data.tasks.data) {
+                localStorage.setItem(
+                    process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks',
+                    data.tasks.data.length ? 'true' : 'false'
+                );
+            }
+        },
+    });
 
     // add new task (+) fixed button
     const scrollEventHandler = () => {
@@ -60,30 +91,39 @@ export default function Tasks() {
             }
         }
     };
+
+    let touchY: number = 0;
+    const touchstartEventHandler = (e: TouchEvent) => {
+        touchY = e.changedTouches[0].clientY ?? 0;
+    };
+    const touchendEventHandler = (e: TouchEvent) => {
+        if (
+            touchY > 0 &&
+            e.changedTouches[0].clientY > 0 &&
+            window.scrollY === 0 &&
+            touchY < e.changedTouches[0].clientY &&
+            e.changedTouches[0].clientY - touchY > 150
+        ) {
+            loadTasks();
+        }
+    };
+
     useEffect(() => {
+        // add button
         document.addEventListener('scroll', scrollEventHandler);
+        // reload data after slide down
+        document.addEventListener('touchstart', touchstartEventHandler);
+        document.addEventListener('touchend', touchendEventHandler);
+
+        loadTasks();
 
         return () => {
             document.removeEventListener('scroll', scrollEventHandler);
+            document.addEventListener('touchstart', touchstartEventHandler);
+            document.addEventListener('touchend', touchendEventHandler);
         };
     }, []);
 
-    const { loading, error, data } = useQuery(GET_TASKS, {
-        variables: {
-            recordsPerPage,
-            currentPage,
-        },
-        onCompleted: (data) => {
-            scrollEventHandler();
-
-            if (!userHasTasksLocalStorage && data.tasks.data) {
-                localStorage.setItem(
-                    process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks',
-                    data.tasks.data.length ? 'true' : 'false'
-                );
-            }
-        },
-    });
     if (loading) return <Loading />;
     if (error) return <p>Network error :(</p>;
 
@@ -141,11 +181,16 @@ export default function Tasks() {
                                         id,
                                         name,
                                         nextRunDateTime,
-                                        hasEvent,
+                                        isActive,
                                     }: GetTaskResponseType,
                                     index: number
                                 ) => (
-                                    <tr key={id}>
+                                    <tr
+                                        key={id}
+                                        className={
+                                            isActive ? '' : 'tasksIsNotActive'
+                                        }
+                                    >
                                         <td className="tasksTableN">
                                             {index + 1}
                                         </td>
@@ -206,29 +251,34 @@ export default function Tasks() {
                                                     <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
                                                 </svg>
                                             </a>
-                                            <button
-                                                className="btn btn-link"
-                                                title={t('Complete')}
-                                                type="button"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#globalModal"
-                                                onClick={() => {
-                                                    completeTaskId.current = id;
-                                                }}
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="16"
-                                                    height="16"
-                                                    fill="currentColor"
-                                                    className="bi bi-check-circle"
-                                                    viewBox="0 0 16 16"
-                                                    focusable="false"
+                                            {isActive ? (
+                                                <button
+                                                    className="btn btn-link"
+                                                    title={t('Complete')}
+                                                    type="button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#globalModal"
+                                                    onClick={() => {
+                                                        completeTaskId.current =
+                                                            id;
+                                                    }}
                                                 >
-                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
-                                                </svg>
-                                            </button>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="16"
+                                                        height="16"
+                                                        fill="currentColor"
+                                                        className="bi bi-check-circle"
+                                                        viewBox="0 0 16 16"
+                                                        focusable="false"
+                                                    >
+                                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+                                                    </svg>
+                                                </button>
+                                            ) : (
+                                                ''
+                                            )}
                                             <a
                                                 className="btn btn-link"
                                                 title={t('Edit')}
@@ -278,7 +328,7 @@ export default function Tasks() {
                         e.preventDefault();
                         navigate('../tasks/create');
                     }}
-                    title={t('Create new task')}
+                    title={t('Create a new task')}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

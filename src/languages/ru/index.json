@@ -117,5 +117,6 @@
     "Are you sure ?": "Вы уверены?",
     "Logging in": "Входим",
     "TaskOnce": "Единоразово",
-    "Login": "Войти"
+    "Login": "Войти",
+    "Is active": "Активный"
 }

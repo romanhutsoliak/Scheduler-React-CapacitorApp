@@ -190,17 +190,17 @@ export default function App() {
 }
 
 // console log for the app
-function clog(message: any) {
-    if (typeof message !== 'string') message = JSON.stringify(message);
-    const node = document.createElement('div');
-    const textNode = document.createTextNode('--- ' + message);
-    node.appendChild(textNode);
-    let clog = document.getElementById('clog');
-    if (!clog) {
-        const newClog = document.createElement('div');
-        newClog.setAttribute('id', 'clog');
-        document.getElementById('root')?.after(newClog);
-        clog = document.getElementById('clog');
-    }
-    clog?.appendChild(node);
-}
+// function clog(message: any) {
+//     if (typeof message !== 'string') message = JSON.stringify(message);
+//     const node = document.createElement('div');
+//     const textNode = document.createTextNode('--- ' + message);
+//     node.appendChild(textNode);
+//     let clog = document.getElementById('clog');
+//     if (!clog) {
+//         const newClog = document.createElement('div');
+//         newClog.setAttribute('id', 'clog');
+//         document.getElementById('root')?.after(newClog);
+//         clog = document.getElementById('clog');
+//     }
+//     clog?.appendChild(node);
+// }
