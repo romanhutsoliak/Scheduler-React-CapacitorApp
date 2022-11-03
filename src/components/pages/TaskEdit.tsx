@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
-import { QUERY_TASK, UPDATE_TASK, CREATE_TASK } from '../../graphql/queries';
+import {
+    QUERY_TASK,
+    UPDATE_TASK,
+    CREATE_TASK,
+    DELETE_TASK,
+} from '../../graphql/queries';
 import { useForm } from 'react-hook-form';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
 import { periodTypeMonthsArray, periodTypeWeekDaysArray } from '../../utils';
@@ -11,6 +16,7 @@ import BreadCrumbs, {
     updateBreadCrumbsPathArray,
 } from '../layoutParts/BreadCrumbs';
 import { useLanguage } from '../../languages';
+import Modal from '../layoutParts/Modal';
 
 type TaskFormValuesType = {
     name: string;
@@ -27,7 +33,7 @@ type TaskFormValuesType = {
 function SaveButton({ buttonLoading }: { buttonLoading: boolean }) {
     const t = useLanguage();
     return (
-        <div className="text-start">
+        <div className="d-flex justify-content-between">
             <button
                 type="submit"
                 className="btn btn-primary mb-3"
@@ -45,6 +51,17 @@ function SaveButton({ buttonLoading }: { buttonLoading: boolean }) {
                 ) : (
                     t('Save')
                 )}
+            </button>
+            <button
+                type="button"
+                className="btn btn-link mb-3 text-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#globalModal"
+                onClick={(e) => {
+                    e.preventDefault();
+                }}
+            >
+                {t('Remove')}
             </button>
         </div>
     );
@@ -85,6 +102,9 @@ export default function TaskEdit() {
         },
     });
     const [updateTask, updatingTask] = useMutation(UPDATE_TASK, {
+        onError: () => null,
+    });
+    const [deleteTask, deletingTask] = useMutation(DELETE_TASK, {
         onError: () => null,
     });
     const [createTask, creatingTask] = useMutation(CREATE_TASK, {
@@ -583,6 +603,19 @@ export default function TaskEdit() {
                     </div>
                 </div>
             </form>
+            <Modal
+                title={t('Are you sure you want to remove this task?')}
+                onSuccessFn={async () => {
+                    await deleteTask({
+                        variables: {
+                            id: taskId,
+                        },
+                    });
+                    navigate('/tasks');
+                }}
+                okButtonText={t('Remove task')}
+                okButtonClass="btn-danger"
+            />
         </>
     );
 }

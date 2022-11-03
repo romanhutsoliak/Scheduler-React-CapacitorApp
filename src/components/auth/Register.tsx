@@ -222,8 +222,8 @@ export default function Register() {
                 <i className="bi bi-person-fill"></i>
                 {t(' If you have an account ')}
                 <a
-                    className=""
-                    title="Edit"
+                    className="registerLoginLink"
+                    title={t('login')}
                     href="/login"
                     onClick={(e) => {
                         e.preventDefault();

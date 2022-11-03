@@ -81,6 +81,7 @@ export default function TaskView() {
                     <>
                         <div className="mb-3">
                             <textarea
+                                id="completeNotesTextarea"
                                 ref={completeNotesRef}
                                 className="form-control"
                                 rows={3}
@@ -103,7 +104,7 @@ export default function TaskView() {
                 <div className="col-md-6">
                     <div className="taskViewDetail">
                         <a
-                            className="btn btn-link taskViewDetailEditBtn"
+                            className="btn btn-link taskViewDetailBtn taskViewDetailBtnEdit"
                             title={t('Edit')}
                             href={'/tasks/' + taskId + '/edit'}
                             onClick={(e) => {
@@ -125,7 +126,7 @@ export default function TaskView() {
                         </a>
                         {task.data.task.isActive ? (
                             <button
-                                className="btn btn-link taskViewDetailEditBtn"
+                                className="btn btn-link taskViewDetailBtn taskViewDetailBtnComplete"
                                 title={t('Complete')}
                                 type="button"
                                 data-bs-toggle="modal"
@@ -214,7 +215,7 @@ export default function TaskView() {
                                                         history.created_at
                                                     )}
                                                 </div>
-                                                <div className="col-sm-8">
+                                                <div className="col-sm-8 taskViewHistoryDivText">
                                                     {history.notes}
                                                 </div>
                                             </div>
@@ -223,7 +224,7 @@ export default function TaskView() {
                                 }
                             )
                         ) : (
-                            <div className="taskViewHistoryDiv">
+                            <div className="taskViewHistoryDiv taskViewHistoryNoEvents">
                                 {t('No records found')}
                             </div>
                         )}

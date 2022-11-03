@@ -4,13 +4,15 @@ import { useLanguage } from '../../languages';
 type Props = {
     title?: String | undefined;
     okButtonText?: String | undefined;
-    body: React.ReactNode;
+    okButtonClass?: String | undefined;
+    body?: React.ReactNode | undefined;
     onSuccessFn?: () => void;
 };
 export default function Modal({
     title,
     body,
     okButtonText,
+    okButtonClass,
     onSuccessFn,
 }: Props) {
     const [buttonLoading, setButtonLoading] = useState(false);
@@ -48,20 +50,16 @@ export default function Modal({
                             aria-label="Close"
                         ></button>
                     </div>
-                    <div className="modal-body">{body}</div>
+                    {body ? <div className="modal-body">{body}</div> : ''}
                     <div className="modal-footer">
                         <button
-                            type="button"
-                            className="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                        >
-                            {t('Close')}
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-primary"
+                            type="submit"
                             onClick={onClickHandler}
                             disabled={buttonLoading ? true : false}
+                            className={
+                                'btn ' +
+                                (okButtonClass ? okButtonClass : 'btn-primary')
+                            }
                         >
                             {buttonLoading ? (
                                 <>
@@ -75,6 +73,13 @@ export default function Modal({
                             ) : (
                                 <>{okButtonText ?? t('Ok')}</>
                             )}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            {t('Close')}
                         </button>
                     </div>
                 </div>

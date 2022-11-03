@@ -91,6 +91,14 @@ export const CREATE_TASK = gql`
     }
 `;
 
+export const DELETE_TASK = gql`
+    mutation DeleteTask($id: ID!) {
+        deleteTask(id: $id) {
+            result
+        }
+    }
+`;
+
 export const COMPLETE_TASK = gql`
     mutation CompleteTask($id: ID!, $notes: String) {
         completeTask(id: $id, notes: $notes) {

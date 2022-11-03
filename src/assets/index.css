@@ -64,7 +64,7 @@ h2 {
 .breadCrumbs .breadCrumbsSpan:last-child::after {
     display: none;
 }
-.taskViewDetailEditBtn {
+.taskViewDetailBtn {
     float: right;
 }
 .dropdown-menu[data-bs-popper] {
@@ -167,6 +167,15 @@ h1 {
 }
 .tasksIsNotActive {
     opacity: 0.5;
+}
+.modal-header {
+    border-bottom: none;
+}
+.modal-footer {
+    border-top: none;
+}
+.modal-body {
+    padding: 0 1rem;
 }
 @media (min-width: 992px) {
     .topLangMenuDropdown_cont {

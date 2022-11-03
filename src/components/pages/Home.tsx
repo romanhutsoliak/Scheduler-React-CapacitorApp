@@ -43,6 +43,7 @@ export default function Home() {
             userHasTasksLocalStorage !== 'true' ? (
                 <div className="mainPageLoginOrRegister">
                     <button
+                        id="mainPageCreateANewTask"
                         className="btn btn-primary"
                         title="Edit"
                         onClick={(e) => {
