@@ -28,9 +28,22 @@ type TaskFormValuesType = {
     periodTypeWeekDays: number[] | null;
     periodTypeMonthDays: number[] | null;
     periodTypeMonths: number[] | null;
+
+    // once periodType
+    periodTypeMonthDaysRadio?: number | null;
+    periodTypeMonthsRadio?: number | null;
+    // yearly periodType
+    periodTypeMonthDaysCheckbox?: number[] | null;
+    periodTypeMonthsCheckbox?: number[] | null;
 };
 
-function SaveButton({ buttonLoading }: { buttonLoading: boolean }) {
+function SaveButton({
+    buttonLoading,
+    showRemoveBtn,
+}: {
+    buttonLoading: boolean;
+    showRemoveBtn: boolean;
+}) {
     const t = useLanguage();
     return (
         <div className="d-flex justify-content-between">
@@ -52,17 +65,21 @@ function SaveButton({ buttonLoading }: { buttonLoading: boolean }) {
                     t('Save')
                 )}
             </button>
-            <button
-                type="button"
-                className="btn btn-link mb-3 text-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#globalModal"
-                onClick={(e) => {
-                    e.preventDefault();
-                }}
-            >
-                {t('Remove')}
-            </button>
+            {showRemoveBtn ? (
+                <button
+                    type="button"
+                    className="btn btn-link mb-3 text-danger taskEditRemoveBtn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#globalModal"
+                    onClick={(e) => {
+                        e.preventDefault();
+                    }}
+                >
+                    {t('Remove')}
+                </button>
+            ) : (
+                ''
+            )}
         </div>
     );
 }
@@ -91,8 +108,22 @@ export default function TaskEdit() {
                 setValue('periodType', data.task.periodType);
                 setValue('periodTypeTime', data.task.periodTypeTime);
                 setValue('periodTypeWeekDays', data.task.periodTypeWeekDays);
-                setValue('periodTypeMonthDays', data.task.periodTypeMonthDays);
-                setValue('periodTypeMonths', data.task.periodTypeMonths);
+                setValue(
+                    'periodTypeMonthDaysRadio',
+                    data.task.periodTypeMonthDays[0] ?? null
+                );
+                setValue(
+                    'periodTypeMonthsRadio',
+                    data.task.periodTypeMonths[0] ?? null
+                );
+                setValue(
+                    'periodTypeMonthDaysCheckbox',
+                    data.task.periodTypeMonthDays
+                );
+                setValue(
+                    'periodTypeMonthsCheckbox',
+                    data.task.periodTypeMonths
+                );
                 if (
                     data.task.periodType &&
                     parseInt(data.task.periodType) !== periodTypeState
@@ -150,13 +181,21 @@ export default function TaskEdit() {
         if (['3', '4'].includes(data.periodType)) {
             variables = {
                 ...variables,
-                periodTypeMonthDays: data.periodTypeMonthDays,
+                periodTypeMonthDays: data.periodTypeMonthDaysCheckbox || null,
             };
         }
         if (data.periodType === '4') {
             variables = {
                 ...variables,
-                periodTypeMonths: data.periodTypeMonths,
+                periodTypeMonths: data.periodTypeMonthsCheckbox || null,
+            };
+        }
+        // radio buttons
+        if (data.periodType === '5') {
+            variables = {
+                ...variables,
+                periodTypeMonthDays: [data.periodTypeMonthDaysRadio as number],
+                periodTypeMonths: [data.periodTypeMonthsRadio as number],
             };
         }
 
@@ -333,7 +372,10 @@ export default function TaskEdit() {
                             </p>
                         </div>
                         <div className="text-start d-none d-md-block">
-                            <SaveButton buttonLoading={buttonLoading} />
+                            <SaveButton
+                                buttonLoading={buttonLoading}
+                                showRemoveBtn={taskId ? true : false}
+                            />
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -500,16 +542,16 @@ export default function TaskEdit() {
                                                             type="checkbox"
                                                             className={
                                                                 'form-check-input ' +
-                                                                (errors.periodTypeMonthDays
+                                                                (errors.periodTypeMonthDaysCheckbox
                                                                     ? 'is-invalid'
                                                                     : '')
                                                             }
                                                             id={
-                                                                'periodTypeMonthDaysArray' +
+                                                                'periodTypeMonthDaysCheckbox' +
                                                                 i
                                                             }
                                                             {...register(
-                                                                'periodTypeMonthDays',
+                                                                'periodTypeMonthDaysCheckbox',
                                                                 {
                                                                     required: t(
                                                                         'Month day is required.'
@@ -521,7 +563,7 @@ export default function TaskEdit() {
                                                         <label
                                                             className="form-check-label"
                                                             htmlFor={
-                                                                'periodTypeMonthDaysArray' +
+                                                                'periodTypeMonthDaysCheckbox' +
                                                                 i
                                                             }
                                                         >
@@ -559,16 +601,16 @@ export default function TaskEdit() {
                                                             type="checkbox"
                                                             className={
                                                                 'form-check-input ' +
-                                                                (errors.periodTypeMonths
+                                                                (errors.periodTypeMonthsCheckbox
                                                                     ? 'is-invalid'
                                                                     : '')
                                                             }
                                                             id={
-                                                                'periodTypeMonths' +
+                                                                'periodTypeMonthsCheckbox' +
                                                                 i
                                                             }
                                                             {...register(
-                                                                'periodTypeMonths',
+                                                                'periodTypeMonthsCheckbox',
                                                                 {
                                                                     required:
                                                                         t(
@@ -581,7 +623,7 @@ export default function TaskEdit() {
                                                         <label
                                                             className="form-check-label"
                                                             htmlFor={
-                                                                'periodTypeMonths' +
+                                                                'periodTypeMonthsCheckbox' +
                                                                 i
                                                             }
                                                         >
@@ -596,10 +638,124 @@ export default function TaskEdit() {
                             ) : (
                                 ''
                             )}
+
+                            {periodTypeState === 5 ? (
+                                <>
+                                    <div className="periodTypeMonthDaysC">
+                                        <div className="mb-3">
+                                            {periodTypeMonthDaysArray.map(
+                                                (monthDay, i) => {
+                                                    return (
+                                                        <div
+                                                            className="form-check form-check-inline"
+                                                            key={i}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                className={
+                                                                    'form-check-input ' +
+                                                                    (errors.periodTypeMonthDaysRadio
+                                                                        ? 'is-invalid'
+                                                                        : '')
+                                                                }
+                                                                id={
+                                                                    'periodTypeMonthDaysRadio' +
+                                                                    i
+                                                                }
+                                                                {...register(
+                                                                    'periodTypeMonthDaysRadio',
+                                                                    {
+                                                                        required:
+                                                                            t(
+                                                                                'Month day is required.'
+                                                                            ),
+                                                                    }
+                                                                )}
+                                                                value={i + 1}
+                                                            />
+                                                            <label
+                                                                className="form-check-label"
+                                                                htmlFor={
+                                                                    'periodTypeMonthDaysRadio' +
+                                                                    i
+                                                                }
+                                                            >
+                                                                {monthDay.length ===
+                                                                1
+                                                                    ? '0' +
+                                                                      monthDay
+                                                                    : monthDay}
+                                                            </label>
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                            <p className="invalid-feedback">
+                                                {t(
+                                                    errors?.periodTypeMonthDays
+                                                        ?.message as string
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="periodTypeDiv4">
+                                        <div className="mb-3">
+                                            {periodTypeMonthsArray.map(
+                                                (month, i) => {
+                                                    return (
+                                                        <div
+                                                            className="form-check form-check-inline"
+                                                            key={i}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                className={
+                                                                    'form-check-input ' +
+                                                                    (errors.periodTypeMonthsRadio
+                                                                        ? 'is-invalid'
+                                                                        : '')
+                                                                }
+                                                                id={
+                                                                    'periodTypeMonthsRadio' +
+                                                                    i
+                                                                }
+                                                                {...register(
+                                                                    'periodTypeMonthsRadio',
+                                                                    {
+                                                                        required:
+                                                                            t(
+                                                                                'Month is required.'
+                                                                            ),
+                                                                    }
+                                                                )}
+                                                                value={i + 1}
+                                                            />
+                                                            <label
+                                                                className="form-check-label"
+                                                                htmlFor={
+                                                                    'periodTypeMonthsRadio' +
+                                                                    i
+                                                                }
+                                                            >
+                                                                {t(month)}
+                                                            </label>
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     </div>
                     <div className="text-start d-md-none">
-                        <SaveButton buttonLoading={buttonLoading} />
+                        <SaveButton
+                            buttonLoading={buttonLoading}
+                            showRemoveBtn={taskId ? true : false}
+                        />
                     </div>
                 </div>
             </form>
@@ -614,7 +770,7 @@ export default function TaskEdit() {
                     navigate('/tasks');
                 }}
                 okButtonText={t('Remove task')}
-                okButtonClass="btn-danger"
+                okButtonClass="btn-danger removeTaskConfirmBtn"
             />
         </>
     );

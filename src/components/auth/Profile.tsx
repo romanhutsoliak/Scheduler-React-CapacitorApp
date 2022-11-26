@@ -6,6 +6,7 @@ import { UPDATE_PROFILE } from '../../graphql/queries';
 import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
 import { useLanguage } from '../../languages';
 import { useNavigate } from 'react-router-dom';
+import { LanguageContext } from '../../context/LanguageContext';
 
 type ProfileFormValuesType = {
     email: string;
@@ -24,6 +25,7 @@ export default function Profile() {
         setError,
         setValue,
     } = useForm<ProfileFormValuesType>();
+    const { language, setLanguage } = useContext(LanguageContext);
 
     const [saveProfile, savedProfile] = useMutation(UPDATE_PROFILE, {
         onError: () => null,
@@ -101,11 +103,38 @@ export default function Profile() {
             );
         }
     }
-    console.log(errors);
+
+    const languageChangeHandler = (languageValue: string) => {
+        localStorage.setItem(
+            process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
+            languageValue
+        );
+        setLanguage(languageValue);
+    };
 
     return (
         <>
             <h1>{t('Profile')}</h1>
+            <div className="mb-3">
+                <div className="topLangMenuDropdown_cont">
+                    <label htmlFor="language" className="form-label">
+                        {t('Language')}
+                    </label>
+                    <select
+                        className="form-select form-control"
+                        aria-label="Default select example"
+                        onChange={(e) => {
+                            languageChangeHandler(e.target.value);
+                        }}
+                        value={language}
+                    >
+                        <option value="en">English</option>
+                        <option value="ua">Українська</option>
+                        <option value="ru">Русский</option>
+                    </select>
+                </div>
+            </div>
+
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">

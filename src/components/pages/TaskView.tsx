@@ -15,6 +15,7 @@ import BreadCrumbs, {
 import { useLanguage } from '../../languages';
 import Modal from '../layoutParts/Modal';
 import { useRef } from 'react';
+import Nl2br from '../layoutParts/Nl2br';
 
 type TaskHistory = {
     created_at: string;
@@ -216,7 +217,9 @@ export default function TaskView() {
                                                     )}
                                                 </div>
                                                 <div className="col-sm-8 taskViewHistoryDivText">
-                                                    {history.notes}
+                                                    <Nl2br
+                                                        text={history.notes}
+                                                    />
                                                 </div>
                                             </div>
                                         </div>

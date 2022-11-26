@@ -1,25 +1,15 @@
 import { useContext } from 'react';
 import { CurrentUserContext } from '../../context/CurrentUserContext';
-import { LanguageContext } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../languages';
 
 export default function Header() {
     const { currentUser } = useContext(CurrentUserContext);
-    const { language, setLanguage } = useContext(LanguageContext);
     const navigate = useNavigate();
     const t = useLanguage();
 
-    const languageChangeHandler = (languageValue: string) => {
-        localStorage.setItem(
-            process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
-            languageValue
-        );
-        setLanguage(languageValue);
-    };
-
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg topNavbar">
             <div className="container container-fluid">
                 <button
                     className="navbar-toggler"
@@ -30,36 +20,37 @@ export default function Header() {
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                 >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="topLangMenuDropdown_cont">
-                    <select
-                        className="form-select"
-                        aria-label="Default select example"
-                        onChange={(e) => {
-                            languageChangeHandler(e.target.value);
-                        }}
-                        value={language}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        fill="currentColor"
+                        className="bi bi-list"
+                        viewBox="0 0 16 16"
+                        focusable="false"
                     >
-                        <option value="en">Eng</option>
-                        <option value="ua">Укр</option>
-                        <option value="ru">Рус</option>
-                    </select>
-                </div>
+                        <path
+                            fillRule="evenodd"
+                            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
+                        />
+                    </svg>
+                </button>
                 <div className="btn-group topUserMenuDropdown_cont">
                     <button
-                        className="btn btn-link btn-link-topUser dropdown-toggle"
-                        type="button"
                         id="topUserMenuDropdown"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="true"
-                        aria-expanded="false"
+                        className="btn btn-link btn-link-topUser"
+                        type="button"
+                        onClick={(e) => {
+                            let navigateTo = '/register';
+                            if (currentUser) navigateTo = '/profile';
+                            navigate(navigateTo);
+                        }}
                     >
                         <span className="topUserMenuDropdown_span">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
+                                width="30"
+                                height="30"
                                 fill="currentColor"
                                 className="bi bi-person-fill"
                                 viewBox="0 0 16 16"
@@ -67,58 +58,8 @@ export default function Header() {
                             >
                                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                             </svg>
-                            &nbsp;
-                            {currentUser ? currentUser.name : t('Guest')}
                         </span>
                     </button>
-                    <ul
-                        className="dropdown-menu"
-                        aria-labelledby="topUserMenuDropdown"
-                    >
-                        {currentUser ? (
-                            <>
-                                <li>
-                                    <a
-                                        className="dropdown-item"
-                                        href="/profile"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('/profile');
-                                        }}
-                                    >
-                                        {t('Profile')}
-                                    </a>
-                                </li>
-                            </>
-                        ) : (
-                            <>
-                                <li>
-                                    <a
-                                        className="dropdown-item"
-                                        href="/login"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('../login');
-                                        }}
-                                    >
-                                        {t('Login')}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        className="dropdown-item"
-                                        href="/register"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('../register');
-                                        }}
-                                    >
-                                        {t('Registration')}
-                                    </a>
-                                </li>
-                            </>
-                        )}
-                    </ul>
                 </div>
                 <div
                     className="collapse navbar-collapse"

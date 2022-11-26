@@ -26,6 +26,7 @@ describe('The full test', () => {
             setResAlias(req, 'GetTaskWithHistory');
             setResAlias(req, 'CreateTask');
             setResAlias(req, 'UpdateTask');
+            setResAlias(req, 'DeleteTask');
         });
     });
     afterEach(() => {
@@ -195,12 +196,13 @@ describe('The full test', () => {
         );
     });
 
-    const completeNotesText = 'Complete notes';
+    const completeNotesText = 'Complete task';
     it('Complete task', () => {
         cy.get('.taskViewDetailBtnComplete').click();
 
+        cy.wait(500);
         cy.get('#globalModal').should('be.visible');
-        cy.get('#completeNotesTextarea').clear().type(completeNotesText);
+        cy.get('#completeNotesTextarea').type(completeNotesText);
 
         cy.get('#globalModal button[type="submit"]:visible').click();
         cy.wait('@CompleteTask').then((interception) => {
@@ -216,6 +218,26 @@ describe('The full test', () => {
                     completeNotesText
                 );
             });
+        });
+    });
+
+    it('Remove task', () => {
+        cy.get('.taskViewDetailBtnEdit').click();
+
+        cy.wait('@graphql');
+        cy.get('.taskEditRemoveBtn:visible').click();
+        cy.get('#globalModal:visible', { timeout: 10000 }).should('be.visible');
+
+        cy.get('#myModalClose', { timeout: 10000 }).click();
+
+        cy.get('.removeTaskConfirmBtn').click();
+        cy.wait('@DeleteTask').then((interception) => {
+            const deleteTaskResult =
+                interception.response?.body?.data?.deleteTask?.result ?? null;
+
+            expect(deleteTaskResult).equal('ok');
+
+            cy.url().should('include', '/tasks');
         });
     });
 });

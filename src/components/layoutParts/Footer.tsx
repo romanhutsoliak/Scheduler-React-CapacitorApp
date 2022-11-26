@@ -8,10 +8,7 @@ export default function Footer() {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="copyright-text">
-                            <p>
-                                © 2022.{' '}
-                                {t('All rights reserved. Created by Roman')} :)
-                            </p>
+                            <p>{t('The important should be done')} :)</p>
                         </div>
 
                         <div className="go_top">

@@ -1,0 +1,9 @@
+.git
+.vscode
+.gitignore
+.dockerignore
+.env.local
+.env.prod
+.env
+build
+node_modules

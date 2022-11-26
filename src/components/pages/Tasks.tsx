@@ -188,7 +188,10 @@ export default function Tasks() {
                                     <tr
                                         key={id}
                                         className={
-                                            isActive ? '' : 'tasksIsNotActive'
+                                            (isActive
+                                                ? ''
+                                                : 'tasksIsNotActive ') +
+                                            'taskViewListDiv'
                                         }
                                     >
                                         <td className="tasksTableN">

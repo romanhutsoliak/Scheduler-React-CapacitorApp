@@ -1,0 +1,94 @@
+body {
+    color: #fff;
+}
+.darkGreenTheme {
+    background-color: #324a2d;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+}
+.darkGreenTheme .main_background_gradient1 {
+    background: radial-gradient(
+        circle,
+        rgb(8, 230, 32) 0%,
+        rgba(0, 0, 0, 0) 70%
+    );
+    width: 129%;
+    position: absolute;
+    z-index: 10;
+    margin-top: -44%;
+    right: -50%;
+    pointer-events: none;
+    aspect-ratio: 1 / 1;
+}
+.darkGreenTheme .main_background_gradient2 {
+    background: radial-gradient(
+        circle,
+        rgb(8, 230, 32) 0%,
+        rgb(0, 0, 0, 0) 75%
+    );
+    width: 115%;
+    position: absolute;
+    z-index: 10;
+    margin-bottom: -30%;
+    left: -50%;
+    pointer-events: none;
+    aspect-ratio: 1 / 1;
+    bottom: 0;
+}
+.darkGreenTheme .darkGreenThemeContent {
+    z-index: 2000;
+    position: relative;
+    overflow: auto;
+    width: 100%;
+}
+.darkGreenTheme .bg-light {
+    background-color: transparent !important;
+}
+
+a,
+td,
+.tasksTableActions svg,
+.taskViewDetailBtn svg {
+    color: #fff;
+}
+h1 {
+    color: rgb(172, 172, 172);
+}
+.taskViewListDiv,
+.taskViewDetailDiv,
+.taskViewHistoryDiv {
+    background: #fff;
+    background: linear-gradient(54deg, #ffffffbd 0%, #c6fdc5 100%);
+    padding: 15px 20px 10px;
+    border-radius: 0 50px 0 10px;
+    margin: 5px auto 20px;
+    position: relative;
+    left: -20px;
+    width: calc(100% + 20px);
+    color: #333;
+}
+.taskViewListDiv td,
+.taskViewListDiv td svg {
+    color: #333;
+}
+.taskViewDetail h2 {
+    margin: 20px 0;
+}
+.topNavbar {
+    margin-bottom: 10px;
+}
+.topNavbar .navbar-toggler svg,
+.topUserMenuDropdown_span svg {
+    color: #fff;
+}
+.navbar-nav .nav-link {
+    color: #fff;
+}
+
+@media (max-width: 991px) {
+    .table-responsive {
+        overflow-x: visible;
+    }
+}

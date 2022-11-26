@@ -1,0 +1,11 @@
+FROM node:16-alpine as node_build
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+ARG REACT_APP_ANYVARNAME
+ENV REACT_APP_ANYVARNAME=$REACT_APP_ANYVARNAME
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=node_build /app/build /usr/share/nginx/html
