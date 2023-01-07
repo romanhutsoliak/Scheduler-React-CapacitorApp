@@ -110,11 +110,11 @@ export default function TaskEdit() {
                 setValue('periodTypeWeekDays', data.task.periodTypeWeekDays);
                 setValue(
                     'periodTypeMonthDaysRadio',
-                    data.task.periodTypeMonthDays[0] ?? null
+                    data.task.periodTypeMonthDays && data.task.periodTypeMonthDays[0] ? data.task.periodTypeMonthDays[0] : null
                 );
                 setValue(
                     'periodTypeMonthsRadio',
-                    data.task.periodTypeMonths[0] ?? null
+                    data.task.periodTypeMonths && data.task.periodTypeMonths[0] ? data.task.periodTypeMonths[0] : null
                 );
                 setValue(
                     'periodTypeMonthDaysCheckbox',
