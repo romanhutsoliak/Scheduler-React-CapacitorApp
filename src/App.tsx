@@ -177,11 +177,7 @@ export default function App() {
                 value={{ currentUser, setCurrentUser }}
             >
                 <LanguageContext.Provider value={{ language, setLanguage }}>
-                    {loadingCurrentUser ? (
-                        <Loading position="position-absolute" />
-                    ) : (
-                        <MainRouter />
-                    )}
+                    <MainRouter loadingCurrentUser={loadingCurrentUser} />
                 </LanguageContext.Provider>
             </CurrentUserContext.Provider>
             <div id="mess"></div>

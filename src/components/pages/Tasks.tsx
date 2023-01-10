@@ -15,21 +15,6 @@ type GetTaskResponseType = {
     isActive: boolean;
 };
 
-function clog(message: any) {
-    if (typeof message !== 'string') message = JSON.stringify(message);
-    const node = document.createElement('div');
-    const textNode = document.createTextNode('--- ' + message);
-    node.appendChild(textNode);
-    let clog = document.getElementById('clog');
-    if (!clog) {
-        const newClog = document.createElement('div');
-        newClog.setAttribute('id', 'clog');
-        document.getElementById('root')?.before(newClog);
-        clog = document.getElementById('clog');
-    }
-    clog?.appendChild(node);
-}
-
 export default function Tasks() {
     const [searchParams] = useSearchParams();
     const searchParamsPage = searchParams.get('page');
@@ -72,15 +57,6 @@ export default function Tasks() {
         )[0] as HTMLElement | null;
         // for mobile devices only
         if (taskButtonC && window.innerWidth < 992) {
-            console.log(
-                taskButtonC.offsetTop +
-                    ' > ' +
-                    window.innerHeight +
-                    ' && ' +
-                    (window.scrollY + window.innerHeight) +
-                    ' < ' +
-                    taskButtonC.offsetTop
-            );
             if (
                 taskButtonC.offsetTop > window.innerHeight &&
                 window.scrollY + window.innerHeight < taskButtonC.offsetTop

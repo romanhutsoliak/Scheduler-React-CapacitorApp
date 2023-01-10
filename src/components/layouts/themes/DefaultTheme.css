@@ -1,3 +1,25 @@
+/* Color */
+a, .btn-link {
+	color: #0eadd2;
+}
+.btn-primary {
+	color: #fff;
+	background-color: #0eadd2;
+	border-color: #0eadd2;
+}
+.btn-primary:hover, .btn-primary:focus {
+	color: #fff;
+	background-color: #00b5df;
+	border-color: #00b5df;
+}
+.form-check-input:checked {
+	background-color: #0eadd2;
+	border-color: #0eadd2;
+}
+.form-control, .form-select, .form-check-input {
+	border-color: #0eadd24f;
+}
+
 .mini-footer {
     background: #f0f0f0;
     text-align: center;
@@ -22,13 +44,12 @@ nav.navbar.navbar-light {
 .htmlForm-label {
     margin-bottom: 5px;
 }
-.taskViewHistoryDiv,
-.taskViewDetailDiv {
-    border: 1px solid #f1f1f1;
-    padding: 8px 12px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background-color: #f8f9fa;
+.taskViewHistoryDiv, .taskViewDetailDiv {
+	padding: 8px 12px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	background: linear-gradient(#0eadd200, #0eadd20f);
+	border: 1px solid #0eadd226;
 }
 h2 {
     margin-bottom: 1rem;
@@ -170,11 +191,20 @@ h1 {
 }
 
 @media (max-width: 991px) {
+    .tasksTableCont .taskViewListDiv {
+        padding: 8px 12px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        background: linear-gradient(#0eadd200, #0eadd20f);
+        border: 1px solid #0eadd226;
+    }
     .navbar-collapse ul {
         margin-top: 20px;
         border-top: 1px solid #eaeaea;
     }
-
+    .taskViewHistory {
+        margin-top: 1rem;
+    }
     .tasksTableCont {
         margin-top: 10px;
     }
@@ -185,13 +215,9 @@ h1 {
     .tasksTableCont tr {
         display: block;
         width: 100%;
-        border: none;
     }
     .tasksTableCont .tasksTableN {
         display: none;
-    }
-    .tasksTableCont tr {
-        border-bottom: 1px solid #eee;
     }
     .tasksTableName {
         font-size: 1.2rem;
