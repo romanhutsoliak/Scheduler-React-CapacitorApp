@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
+import { useLanguage } from '../../languages';
 
 type Props = {
     lastPage: number;
@@ -11,7 +12,8 @@ export default function Pagination({
     setCurrentPage,
 }: Props) {
     const [searchParams, setSearchParams] = useSearchParams();
-
+    const t = useLanguage();
+    
     if (lastPage === 1) return null;
     const searchParamsPage = searchParams.get('page');
     if (searchParamsPage) {
@@ -40,7 +42,7 @@ export default function Pagination({
                             }}
                             href={'?page=' + (currentPage - 1)}
                         >
-                            Previous
+                            {t('PreviousPage')}
                         </a>
                     </li>
                 ) : (
@@ -83,7 +85,7 @@ export default function Pagination({
                             }}
                             href={'?page=' + (currentPage + 1)}
                         >
-                            Next
+                            {t('NextPage')}
                         </a>
                     </li>
                 ) : (

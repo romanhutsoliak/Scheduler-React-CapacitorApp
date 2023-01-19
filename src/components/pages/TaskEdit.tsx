@@ -17,6 +17,8 @@ import BreadCrumbs, {
 } from '../layoutParts/BreadCrumbs';
 import { useLanguage } from '../../languages';
 import Modal from '../layoutParts/Modal';
+import LoadingError from '../layoutParts/LoadingError';
+import Error404 from '../layoutParts/Error404';
 
 type TaskFormValuesType = {
     name: string;
@@ -130,12 +132,12 @@ export default function TaskEdit() {
                 )
                     setPeriodTypeState(parseInt(data.task.periodType));
             }
-        },
+        }
     });
     const [updateTask, updatingTask] = useMutation(UPDATE_TASK, {
         onError: () => null,
     });
-    const [deleteTask, deletingTask] = useMutation(DELETE_TASK, {
+    const [deleteTask] = useMutation(DELETE_TASK, {
         onError: () => null,
     });
     const [createTask, creatingTask] = useMutation(CREATE_TASK, {
@@ -155,7 +157,8 @@ export default function TaskEdit() {
     );
 
     if (loadingTask.loading) return <Loading />;
-    else if (taskId && loadingTask.data?.task === null) return <>404</>;
+    else if (loadingTask.error) return <LoadingError />;
+    else if (taskId && loadingTask.data?.task === null) return <Error404 />;
 
     const buttonLoading = updatingTask.loading || creatingTask.loading;
 
@@ -246,7 +249,7 @@ export default function TaskEdit() {
         if (periodTypeTimeRes !== currentValue) return periodTypeTimeRes;
 
         periodTypeTimeRes = periodTypeTimeRes.replace(
-            /^(\d{2})\:?(\d{0,2})$/,
+            /^(\d{2}):?(\d{0,2})$/,
             '$1:$2'
         );
         const matchArray = /^(\d+):(\d+)$/.exec(periodTypeTimeRes);
@@ -479,7 +482,7 @@ export default function TaskEdit() {
                                             (weekDay, i) => {
                                                 return (
                                                     <div
-                                                        className="form-check form-check-inline"
+                                                        className="form-check form-check-inline task-date-checkbox-size"
                                                         key={i}
                                                     >
                                                         <input
@@ -530,12 +533,13 @@ export default function TaskEdit() {
                             )}
                             {[3, 4].includes(periodTypeState) ? (
                                 <div className="periodTypeMonthDaysC">
+                                    <label className="htmlForm-label">{t('Day of month')}</label>
                                     <div className="mb-3">
                                         {periodTypeMonthDaysArray.map(
                                             (monthDay, i) => {
                                                 return (
                                                     <div
-                                                        className="form-check form-check-inline"
+                                                        className="form-check form-check-inline task-date-checkbox-size"
                                                         key={i}
                                                     >
                                                         <input
@@ -594,7 +598,7 @@ export default function TaskEdit() {
                                             (month, i) => {
                                                 return (
                                                     <div
-                                                        className="form-check form-check-inline"
+                                                        className="form-check form-check-inline task-month-checkbox-size"
                                                         key={i}
                                                     >
                                                         <input
@@ -642,12 +646,13 @@ export default function TaskEdit() {
                             {periodTypeState === 5 ? (
                                 <>
                                     <div className="periodTypeMonthDaysC">
+                                        <label className="htmlForm-label">{t('Day of month')}</label>
                                         <div className="mb-3">
                                             {periodTypeMonthDaysArray.map(
                                                 (monthDay, i) => {
                                                     return (
                                                         <div
-                                                            className="form-check form-check-inline"
+                                                            className="form-check form-check-inline task-date-checkbox-size"
                                                             key={i}
                                                         >
                                                             <input
@@ -704,7 +709,7 @@ export default function TaskEdit() {
                                                 (month, i) => {
                                                     return (
                                                         <div
-                                                            className="form-check form-check-inline"
+                                                            className="form-check form-check-inline task-month-checkbox-size"
                                                             key={i}
                                                         >
                                                             <input

@@ -1,3 +1,12 @@
+@font-face {
+    font-family: "Montserrat";
+    src: local("Montserrat"),
+        url("./fonts/Montserrat-VariableFont_wght.ttf") 
+        format("truetype");
+}
+body {
+    font-family: Montserrat, sans-serif;    
+}
 /* Color */
 a, .btn-link {
 	color: #0eadd2;
@@ -19,7 +28,20 @@ a, .btn-link {
 .form-control, .form-select, .form-check-input {
 	border-color: #0eadd24f;
 }
+.page-item.active .page-link {
+	background-color: #0eadd2;
+	border-color: #0eadd2;
+}
+.page-link, .page-link:hover {
+	color: #0eadd2;
+}
+.form-control::placeholder {
+	color: #c4c4c4;
+}
 
+#navbarTogglerDemo02 .nav-link {
+	color: inherit;
+}
 .mini-footer {
     background: #f0f0f0;
     text-align: center;
@@ -45,11 +67,11 @@ nav.navbar.navbar-light {
     margin-bottom: 5px;
 }
 .taskViewHistoryDiv, .taskViewDetailDiv {
-	padding: 8px 12px;
-	border-radius: 5px;
-	margin-bottom: 10px;
-	background: linear-gradient(#0eadd200, #0eadd20f);
-	border: 1px solid #0eadd226;
+    padding: 8px 12px;
+    border-radius: 0;
+    margin-bottom: 20px;
+    border-left: 3px solid #0eadd273;
+    border-bottom: 1px solid #eee;
 }
 h2 {
     margin-bottom: 1rem;
@@ -76,7 +98,7 @@ h2 {
     opacity: 0.6;
 }
 .breadCrumbsSpan::after {
-    content: '>';
+    content: '•';
     margin-left: 5px;
 }
 .breadCrumbs {
@@ -111,6 +133,7 @@ h2 {
     position: fixed;
     top: 5px;
     right: 5px;
+    z-index: 1000;
 }
 .toast.show {
     display: flex !important;
@@ -189,18 +212,22 @@ h1 {
 .modal-body {
     padding: 0 1rem;
 }
+.loadingErrorCont {
+	margin-left: 20px;
+	margin-right: 20px;
+}
 
 @media (max-width: 991px) {
     .tasksTableCont .taskViewListDiv {
         padding: 8px 12px;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        background: linear-gradient(#0eadd200, #0eadd20f);
-        border: 1px solid #0eadd226;
+        border-radius: 0;
+        margin-bottom: 20px;
+        border-left: 3px solid #0eadd273;
+        border-bottom: 1px solid #eee;
     }
     .navbar-collapse ul {
-        margin-top: 20px;
-        border-top: 1px solid #eaeaea;
+        margin-top: 10px;
+        border-top: none;
     }
     .taskViewHistory {
         margin-top: 1rem;
@@ -243,6 +270,25 @@ h1 {
     }
     .addTaskButtonCFixed .addTaskButtonSpan {
         display: none;
+    }
+    .headerMenuToggle, .topUserMenuDropdown_span > .bi {
+	    color: #fff;
+    }
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 .15rem #fff;
+    }
+    #navbarTogglerDemo02 {
+        margin-top: 9px;
+        opacity: 0.92;
+        background-color: #0eadd2;
+        margin-left: -15px;
+        padding-left: 15px;
+        margin-right: -15px;
+        padding-right: 15px;
+    }
+    #navbarTogglerDemo02 .nav-link {
+        color: #fff;
+        font-size: 1.2rem;
     }
 }
 @media (max-width: 360px) {

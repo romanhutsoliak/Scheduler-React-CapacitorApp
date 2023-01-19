@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import './assets/index.css';
+import { useEffect, useRef, useState } from 'react';
+import './assets/css/bootstrap.min.css';
+import './assets/css/index.css';
 import 'bootstrap/js/dist/dropdown.js';
 import 'bootstrap/js/dist/collapse.js';
 import 'bootstrap/js/dist/modal.js';
@@ -16,41 +17,66 @@ import {
     CREATE_USER_FROM_DEVICE,
 } from './graphql/queries';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import Loading from './components/layoutParts/Loading';
+import { UserDeviceContext, UserDeviceType } from './context/UserDeviceContext';
+import { Capacitor } from '@capacitor/core';
+import { Device } from '@capacitor/device';
+import { App as  CapacitorApp} from '@capacitor/app';
+import { PushNotifications, Token } from '@capacitor/push-notifications';
+import LoadingError from './components/layoutParts/LoadingError';
 
 export default function App() {
     const [currentUser, setCurrentUser] = useState<CurrentUserI | null>(null);
+    const [userDevice, setUserDevice] = useState<UserDeviceType | null>(null);
     const [language, setLanguage] = useState('en');
+    const [noConnection, setNoConnection] = useState(false);
     const [loadingCurrentUser, setLoadingCurrentUser] = useState<boolean>(true);
-    const [loadCurrentUser] = useLazyQuery(CURRENT_USER);
+    const [loadCurrentUser] = useLazyQuery(CURRENT_USER, {
+        onError: (err) => setNoConnection(true),
+    });
     const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
-        onError: () => null,
+        onError: (err) => setNoConnection(true),
     });
     const [createUserFromDevice] = useMutation(CREATE_USER_FROM_DEVICE, {
-        onError: () => null,
+        onError: (err) => setNoConnection(true),
     });
     const [updateUserTimezone] = useMutation(UPDATE_USER_TIMEZONE, {
-        onError: () => null,
+        onError: (err) => setNoConnection(true),
     });
     const userTimezoneOffset = new Date().getTimezoneOffset();
-
-    const handleMessageFromReactNative = (message: CustomEvent) => {
-        if (message.detail.action === 'notificationToken') {
-            window.userDevice = {
-                ...window.userDevice,
-                notificationToken: message.detail.data as string,
-            };
-        }
-    };
-
+    const isNativeApp = Capacitor.isPluginAvailable('PushNotifications');
+    const authenticatedByUserDeviceFailed = useRef(false);
+    
     // the first
     useEffect(() => {
-        window.addEventListener(
-            'message_from_react_native',
-            handleMessageFromReactNative as EventListener
-        );
-
-        const tokenLocalStorage = localStorage.getItem(
+        if (isNativeApp) {
+            // User device
+            const setUserDeviceInfo = async () => {
+                const deviceInfo = await Device.getInfo();
+                const deviceId = await Device.getId();
+                const localeCode = await Device.getLanguageCode();
+                const capacitorApp = await CapacitorApp.getInfo();
+                setUserDevice(prevUserDevice => ({
+                    ...prevUserDevice,
+                    deviceId: deviceId?.uuid,
+                    platform: deviceInfo?.platform + ' ' + deviceInfo?.osVersion,
+                    manufacturer: deviceInfo?.manufacturer,
+                    model: deviceInfo?.name,
+                    locale: localeCode?.value,
+                    appVersion: capacitorApp?.version,
+                }));
+            };
+            setUserDeviceInfo();
+        
+            // On success, we should be able to receive notifications
+            PushNotifications.addListener('registration', (token: Token) => {
+                setUserDevice(prevUserDevice => ({
+                    ...prevUserDevice,
+                    notificationToken: token.value,
+                }));
+            });
+        }
+         
+        let tokenLocalStorage = localStorage.getItem(
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
         );
         if (tokenLocalStorage && !currentUser) {
@@ -64,55 +90,27 @@ export default function App() {
                                 process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
                                     'token'
                             );
+                            tokenLocalStorage = null;
                         }
                     },
                     onError: (error) => {
+                        setNoConnection(true)
                         setLoadingCurrentUser(false);
                     },
                 });
             };
-            fetchCurrentUser().catch((error) => {
-                window.ReactNativeWebView?.postMessage(error);
-            });
+            fetchCurrentUser();
         }
-        if (
-            window.userDevice?.deviceId &&
-            !currentUser &&
-            (!tokenLocalStorage || loadingCurrentUser === false)
-        ) {
-            // clog('window.userDevice?.deviceId');
-            const fetchCreateUserFromDevice = async () => {
-                await createUserFromDevice({
-                    variables: {
-                        deviceId: window.userDevice?.deviceId,
-                        timezoneOffset: userTimezoneOffset,
-                    },
-                    onCompleted: (data) => {
-                        if (data.createUserFromDevice.token) {
-                            localStorage.setItem(
-                                process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
-                                    'token',
-                                data.createUserFromDevice.token
-                            );
-                            setCurrentUser(data.createUserFromDevice.user);
-                        }
-                        setLoadingCurrentUser(false);
-                    },
-                    onError: (error) => {
-                        setLoadingCurrentUser(false);
-                    },
-                });
-            };
-            fetchCreateUserFromDevice().catch((error) => {
-                window.ReactNativeWebView?.postMessage(error);
-            });
+        if (!tokenLocalStorage && !currentUser && isNativeApp) {
+            createUserFromDeviceFn();
+            authenticatedByUserDeviceFailed.current = true;
+            // next try is down below useEffect(() => {}, [userDevice?.deviceId]);
         }
-        if (!tokenLocalStorage && !window.isNativeApp) {
+        if (!tokenLocalStorage && !isNativeApp) {
             setLoadingCurrentUser(false);
         }
-
+                
         // Reset token for app testing
-        // window.ReactNativeWebView?.postMessage(tokenLocalStorage);
         // localStorage.removeItem(
         //     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
         // );
@@ -122,8 +120,8 @@ export default function App() {
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language'
         );
         if (languageLocalStorage) setLanguage(languageLocalStorage);
-        else if (window.userDevice?.locale) {
-            const locale = window.userDevice?.locale.replace(/-.+$/, '');
+        else if (userDevice?.locale) {
+            const locale = userDevice?.locale.replace(/-.+$/, '');
             if (AVAILABLE_LANGUAGES.includes(locale)) {
                 localStorage.setItem(
                     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language',
@@ -134,10 +132,7 @@ export default function App() {
         }
 
         return () => {
-            window.removeEventListener(
-                'message_from_react_native',
-                handleMessageFromReactNative as EventListener
-            );
+            
         };
     }, []);
 
@@ -145,19 +140,12 @@ export default function App() {
     useEffect(() => {
         if (currentUser) {
             window.setTimeout(function () {
-                if (
-                    window.isNativeApp &&
-                    window.userDevice &&
-                    window.userDevice.deviceId
-                ) {
+                if (userDevice?.deviceId) {
                     createUserDevice({
-                        variables: window.userDevice,
-                        onCompleted(data) {
-                            window.userDevice = data.createUserDevice;
-                        },
+                        variables: userDevice,
                     });
                 }
-            }, 5000);
+            }, 3000);
             if (
                 typeof currentUser.timezoneOffset !== undefined &&
                 userTimezoneOffset !== currentUser.timezoneOffset
@@ -171,15 +159,52 @@ export default function App() {
         }
     }, [currentUser]);
 
+    const createUserFromDeviceFn = async () => {
+        if (
+            !currentUser &&
+            userDevice?.deviceId
+        ) {
+            await createUserFromDevice({
+                variables: {
+                    deviceId: userDevice?.deviceId,
+                    timezoneOffset: userTimezoneOffset,
+                },
+                onCompleted: (data) => {
+                    if (data.createUserFromDevice.token) {
+                        localStorage.setItem(
+                            process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
+                                'token',
+                            data.createUserFromDevice.token
+                        );
+                        setCurrentUser(data.createUserFromDevice.user);
+                    }
+                    setLoadingCurrentUser(false);
+                },
+                onError: (error) => {
+                    setNoConnection(true);
+                    setLoadingCurrentUser(false);
+                },
+            });
+        }
+    };
+    // after userDevice object is ready and was not authenticated with stored token in the first useEffect()
+    useEffect(() => {
+        if (authenticatedByUserDeviceFailed.current) {
+            createUserFromDeviceFn();
+        }
+    }, [userDevice?.deviceId]);
+
+    if (noConnection) return <LoadingError />;
+
     return (
         <>
-            <CurrentUserContext.Provider
-                value={{ currentUser, setCurrentUser }}
-            >
-                <LanguageContext.Provider value={{ language, setLanguage }}>
-                    <MainRouter loadingCurrentUser={loadingCurrentUser} />
-                </LanguageContext.Provider>
-            </CurrentUserContext.Provider>
+            <UserDeviceContext.Provider value={{ userDevice, setUserDevice }}>
+                <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+                    <LanguageContext.Provider value={{ language, setLanguage }}>
+                        <MainRouter loadingCurrentUser={loadingCurrentUser} />
+                    </LanguageContext.Provider>
+                </CurrentUserContext.Provider>
+            </UserDeviceContext.Provider>
             <div id="mess"></div>
         </>
     );

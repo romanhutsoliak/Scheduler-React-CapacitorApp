@@ -1,0 +1,93 @@
+#topUserMenuDropdown::after {
+    display: none;
+}
+.taskViewDetailBtn {
+    float: right;
+}
+.grayscale {
+    filter: grayscale(1)
+}
+#navbarTogglerDemo02 .nav-link {
+	color: inherit;
+}
+.task-date-checkbox-size {
+	min-width: 45px;
+}
+.task-month-checkbox-size {
+	min-width: 65px;
+}
+
+@media (min-width: 992px) {
+    .topLangMenuDropdown_cont {
+        order: 2;
+    }
+    .topUserMenuDropdown_cont {
+        order: 3;
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar-collapse ul {
+        margin-top: 20px;
+        border-top: 1px solid #eaeaea;
+    }
+
+    .tasksTableCont {
+        margin-top: 10px;
+    }
+    .tasksTableCont thead {
+        display: none;
+    }
+    .tasksTableCont td,
+    .tasksTableCont tr {
+        display: block;
+        border: none;
+    }
+    .tasksTableCont .tasksTableN {
+        display: none;
+    }
+    .tasksTableCont tr {
+        border-bottom: 1px solid #eee;
+        border-radius: 0;
+    }
+    .tasksTableName {
+        font-size: 1.2rem;
+    }
+    .tasksTableNextDate {
+        color: #8e8d8d;
+    }
+    .tasksTableCont tr td {
+        padding-bottom: 0;
+    }
+    .tasksTableCont tr td.tasksTableActions a,
+    .tasksTableCont tr td.tasksTableActions button {
+        margin-right: 20px;
+    }
+    .addTaskButtonCFixed .addTaskButton {
+        position: fixed;
+        bottom: 50px;
+        padding: 10px;
+        border-radius: 50px;
+        width: 50px;
+        height: 50px;
+        right: 30px;
+    }
+    .addTaskButtonCFixed .addTaskButtonSpan {
+        display: none;
+    }
+    .navbar {
+        max-height: 60px;
+        background-color: #0eadd2;
+        margin-bottom: 20px;
+        z-index: 100;
+    }
+    #navbarTogglerDemo02 {
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+        margin-top: 8px;
+        opacity: 0.95;
+    }
+    .modal-dialog {
+        margin-top: 10%;
+    }
+}

@@ -11,6 +11,12 @@ import {
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
+import { Capacitor } from '@capacitor/core';
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+} from '@capacitor/push-notifications';
 // import reportWebVitals from "./reportWebVitals";
 
 const defaultOptions = {
@@ -78,25 +84,51 @@ const client = new ApolloClient({
     defaultOptions: defaultOptions,
 });
 
-export type UserDeviceType = {
-    deviceId?: string;
-    platform?: string;
-    manufacturer?: string;
-    model?: string;
-    appVersion?: string;
-    notificationToken?: string;
-    locale?: string;
-    updated_at?: string;
-};
+// Push notifications
+// --------------------------------------------------
+const isPushNotificationsAvailable = Capacitor.isPluginAvailable('PushNotifications');
+if (isPushNotificationsAvailable) {
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    PushNotifications.requestPermissions().then(result => {
+    if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+    } else {
+        // Show some error
+    }
+    });
+    // Some issue with our setup and push will not work
+    PushNotifications.addListener('registrationError',
+        (error: any) => {
+            alert('Error on registration: ' + JSON.stringify(error));
+        }
+    );
+    // Show us the notification payload if the app is open on our device
+    PushNotifications.addListener('pushNotificationReceived',
+        (notification: PushNotificationSchema) => {
+            // it just redirects, maybe need some modal with additional information
+            // alert();
+            let redirectTo = notification.data.redirectTo ?? null;
+            if (redirectTo)
+                window.location.href = redirectTo;
+        }
+    );
+    // Method called when tapping on a notification
+    PushNotifications.addListener('pushNotificationActionPerformed',
+        (notification: ActionPerformed) => {
+            let redirectTo = notification.notification.data.redirectTo ?? null;
+            if (redirectTo)
+                window.location.href = redirectTo;
+        }
+    );
+}   
 declare global {
     interface Window {
-        ReactNativeWebView: any;
-        isNativeApp: boolean | undefined;
-        userDevice: UserDeviceType | undefined;
         appStartTimestamp: number | undefined;
     }
 }
-
 window.appStartTimestamp = Date.now();
 
 // <React.StrictMode>

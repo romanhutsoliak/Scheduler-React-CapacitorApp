@@ -2,5 +2,26 @@
     "in_time": "in",
     "time_ago": "ago",
     "TaskName": "Name",
-    "TaskOnce": "Once"
+    "TaskOnce": "Once",
+    "PreviousPage": "Previous",
+    "NextPage": "Next",
+    "HomePagePart1": [
+        "<h1>App introduction</h1>",
+        "<p>This application will help you to memorize and do not skip important events which you perform periodically.</p>",
+        "<ul>",
+            "<li>To pay for services</li>",
+            "<li>Taxes</li>",
+            "<li>Visits to a dentist</li>",
+            "<li>ets ...</li>",
+        "</ul>"
+    ],
+    "HomePagePart2": [
+        "<h2>Which is the difference from calendar ?</h2>",
+        "<p>You see only days and events you have. All the information in one list. ",
+        "You don't need to search calendar to find your event walking by months.</p>"
+    ],
+    "TasksListEmpty": [
+        "<p>Schedule your activities. To save your first record you need to make up a name and ",
+        "set time it has to be repeated (once, daily, monthly, ets).</p>"
+    ]
 }

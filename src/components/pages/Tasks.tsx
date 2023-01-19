@@ -7,6 +7,7 @@ import Pagination from '../layoutParts/Pagination';
 import Modal from '../layoutParts/Modal';
 import { DateFormateUtils, TimeToEventUtils } from '../../utils';
 import { useLanguage } from '../../languages';
+import LoadingError from '../layoutParts/LoadingError';
 
 type GetTaskResponseType = {
     id?: number;
@@ -41,7 +42,7 @@ export default function Tasks() {
         onCompleted: (data) => {
             scrollEventHandler();
 
-            if (!userHasTasksLocalStorage && data.tasks.data) {
+            if (userHasTasksLocalStorage !== 'true' && data.tasks.data) {
                 localStorage.setItem(
                     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks',
                     data.tasks.data.length ? 'true' : 'false'
@@ -99,9 +100,9 @@ export default function Tasks() {
             document.addEventListener('touchend', touchendEventHandler);
         };
     }, []);
-
+ 
     if (loading) return <Loading />;
-    if (error) return <p>Network error :(</p>;
+    if (error) return <LoadingError />;
 
     const onClickDetailHandler = (
         event: React.MouseEvent<HTMLElement>,
@@ -138,20 +139,19 @@ export default function Tasks() {
                 okButtonText={t('Complete')}
             />
             <h1>{t('Tasks')}</h1>
-            <div className="table-responsive tasksTableCont">
-                <table className="table table-responsive">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">{t('TaskName')}</th>
-                            <th scope="col">{t('Next run time')}</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data &&
-                            data.tasks &&
-                            data.tasks.data.map(
+            {data?.tasks?.data?.length ? (
+                <div className="table-responsive tasksTableCont">
+                    <table className="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">{t('TaskName')}</th>
+                                <th scope="col">{t('Next run time')}</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.tasks.data.map(
                                 (
                                     {
                                         id,
@@ -287,10 +287,13 @@ export default function Tasks() {
                                     </tr>
                                 )
                             )}
-                    </tbody>
-                </table>
-            </div>
-            {data && data.tasks && data.tasks.paginatorInfo ? (
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <div dangerouslySetInnerHTML={{ __html: t('TasksListEmpty') }} />
+            )}
+            {data?.tasks?.paginatorInfo ? (
                 <Pagination
                     lastPage={data.tasks.paginatorInfo.lastPage}
                     currentPage={currentPage}

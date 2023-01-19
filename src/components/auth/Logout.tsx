@@ -4,9 +4,11 @@ import { LOGOUT } from '../../graphql/queries';
 import { useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from '../../context/CurrentUserContext';
 import Loading from '../layoutParts/Loading';
+import { UserDeviceContext } from 'src/context/UserDeviceContext';
 
 export default function Logout() {
     const { setCurrentUser } = useContext(CurrentUserContext);
+    const { userDevice } = useContext(UserDeviceContext);
     const logoutLoading = useRef(false);
     const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ export default function Logout() {
         if (!logoutLoading.current) {
             logout({
                 variables: {
-                    deviceId: window.userDevice?.deviceId ?? null,
+                    deviceId: userDevice?.deviceId ?? null,
                 },
             });
             logoutLoading.current = true;

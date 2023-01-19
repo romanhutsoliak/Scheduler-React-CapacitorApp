@@ -25,7 +25,7 @@ export default function Header() {
                         width="32"
                         height="32"
                         fill="currentColor"
-                        className="bi bi-list"
+                        className="bi bi-list headerMenuToggle"
                         viewBox="0 0 16 16"
                         focusable="false"
                     >
