@@ -1,1 +1,1 @@
-# Scheduler client: React with Typescript
+# Scheduler mobile application: React with Typescript compiled by Ionic Capacitor
