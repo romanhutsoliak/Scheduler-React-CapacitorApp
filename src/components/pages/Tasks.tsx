@@ -100,7 +100,7 @@ export default function Tasks() {
             document.addEventListener('touchend', touchendEventHandler);
         };
     }, []);
- 
+
     if (loading) return <Loading />;
     if (error) return <LoadingError />;
 

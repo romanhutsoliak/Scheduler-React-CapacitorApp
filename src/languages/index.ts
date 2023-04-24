@@ -26,7 +26,7 @@ export function useLanguage() {
             // if value is stored as multiline html text as array in language json file. For example: homePagePart1 text
             if (Array.isArray(translations[text]))
                 return translations[text].join('\n');
-            
+
             return translations[text];
         }
 

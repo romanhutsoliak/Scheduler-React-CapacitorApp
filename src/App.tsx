@@ -45,7 +45,7 @@ export default function App() {
     const userTimezoneOffset = new Date().getTimezoneOffset();
     const isNativeApp = Capacitor.isPluginAvailable('PushNotifications');
     const authenticatedByUserDeviceFailed = useRef(false);
-    
+
     // the first
     useEffect(() => {
         if (isNativeApp) {
@@ -66,7 +66,7 @@ export default function App() {
                 }));
             };
             setUserDeviceInfo();
-        
+
             // On success, we should be able to receive notifications
             PushNotifications.addListener('registration', (token: Token) => {
                 setUserDevice(prevUserDevice => ({
@@ -75,7 +75,7 @@ export default function App() {
                 }));
             });
         }
-         
+
         let tokenLocalStorage = localStorage.getItem(
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
         );
@@ -109,7 +109,7 @@ export default function App() {
         if (!tokenLocalStorage && !isNativeApp) {
             setLoadingCurrentUser(false);
         }
-                
+
         // Reset token for app testing
         // localStorage.removeItem(
         //     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
@@ -132,7 +132,7 @@ export default function App() {
         }
 
         return () => {
-            
+
         };
     }, []);
 

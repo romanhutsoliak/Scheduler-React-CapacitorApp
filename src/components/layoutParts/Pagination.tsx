@@ -13,7 +13,7 @@ export default function Pagination({
 }: Props) {
     const [searchParams, setSearchParams] = useSearchParams();
     const t = useLanguage();
-    
+
     if (lastPage === 1) return null;
     const searchParamsPage = searchParams.get('page');
     if (searchParamsPage) {

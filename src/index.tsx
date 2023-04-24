@@ -123,7 +123,7 @@ if (isPushNotificationsAvailable) {
                 window.location.href = redirectTo;
         }
     );
-}   
+}
 declare global {
     interface Window {
         appStartTimestamp: number | undefined;

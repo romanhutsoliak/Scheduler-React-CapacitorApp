@@ -26,10 +26,10 @@ export default function Home() {
 
     return (
         <>
-            {mustRedirectToTasksList() === false && 
+            {mustRedirectToTasksList() === false &&
             (
             <>
-                <div dangerouslySetInnerHTML={{ __html: t('HomePagePart1') }} /> 
+                <div dangerouslySetInnerHTML={{ __html: t('HomePagePart1') }} />
 
                 {!userHasTasksLocalStorage ||
                 userHasTasksLocalStorage !== 'true' ? (
@@ -62,7 +62,7 @@ export default function Home() {
                     ''
                 )}
                 <br />
-                <div dangerouslySetInnerHTML={{ __html: t('HomePagePart2') }} /> 
+                <div dangerouslySetInnerHTML={{ __html: t('HomePagePart2') }} />
             </>
             )}
         </>
