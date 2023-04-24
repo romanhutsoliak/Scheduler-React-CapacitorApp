@@ -29,7 +29,9 @@ export default function Tasks() {
     const t = useLanguage();
     const [completeTask] = useMutation(COMPLETE_TASK, {
         onError: () => null,
-        onCompleted: (data) => {},
+        onCompleted: (data) => {
+            loadTasks();
+        },
     });
     const userHasTasksLocalStorage = localStorage.getItem(
         process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
@@ -40,7 +42,8 @@ export default function Tasks() {
             currentPage,
         },
         onCompleted: (data) => {
-            scrollEventHandler();
+            // show add button at once, don't wait for scroll
+            window.setInterval(() => scrollEventHandler(), 50);
 
             if (userHasTasksLocalStorage !== 'true' && data.tasks.data) {
                 localStorage.setItem(
@@ -59,8 +62,8 @@ export default function Tasks() {
         // for mobile devices only
         if (taskButtonC && window.innerWidth < 992) {
             if (
-                taskButtonC.offsetTop > window.innerHeight &&
-                window.scrollY + window.innerHeight < taskButtonC.offsetTop
+                taskButtonC.offsetTop > window.innerHeight
+                && window.scrollY + window.innerHeight < taskButtonC.offsetTop
             ) {
                 taskButtonC.classList.add('addTaskButtonCFixed');
             } else {
@@ -75,11 +78,11 @@ export default function Tasks() {
     };
     const touchendEventHandler = (e: TouchEvent) => {
         if (
-            touchY > 0 &&
-            e.changedTouches[0].clientY > 0 &&
-            window.scrollY === 0 &&
-            touchY < e.changedTouches[0].clientY &&
-            e.changedTouches[0].clientY - touchY > 150
+            touchY > 0
+            && e.changedTouches[0].clientY > 0
+            && window.scrollY === 0
+            && touchY < e.changedTouches[0].clientY
+            && e.changedTouches[0].clientY - touchY > 150
         ) {
             loadTasks();
         }
