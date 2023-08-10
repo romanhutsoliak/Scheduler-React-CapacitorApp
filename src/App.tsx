@@ -57,7 +57,7 @@ export default function App() {
                 const capacitorApp = await CapacitorApp.getInfo();
                 setUserDevice(prevUserDevice => ({
                     ...prevUserDevice,
-                    deviceId: deviceId?.uuid,
+                    deviceId: deviceId?.identifier,
                     platform: deviceInfo?.platform + ' ' + deviceInfo?.osVersion,
                     manufacturer: deviceInfo?.manufacturer,
                     model: deviceInfo?.name,
