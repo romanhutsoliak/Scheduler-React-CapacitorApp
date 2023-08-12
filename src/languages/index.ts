@@ -1,11 +1,11 @@
-import { useMutation } from '@apollo/client';
-import { useContext } from 'react';
-import { LanguageContext } from '../context/LanguageContext';
-import { CREATE_MISSED_LANGUAGE } from '../graphql/queries';
-import { UNSAFE_RouteContext } from 'react-router-dom';
+import {useMutation} from '@apollo/client';
+import {useContext} from 'react';
+import {LanguageContext} from '../context/LanguageContext';
+import {CREATE_MISSED_LANGUAGE} from '../graphql/queries';
+import {UNSAFE_RouteContext} from 'react-router-dom';
 
 export function useLanguage() {
-    const { language } = useContext(LanguageContext);
+    const {language} = useContext(LanguageContext);
     const lastRouteContext = useContext(UNSAFE_RouteContext);
     const [createMissedLanguage] = useMutation(CREATE_MISSED_LANGUAGE, {
         onError: () => null,
@@ -24,9 +24,9 @@ export function useLanguage() {
     return (text: string) => {
         if (translations[text]) {
             // if value is stored as multiline html text as array in language json file. For example: homePagePart1 text
-            if (Array.isArray(translations[text]))
+            if (Array.isArray(translations[text])) {
                 return translations[text].join('\n');
-
+            }
             return translations[text];
         }
 

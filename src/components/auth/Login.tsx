@@ -37,10 +37,11 @@ export default function Login() {
 
     // if user logged in for the first place redirect to main page
     useEffect(() => {
-        if (currentUser)
+        if (currentUser) {
             navigate('/', {
                 replace: true,
             });
+        }
     }, []);
 
     async function onSubmit(data: FormValuesType) {
@@ -59,8 +60,9 @@ export default function Login() {
             setCurrentUser(responseData.data.login.user);
 
             let redirectTo = '/';
-            if (locationState?.referer?.pathname)
+            if (locationState?.referer?.pathname) {
                 redirectTo = locationState.referer.pathname;
+            }
 
             navigate(redirectTo, {
                 replace: true,

@@ -14,12 +14,15 @@ export default function Pagination({
     const [searchParams, setSearchParams] = useSearchParams();
     const t = useLanguage();
 
-    if (lastPage === 1) return null;
+    if (lastPage === 1) {
+        return null;
+    }
     const searchParamsPage = searchParams.get('page');
     if (searchParamsPage) {
         const searchParamsPageInt = parseInt(searchParamsPage);
-        if (searchParamsPageInt && searchParamsPageInt !== currentPage)
+        if (searchParamsPageInt && searchParamsPageInt !== currentPage) {
             setCurrentPage(searchParamsPageInt);
+        }
     }
 
     const pageNumbers = [...Array.from(Array(lastPage + 1).keys())].slice(1);

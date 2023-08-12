@@ -8,7 +8,6 @@ export const QUERY_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            mustBeCompleted
             isActive
             hasEvent
             periodType
@@ -29,7 +28,6 @@ export const UPDATE_TASK = gql`
         $periodTypeWeekDays: [String]
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
-        $mustBeCompleted: Boolean
         $isActive: Boolean
     ) {
         updateTask(
@@ -41,7 +39,6 @@ export const UPDATE_TASK = gql`
             periodTypeWeekDays: $periodTypeWeekDays
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
-            mustBeCompleted: $mustBeCompleted
             isActive: $isActive
         ) {
             id
@@ -50,7 +47,6 @@ export const UPDATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            mustBeCompleted
             isActive
         }
     }
@@ -65,7 +61,6 @@ export const CREATE_TASK = gql`
         $periodTypeWeekDays: [String]
         $periodTypeMonthDays: [String]
         $periodTypeMonths: [String]
-        $mustBeCompleted: Boolean
         $isActive: Boolean
     ) {
         createTask(
@@ -76,7 +71,6 @@ export const CREATE_TASK = gql`
             periodTypeWeekDays: $periodTypeWeekDays
             periodTypeMonthDays: $periodTypeMonthDays
             periodTypeMonths: $periodTypeMonths
-            mustBeCompleted: $mustBeCompleted
             isActive: $isActive
         ) {
             id
@@ -85,7 +79,6 @@ export const CREATE_TASK = gql`
             startDateTime
             stopDateTime
             nextRunDateTime
-            mustBeCompleted
             isActive
         }
     }
@@ -112,7 +105,6 @@ export const QUERY_TASK_WITH_HISTORY = gql`
         task(id: $id) {
             name
             description
-            mustBeCompleted
             startDateTime
             stopDateTime
             nextRunDateTime

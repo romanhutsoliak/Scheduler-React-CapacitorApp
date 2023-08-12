@@ -104,8 +104,12 @@ export default function Tasks() {
         };
     }, []);
 
-    if (loading) return <Loading />;
-    if (error) return <LoadingError />;
+    if (loading) {
+        return <Loading />;
+    }
+    if (error) {
+        return <LoadingError />;
+    }
 
     const onClickDetailHandler = (
         event: React.MouseEvent<HTMLElement>,

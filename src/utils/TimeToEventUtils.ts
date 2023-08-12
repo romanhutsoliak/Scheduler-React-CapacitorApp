@@ -5,12 +5,17 @@ export default function TimeToEventUtils(
     let seconds = Math.floor((Date.parse(timeFromDB) - Date.now()) / 1000);
 
     let eventTineHasPassed = false;
-    if (seconds < 0) eventTineHasPassed = true;
+    if (seconds < 0) {
+        eventTineHasPassed = true;
+    }
 
     let inTime = '';
     let timeAgo = '';
-    if (!eventTineHasPassed) inTime = t('in_time') + ' ';
-    else timeAgo = ' ' + t('time_ago');
+    if (!eventTineHasPassed) {
+        inTime = t('in_time') + ' ';
+    } else {
+        timeAgo = ' ' + t('time_ago');
+    }
 
     seconds = Math.abs(seconds);
 
@@ -120,10 +125,12 @@ function declOfNum(
             number % 100 > 4 && number % 100 < 20
                 ? 2
                 : cases[number % 10 < 5 ? number % 10 : 5]
-        ];
+            ];
 
     if (verb) {
-        if (verb.indexOf(rootOfVerb) === 0) return rootOfVerb;
+        if (verb.indexOf(rootOfVerb) === 0) {
+            return rootOfVerb;
+        }
         return verb;
     }
     return '';

@@ -1,21 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { useNavigate, useParams } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useLazyQuery, useMutation} from '@apollo/client';
+import {useNavigate, useParams} from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
-import {
-    QUERY_TASK,
-    UPDATE_TASK,
-    CREATE_TASK,
-    DELETE_TASK,
-} from '../../graphql/queries';
-import { useForm } from 'react-hook-form';
-import { ApiGraphQLValidationError } from '../../types/ApiGraphQLErrorsErrors';
-import { periodTypeMonthsArray, periodTypeWeekDaysArray } from '../../utils';
-import BreadCrumbs, {
-    useMakePathArray,
-    updateBreadCrumbsPathArray,
-} from '../layoutParts/BreadCrumbs';
-import { useLanguage } from '../../languages';
+import {CREATE_TASK, DELETE_TASK, QUERY_TASK, UPDATE_TASK,} from '../../graphql/queries';
+import {useForm} from 'react-hook-form';
+import {ApiGraphQLValidationError} from '../../types/ApiGraphQLErrorsErrors';
+import {periodTypeMonthsArray, periodTypeWeekDaysArray} from '../../utils';
+import BreadCrumbs, {updateBreadCrumbsPathArray, useMakePathArray,} from '../layoutParts/BreadCrumbs';
+import {useLanguage} from '../../languages';
 import Modal from '../layoutParts/Modal';
 import LoadingError from '../layoutParts/LoadingError';
 import Error404 from '../layoutParts/Error404';
@@ -24,7 +16,6 @@ type TaskFormValuesType = {
     name: string;
     description: string;
     periodType: string;
-    mustBeCompleted: boolean;
     isActive: boolean;
     periodTypeTime: string;
     periodTypeWeekDays: number[] | null;
@@ -40,9 +31,9 @@ type TaskFormValuesType = {
 };
 
 function SaveButton({
-    buttonLoading,
-    showRemoveBtn,
-}: {
+                        buttonLoading,
+                        showRemoveBtn,
+                    }: {
     buttonLoading: boolean;
     showRemoveBtn: boolean;
 }) {
@@ -90,23 +81,22 @@ export default function TaskEdit() {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
         setError,
         getValues,
         setValue,
     } = useForm<TaskFormValuesType>();
-    const [periodTypeState, setPeriodTypeState] = useState(1);
+    const [periodTypeState, setPeriodTypeState] = useState('');
     const navigate = useNavigate();
-    const { taskId } = useParams();
+    const {taskId} = useParams();
     const t = useLanguage();
     const [loadTask, loadingTask] = useLazyQuery(QUERY_TASK, {
-        variables: { id: taskId },
+        variables: {id: taskId},
         onCompleted: (data) => {
             if (data.task) {
                 setValue('name', data.task.name);
                 setValue('description', data.task.description);
                 setValue('isActive', data.task.isActive);
-                setValue('mustBeCompleted', data.task.mustBeCompleted);
                 setValue('periodType', data.task.periodType);
                 setValue('periodTypeTime', data.task.periodTypeTime);
                 setValue('periodTypeWeekDays', data.task.periodTypeWeekDays);
@@ -128,9 +118,10 @@ export default function TaskEdit() {
                 );
                 if (
                     data.task.periodType &&
-                    parseInt(data.task.periodType) !== periodTypeState
-                )
-                    setPeriodTypeState(parseInt(data.task.periodType));
+                    data.task.periodType !== periodTypeState
+                ) {
+                    setPeriodTypeState(data.task.periodType);
+                }
             }
         }
     });
@@ -144,57 +135,64 @@ export default function TaskEdit() {
         onError: () => null,
     });
     useEffect(() => {
-        if (taskId) loadTask();
-        else {
+        if (taskId) {
+            loadTask();
+        } else {
             setValue('isActive', true);
-            setValue('mustBeCompleted', true);
         }
     }, []);
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
         1,
-        { name: loadingTask.data?.task?.name ?? t('Create') },
+        {name: loadingTask.data?.task?.name ?? t('Create')},
         useMakePathArray()
     );
 
-    if (loadingTask.loading) return <Loading />;
-    else if (loadingTask.error) return <LoadingError />;
-    else if (taskId && loadingTask.data?.task === null) return <Error404 />;
+    if (loadingTask.loading) {
+        return <Loading/>;
+    }
+    else if (loadingTask.error) {
+        return <LoadingError/>;
+    }
+    else if (taskId && loadingTask.data?.task === null) {
+        return <Error404/>;
+    }
 
     const buttonLoading = updatingTask.loading || creatingTask.loading;
 
     async function onSubmit(data: TaskFormValuesType) {
-        let variables: TaskFormValuesType & { id: String | undefined } = {
+        let variables: TaskFormValuesType & {
+            id: String | undefined
+        } = {
             id: taskId,
             name: data.name,
             description: data.description,
             periodType: data.periodType,
             periodTypeTime: data.periodTypeTime,
-            mustBeCompleted: data.mustBeCompleted,
             isActive: data.isActive,
             periodTypeWeekDays: null,
             periodTypeMonthDays: null,
             periodTypeMonths: null,
         };
-        if (data.periodType === '2') {
+        if (data.periodType === 'Weekly') {
             variables = {
                 ...variables,
                 periodTypeWeekDays: data.periodTypeWeekDays,
             };
         }
-        if (['3', '4'].includes(data.periodType)) {
+        if (['Monthly', 'Yearly'].includes(data.periodType)) {
             variables = {
                 ...variables,
                 periodTypeMonthDays: data.periodTypeMonthDaysCheckbox || null,
             };
         }
-        if (data.periodType === '4') {
+        if (data.periodType === 'Yearly') {
             variables = {
                 ...variables,
                 periodTypeMonths: data.periodTypeMonthsCheckbox || null,
             };
         }
         // radio buttons
-        if (data.periodType === '5') {
+        if (data.periodType === 'Once') {
             variables = {
                 ...variables,
                 periodTypeMonthDays: [data.periodTypeMonthDaysRadio as number],
@@ -246,7 +244,9 @@ export default function TaskEdit() {
         prevValue: string
     ): string | null {
         let periodTypeTimeRes = currentValue.replace(/[^\d:]+/, '');
-        if (periodTypeTimeRes !== currentValue) return periodTypeTimeRes;
+        if (periodTypeTimeRes !== currentValue) {
+            return periodTypeTimeRes;
+        }
 
         periodTypeTimeRes = periodTypeTimeRes.replace(
             /^(\d{2}):?(\d{0,2})$/,
@@ -256,8 +256,12 @@ export default function TaskEdit() {
         if (matchArray && matchArray[1] && matchArray[2]) {
             matchArray[1] = matchArray[1].slice(0, 2);
             matchArray[2] = matchArray[2].slice(0, 2);
-            if (parseInt(matchArray[1]) > 24) matchArray[1] = '24';
-            if (parseInt(matchArray[2]) > 59) matchArray[2] = '59';
+            if (parseInt(matchArray[1]) > 24) {
+                matchArray[1] = '24';
+            }
+            if (parseInt(matchArray[2]) > 59) {
+                matchArray[2] = '59';
+            }
             periodTypeTimeRes = matchArray[1] + ':' + matchArray[2];
         }
         if (
@@ -273,7 +277,7 @@ export default function TaskEdit() {
 
     return (
         <>
-            <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray} />
+            <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray}/>
             <form method="POST" onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
                     <div className="col-md-6">
@@ -348,32 +352,6 @@ export default function TaskEdit() {
                                 {t(errors?.isActive?.message as string)}
                             </p>
                         </div>
-                        <div className="mb-3">
-                            <input
-                                type="checkbox"
-                                className={
-                                    'form-check-input ' +
-                                    (errors.mustBeCompleted ? 'is-invalid' : '')
-                                }
-                                id="inputMustBeCompleted"
-                                {...register('mustBeCompleted')}
-                                onChange={(e) => {
-                                    setValue(
-                                        'mustBeCompleted',
-                                        e.target.checked ? true : false
-                                    );
-                                }}
-                            />{' '}
-                            <label
-                                htmlFor="inputMustBeCompleted"
-                                className="htmlForm-label"
-                            >
-                                {t('Must be completed')}
-                            </label>
-                            <p className="invalid-feedback">
-                                {t(errors?.mustBeCompleted?.message as string)}
-                            </p>
-                        </div>
                         <div className="text-start d-none d-md-block">
                             <SaveButton
                                 buttonLoading={buttonLoading}
@@ -399,18 +377,16 @@ export default function TaskEdit() {
                                 {...register('periodType', {
                                     required: t('Period type is required.'),
                                     onChange: (e) => {
-                                        setPeriodTypeState(
-                                            parseInt(e.target.value)
-                                        );
+                                        setPeriodTypeState(e.target.value);
                                     },
                                 })}
                             >
                                 <option disabled>{t('Select period')}</option>
-                                <option value="1">{t('Daily')}</option>
-                                <option value="2">{t('Weekly')}</option>
-                                <option value="3">{t('Monthly')}</option>
-                                <option value="4">{t('Yearly')}</option>
-                                <option value="5">{t('Once')}</option>
+                                <option value="Daily">{t('Daily')}</option>
+                                <option value="Weekly">{t('Weekly')}</option>
+                                <option value="Monthly">{t('Monthly')}</option>
+                                <option value="Yearly">{t('Yearly')}</option>
+                                <option value="Once">{t('Once')}</option>
                             </select>
                             <p className="invalid-feedback">
                                 {errors?.periodType &&
@@ -470,11 +446,11 @@ export default function TaskEdit() {
                                         )}
                                 </p>
                             </div>
-                            {periodTypeState === 2 ? (
+                            {periodTypeState === 'Weekly' ? (
                                 <div
                                     className={
                                         'periodTypeWeekDaysC' +
-                                        (periodTypeState !== 2 ? ' d-none' : '')
+                                        (periodTypeState !== 'Weekly' ? ' d-none' : '')
                                     }
                                 >
                                     <div className="mb-3">
@@ -531,7 +507,7 @@ export default function TaskEdit() {
                             ) : (
                                 ''
                             )}
-                            {[3, 4].includes(periodTypeState) ? (
+                            {['Monthly', 'Yearly'].includes(periodTypeState) ? (
                                 <div className="periodTypeMonthDaysC">
                                     <label className="htmlForm-label">{t('Day of month')}</label>
                                     <div className="mb-3">
@@ -591,7 +567,7 @@ export default function TaskEdit() {
                             ) : (
                                 ''
                             )}
-                            {periodTypeState === 4 ? (
+                            {periodTypeState === 'Yearly' ? (
                                 <div className="periodTypeDiv4">
                                     <div className="mb-3">
                                         {periodTypeMonthsArray.map(
@@ -643,7 +619,7 @@ export default function TaskEdit() {
                                 ''
                             )}
 
-                            {periodTypeState === 5 ? (
+                            {periodTypeState === 'Once' ? (
                                 <>
                                     <div className="periodTypeMonthDaysC">
                                         <label className="htmlForm-label">{t('Day of month')}</label>
@@ -688,7 +664,7 @@ export default function TaskEdit() {
                                                                 {monthDay.length ===
                                                                 1
                                                                     ? '0' +
-                                                                      monthDay
+                                                                    monthDay
                                                                     : monthDay}
                                                             </label>
                                                         </div>

@@ -1,9 +1,10 @@
 import console from 'console';
 // https://dev.to/javierbrea/how-to-preserve-localstorage-between-cypress-tests-19o1
 import 'cypress-localstorage-commands';
+import {CyHttpMessages} from "cypress/types/net-stubbing";
 
 // Alias query if operationName matches
-const setResAlias = (req, operationName) => {
+const setResAlias = (req: CyHttpMessages.IncomingHttpRequest, operationName: string) => {
     if (
         req.body.hasOwnProperty('operationName') &&
         req.body.operationName === operationName

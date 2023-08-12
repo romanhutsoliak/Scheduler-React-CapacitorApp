@@ -15,7 +15,9 @@ export default function Home() {
             Date.now() - window.appStartTimestamp < 2000 &&
             userHasTasksLocalStorage &&
             userHasTasksLocalStorage === 'true'
-        ) return true;
+        ) {
+            return true;
+        }
         return false;
     }
     useEffect(() => {

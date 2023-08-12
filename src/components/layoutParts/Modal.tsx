@@ -24,7 +24,9 @@ export default function Modal({
 
             // close
             const myModalClose = document.getElementById('myModalClose');
-            if (myModalClose) myModalClose.click();
+            if (myModalClose) {
+                myModalClose.click();
+            }
             setButtonLoading(false);
         }
     };

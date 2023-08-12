@@ -1,27 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import './assets/css/bootstrap.min.css';
 import './assets/css/index.css';
 import 'bootstrap/js/dist/dropdown.js';
 import 'bootstrap/js/dist/collapse.js';
 import 'bootstrap/js/dist/modal.js';
 import MainRouter from './MainRouter';
-import { CurrentUserContext, CurrentUserI } from './context/CurrentUserContext';
-import {
-    AVAILABLE_LANGUAGES,
-    LanguageContext,
-} from './context/LanguageContext';
-import {
-    CURRENT_USER,
-    CREATE_USER_DEVICE,
-    UPDATE_USER_TIMEZONE,
-    CREATE_USER_FROM_DEVICE,
-} from './graphql/queries';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { UserDeviceContext, UserDeviceType } from './context/UserDeviceContext';
-import { Capacitor } from '@capacitor/core';
-import { Device } from '@capacitor/device';
-import { App as  CapacitorApp} from '@capacitor/app';
-import { PushNotifications, Token } from '@capacitor/push-notifications';
+import {CurrentUserContext, CurrentUserI} from './context/CurrentUserContext';
+import {AVAILABLE_LANGUAGES, LanguageContext,} from './context/LanguageContext';
+import {CREATE_USER_DEVICE, CREATE_USER_FROM_DEVICE, CURRENT_USER, UPDATE_USER_TIMEZONE,} from './graphql/queries';
+import {useLazyQuery, useMutation} from '@apollo/client';
+import {UserDeviceContext, UserDeviceType} from './context/UserDeviceContext';
+import {Capacitor} from '@capacitor/core';
+import {Device} from '@capacitor/device';
+import {App as CapacitorApp} from '@capacitor/app';
+import {PushNotifications, Token} from '@capacitor/push-notifications';
 import LoadingError from './components/layoutParts/LoadingError';
 
 export default function App() {
@@ -88,7 +80,7 @@ export default function App() {
                         if (data.currentUser === null) {
                             localStorage.removeItem(
                                 process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
-                                    'token'
+                                'token'
                             );
                             tokenLocalStorage = null;
                         }
@@ -119,7 +111,9 @@ export default function App() {
         const languageLocalStorage = localStorage.getItem(
             process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'language'
         );
-        if (languageLocalStorage) setLanguage(languageLocalStorage);
+        if (languageLocalStorage) {
+            setLanguage(languageLocalStorage);
+        }
         else if (userDevice?.locale) {
             const locale = userDevice?.locale.replace(/-.+$/, '');
             if (AVAILABLE_LANGUAGES.includes(locale)) {
@@ -173,7 +167,7 @@ export default function App() {
                     if (data.createUserFromDevice.token) {
                         localStorage.setItem(
                             process.env.REACT_APP_LOCAL_STORAGE_PREFIX +
-                                'token',
+                            'token',
                             data.createUserFromDevice.token
                         );
                         setCurrentUser(data.createUserFromDevice.user);
@@ -194,14 +188,16 @@ export default function App() {
         }
     }, [userDevice?.deviceId]);
 
-    if (noConnection) return <LoadingError />;
+    if (noConnection) {
+        return <LoadingError/>;
+    }
 
     return (
         <>
-            <UserDeviceContext.Provider value={{ userDevice, setUserDevice }}>
-                <CurrentUserContext.Provider value={{ currentUser, setCurrentUser }}>
-                    <LanguageContext.Provider value={{ language, setLanguage }}>
-                        <MainRouter loadingCurrentUser={loadingCurrentUser} />
+            <UserDeviceContext.Provider value={{userDevice, setUserDevice}}>
+                <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
+                    <LanguageContext.Provider value={{language, setLanguage}}>
+                        <MainRouter loadingCurrentUser={loadingCurrentUser}/>
                     </LanguageContext.Provider>
                 </CurrentUserContext.Provider>
             </UserDeviceContext.Provider>

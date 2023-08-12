@@ -43,9 +43,15 @@ export default function TaskView() {
         useMakePathArray()
     );
 
-    if (task.loading) return <Loading />;
-    else if (task.error) return <LoadingError />;
-    else if (taskId && task.data?.task === null) return <Error404 />;
+    if (task.loading) {
+        return <Loading />;
+    }
+    else if (task.error) {
+        return <LoadingError />;
+    }
+    else if (taskId && task.data?.task === null) {
+        return <Error404 />;
+    }
 
     let periodText = '';
     if (task?.data?.task?.periodType === '1') {
@@ -192,12 +198,6 @@ export default function TaskView() {
                             <div className="mb-3">
                                 {t('Is active')}:{' '}
                                 {task?.data?.task?.isActive ? t('Yes') : t('No')}
-                            </div>
-                            <div className="mb-3">
-                                {t('Must be completed')}:{' '}
-                                {task?.data?.task?.mustBeCompleted
-                                    ? t('Yes')
-                                    : t('No')}
                             </div>
                         </div>
                     </div>

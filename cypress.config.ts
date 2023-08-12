@@ -7,6 +7,7 @@ export default defineConfig({
             require('cypress-localstorage-commands/plugin')(on, config);
             return config;
         },
+        testIsolation: false,
     },
     viewportWidth: 360,
     viewportHeight: 660,
