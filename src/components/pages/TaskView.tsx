@@ -31,7 +31,7 @@ export default function TaskView() {
 
     const [completeTask] = useMutation(COMPLETE_TASK, {
         onError: () => null,
-        onCompleted: (data) => {},
+        onCompleted: () => {},
         refetchQueries: ['GetTaskWithHistory'],
     });
     const task = useQuery(QUERY_TASK_WITH_HISTORY, {
@@ -54,21 +54,21 @@ export default function TaskView() {
     }
 
     let periodText = '';
-    if (task?.data?.task?.periodType === '1') {
+    if (task?.data?.task?.periodType === 'Daily') {
         periodText = t('Daily');
-    } else if (task?.data?.task?.periodType === '2') {
+    } else if (task?.data?.task?.periodType === 'Weekly') {
         const periodTypeWeekDaysNames = task?.data?.task?.periodTypeWeekDays?.map(
             (day: string) => {
                 return t(periodTypeWeekDaysArray[parseInt(day) - 1]);
             }
         );
         periodText = t('Weekly on ') + periodTypeWeekDaysNames.join(', ');
-    } else if (task?.data?.task?.periodType === '3') {
+    } else if (task?.data?.task?.periodType === 'Monthly') {
         periodText =
             t('Monthly each ') +
             task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') +
             t('th');
-    } else if (task?.data?.task?.periodType === '4') {
+    } else if (task?.data?.task?.periodType === 'Yearly') {
         const periodTypeMonthsNames = task?.data?.task?.periodTypeMonths?.map(
             (month: string) => {
                 return t(periodTypeMonthsArray[parseInt(month) - 1]);
@@ -79,7 +79,7 @@ export default function TaskView() {
             task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') +
             t('th of ') +
             periodTypeMonthsNames.join(', ');
-    } else if (task?.data?.task?.periodType === '5') {
+    } else if (task?.data?.task?.periodType === 'Once') {
         periodText = t('TaskOnce') + ' ';
     }
     return (

@@ -216,6 +216,16 @@ h1 {
 	margin-left: 20px;
 	margin-right: 20px;
 }
+.tasts-h1-cont button {
+    display: block;
+    padding: .5em;
+    line-height: 1;
+    color: #666;
+    background-color: transparent;
+    border: 0;
+    border-radius: .25rem;
+    cursor: pointer;
+}
 
 @media (max-width: 991px) {
     .tasksTableCont .taskViewListDiv {

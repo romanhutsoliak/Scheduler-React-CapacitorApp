@@ -1,12 +1,12 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useLazyQuery, useMutation} from '@apollo/client';
 import {useNavigate, useParams} from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
-import {CREATE_TASK, DELETE_TASK, QUERY_TASK, UPDATE_TASK,} from '../../graphql/queries';
+import {CREATE_TASK, DELETE_TASK, QUERY_TASK, TASK_CATEGORIES_ALL, UPDATE_TASK} from '../../graphql/queries';
 import {useForm} from 'react-hook-form';
 import {ApiGraphQLValidationError} from '../../types/ApiGraphQLErrorsErrors';
 import {periodTypeMonthsArray, periodTypeWeekDaysArray} from '../../utils';
-import BreadCrumbs, {updateBreadCrumbsPathArray, useMakePathArray,} from '../layoutParts/BreadCrumbs';
+import BreadCrumbs, {updateBreadCrumbsPathArray, useMakePathArray} from '../layoutParts/BreadCrumbs';
 import {useLanguage} from '../../languages';
 import Modal from '../layoutParts/Modal';
 import LoadingError from '../layoutParts/LoadingError';
@@ -16,6 +16,7 @@ type TaskFormValuesType = {
     name: string;
     description: string;
     periodType: string;
+    categoryName: string;
     isActive: boolean;
     periodTypeTime: string;
     periodTypeWeekDays: number[] | null;
@@ -43,7 +44,7 @@ function SaveButton({
             <button
                 type="submit"
                 className="btn btn-primary mb-3"
-                disabled={buttonLoading ? true : false}
+                disabled={buttonLoading}
             >
                 {buttonLoading ? (
                     <>
@@ -90,6 +91,7 @@ export default function TaskEdit() {
     const navigate = useNavigate();
     const {taskId} = useParams();
     const t = useLanguage();
+    const categoryNameOptions = useRef([]);
     const [loadTask, loadingTask] = useLazyQuery(QUERY_TASK, {
         variables: {id: taskId},
         onCompleted: (data) => {
@@ -100,6 +102,7 @@ export default function TaskEdit() {
                 setValue('periodType', data.task.periodType);
                 setValue('periodTypeTime', data.task.periodTypeTime);
                 setValue('periodTypeWeekDays', data.task.periodTypeWeekDays);
+                setValue('categoryName', data.task.category.name);
                 setValue(
                     'periodTypeMonthDaysRadio',
                     data.task.periodTypeMonthDays && data.task.periodTypeMonthDays[0] ? data.task.periodTypeMonthDays[0] : null
@@ -123,6 +126,11 @@ export default function TaskEdit() {
                     setPeriodTypeState(data.task.periodType);
                 }
             }
+        }
+    });
+    const [loadCategoryNameOptions] = useLazyQuery(TASK_CATEGORIES_ALL, {
+        onCompleted: (data) => {
+            categoryNameOptions.current = data.taskCategoriesAll;
         }
     });
     const [updateTask, updatingTask] = useMutation(UPDATE_TASK, {
@@ -149,11 +157,9 @@ export default function TaskEdit() {
 
     if (loadingTask.loading) {
         return <Loading/>;
-    }
-    else if (loadingTask.error) {
+    } else if (loadingTask.error) {
         return <LoadingError/>;
-    }
-    else if (taskId && loadingTask.data?.task === null) {
+    } else if (taskId && loadingTask.data?.task === null) {
         return <Error404/>;
     }
 
@@ -169,6 +175,7 @@ export default function TaskEdit() {
             periodType: data.periodType,
             periodTypeTime: data.periodTypeTime,
             isActive: data.isActive,
+            categoryName: data.categoryName,
             periodTypeWeekDays: null,
             periodTypeMonthDays: null,
             periodTypeMonths: null,
@@ -338,7 +345,7 @@ export default function TaskEdit() {
                                 onChange={(e) => {
                                     setValue(
                                         'isActive',
-                                        e.target.checked ? true : false
+                                        e.target.checked
                                     );
                                 }}
                             />{' '}
@@ -352,10 +359,45 @@ export default function TaskEdit() {
                                 {t(errors?.isActive?.message as string)}
                             </p>
                         </div>
+                        <div className="mb-3">
+                            <label
+                                htmlFor="inputCategoryName"
+                                className="htmlForm-label"
+                            >
+                                {t('Category name (optional)')}
+                            </label>
+                            <input
+                                type="text"
+                                className={
+                                    'form-control ' +
+                                    (errors.categoryName ? 'is-invalid' : '')
+                                }
+                                id="inputCategoryName"
+                                list="inputCategoryNameOptions"
+                                placeholder={t('No category')}
+                                autoComplete="off"
+                                {...register('categoryName')}
+                                onChange={(e) => {
+                                    const prevValue = getValues('categoryName');
+                                    setValue(
+                                        'categoryName',
+                                        e.target.value
+                                    );
+                                    if (e.target.value.length > 2 && e.target.value !== prevValue) {
+                                        loadCategoryNameOptions({variables: {name: '%' + e.target.value + '%'}});
+                                    }
+                                }}
+                            />
+                            <datalist id="inputCategoryNameOptions">
+                                {categoryNameOptions.current.map((option: any) => {
+                                    return (<option key={option?.slug} value={option?.name}/>);
+                                })}
+                            </datalist>
+                        </div>
                         <div className="text-start d-none d-md-block">
                             <SaveButton
                                 buttonLoading={buttonLoading}
-                                showRemoveBtn={taskId ? true : false}
+                                showRemoveBtn={!!taskId}
                             />
                         </div>
                     </div>
@@ -735,7 +777,7 @@ export default function TaskEdit() {
                     <div className="text-start d-md-none">
                         <SaveButton
                             buttonLoading={buttonLoading}
-                            showRemoveBtn={taskId ? true : false}
+                            showRemoveBtn={!!taskId}
                         />
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client';
 
 export const QUERY_TASK = gql`
     query GetTask($id: ID!) {
@@ -15,6 +15,29 @@ export const QUERY_TASK = gql`
             periodTypeWeekDays
             periodTypeMonthDays
             periodTypeMonths
+            category {
+                name
+                slug
+                label
+            }
+        }
+    }
+`;
+
+export const TASK_CATEGORIES_ALL = gql`
+    query GetCategoryAll($name: String) {
+        taskCategoriesAll(name: $name) {
+            name
+            slug
+        }
+    }
+`;
+
+export const TASK_CATEGORIES_WITH_TASKS = gql`
+    query GetTaskCategoryWithTasks {
+        taskCategoriesWithTasks(orderBy: [{ column: "name", order: ASC }]) {
+            name
+            slug
         }
     }
 `;
@@ -23,6 +46,7 @@ export const UPDATE_TASK = gql`
         $id: ID!
         $name: String!
         $description: String
+        $categoryName: String
         $periodType: String
         $periodTypeTime: String
         $periodTypeWeekDays: [String]
@@ -34,6 +58,7 @@ export const UPDATE_TASK = gql`
             id: $id
             name: $name
             description: $description
+            categoryName: $categoryName
             periodType: $periodType
             periodTypeTime: $periodTypeTime
             periodTypeWeekDays: $periodTypeWeekDays
@@ -56,6 +81,7 @@ export const CREATE_TASK = gql`
     mutation CreateTask(
         $name: String!
         $description: String
+        $categoryName: String
         $periodType: String
         $periodTypeTime: String
         $periodTypeWeekDays: [String]
@@ -66,6 +92,7 @@ export const CREATE_TASK = gql`
         createTask(
             name: $name
             description: $description
+            categoryName: $categoryName
             periodType: $periodType
             periodTypeTime: $periodTypeTime
             periodTypeWeekDays: $periodTypeWeekDays
@@ -124,8 +151,10 @@ export const QUERY_TASK_WITH_HISTORY = gql`
 `;
 
 export const GET_TASKS = gql`
-    query GetTasks($recordsPerPage: Int, $currentPage: Int) {
+    query GetTasks($recordsPerPage: Int, $currentPage: Int, $search: String, $filter: TaskFiltersList) {
         tasks(
+            search: $search,
+            filter: $filter,
             first: $recordsPerPage
             page: $currentPage
             orderBy: [

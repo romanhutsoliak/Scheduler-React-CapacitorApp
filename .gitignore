@@ -22,7 +22,7 @@ debug.log
 .env.test.local
 .env.production.local
 
-#settings
+# IDE settings
 /.vscode
 /.idea
 /nbproject
