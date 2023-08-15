@@ -2,4 +2,6 @@
 
 ## Deployment
 npm install
+
+## Run locally
 npm run
