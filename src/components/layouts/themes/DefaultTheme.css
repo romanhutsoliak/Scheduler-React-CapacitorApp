@@ -65,6 +65,7 @@ nav.navbar.navbar-light {
 }
 .htmlForm-label {
     margin-bottom: 5px;
+    color: #777;
 }
 .taskViewHistoryDiv, .taskViewDetailDiv {
     padding: 8px 12px;
@@ -225,6 +226,19 @@ h1 {
     border: 0;
     border-radius: .25rem;
     cursor: pointer;
+}
+
+.form-control:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #0eadd24f;
+    outline: 0;
+    box-shadow: 0px 0px 4px .25rem #0eadd21a;
+}
+.form-select:focus {
+    border-color: #0eadd24f;
+    outline: 0;
+    box-shadow: 0px 0px 4px .25rem #0eadd21a;
 }
 
 @media (max-width: 991px) {

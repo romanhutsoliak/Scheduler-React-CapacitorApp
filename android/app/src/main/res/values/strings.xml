@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Tasks TODO</string>
-    <string name="title_activity_main">Tasks TODO</string>
+    <string name="app_name">Monthly tasks</string>
+    <string name="title_activity_main">Monthly tasks</string>
     <string name="package_name">com.hutsoliak.scheduler_app</string>
     <string name="custom_url_scheme">com.hutsoliak.scheduler_app</string>
 </resources>
