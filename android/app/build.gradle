@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-
-    namespace 'com.hutsoliak.scheduler_app'
+    namespace "com.hutsoliak.scheduler_app"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.hutsoliak.scheduler_app"
