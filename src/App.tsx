@@ -15,6 +15,7 @@ import {Device} from '@capacitor/device';
 import {App as CapacitorApp} from '@capacitor/app';
 import {PushNotifications, Token} from '@capacitor/push-notifications';
 import LoadingError from './components/layoutParts/LoadingError';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 export default function App() {
     const [currentUser, setCurrentUser] = useState<CurrentUserI | null>(null);
@@ -23,16 +24,16 @@ export default function App() {
     const [noConnection, setNoConnection] = useState(false);
     const [loadingCurrentUser, setLoadingCurrentUser] = useState<boolean>(true);
     const [loadCurrentUser] = useLazyQuery(CURRENT_USER, {
-        onError: (err) => setNoConnection(true),
+        onError: () => setNoConnection(true),
     });
     const [createUserDevice] = useMutation(CREATE_USER_DEVICE, {
-        onError: (err) => setNoConnection(true),
+        onError: () => setNoConnection(true),
     });
     const [createUserFromDevice] = useMutation(CREATE_USER_FROM_DEVICE, {
-        onError: (err) => setNoConnection(true),
+        onError: () => setNoConnection(true),
     });
     const [updateUserTimezone] = useMutation(UPDATE_USER_TIMEZONE, {
-        onError: (err) => setNoConnection(true),
+        onError: () => setNoConnection(true),
     });
     const userTimezoneOffset = new Date().getTimezoneOffset();
     const isNativeApp = Capacitor.isPluginAvailable('PushNotifications');
@@ -41,6 +42,11 @@ export default function App() {
     // the first
     useEffect(() => {
         if (isNativeApp) {
+            const splashScreenHide = async () => {
+                await SplashScreen.hide();
+            };
+            splashScreenHide();
+
             // User device
             const setUserDeviceInfo = async () => {
                 const deviceInfo = await Device.getInfo();
@@ -85,7 +91,7 @@ export default function App() {
                             tokenLocalStorage = null;
                         }
                     },
-                    onError: (error) => {
+                    onError: () => {
                         setNoConnection(true)
                         setLoadingCurrentUser(false);
                     },
@@ -174,7 +180,7 @@ export default function App() {
                     }
                     setLoadingCurrentUser(false);
                 },
-                onError: (error) => {
+                onError: () => {
                     setNoConnection(true);
                     setLoadingCurrentUser(false);
                 },

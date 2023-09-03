@@ -302,8 +302,7 @@ export default function Tasks() {
                                             <td
                                                 className={
                                                     'tasksTableNextDate ' +
-                                                    (Date.parse(nextRunDateTime) <
-                                                    Date.now()
+                                                    (isActive && Date.parse(nextRunDateTime) < Date.now()
                                                         ? 'tasksTableNextDate_passed'
                                                         : '')
                                                 }

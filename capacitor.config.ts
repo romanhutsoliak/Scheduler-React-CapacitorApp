@@ -6,9 +6,11 @@ const config: CapacitorConfig = {
     webDir: 'build',
     plugins: {
         SplashScreen: {
-            launchAutoHide: true,
+            launchAutoHide: false,
             androidScaleType: "CENTER_CROP",
             showSpinner: false,
+            splashFullScreen: true,
+            splashImmersive: true,
         }
     }
 };

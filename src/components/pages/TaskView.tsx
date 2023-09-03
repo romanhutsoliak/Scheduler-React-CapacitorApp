@@ -44,35 +44,45 @@ export default function TaskView() {
         return <Error404/>;
     }
 
-    let periodText = '';
-    if (task?.data?.task?.periodType === 'Daily') {
-        periodText = t('Daily');
-    } else if (task?.data?.task?.periodType === 'Weekly') {
-        const periodTypeWeekDaysNames = task?.data?.task?.periodTypeWeekDays?.map(
-            (day: string) => {
-                return t(periodTypeWeekDaysArray[parseInt(day) - 1]);
-            }
-        );
-        periodText = t('Weekly on ') + periodTypeWeekDaysNames.join(', ');
-    } else if (task?.data?.task?.periodType === 'Monthly') {
-        periodText =
-            t('Monthly each ') +
-            task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') +
-            t('th');
-    } else if (task?.data?.task?.periodType === 'Yearly') {
-        const periodTypeMonthsNames = task?.data?.task?.periodTypeMonths?.map(
-            (month: string) => {
-                return t(periodTypeMonthsArray[parseInt(month) - 1]);
-            }
-        );
-        periodText =
-            t('Yearly each ') +
-            task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') +
-            t('th of ') +
-            periodTypeMonthsNames.join(', ');
-    } else if (task?.data?.task?.periodType === 'Once') {
-        periodText = t('TaskOnce') + ' ';
+    function getPeriodText() {
+        let periodText = '';
+        if (task?.data?.task?.periodType === 'Daily') {
+            periodText = t('Daily at {time}', {
+                time: task?.data?.task?.periodTypeTime
+            });
+        } else if (task?.data?.task?.periodType === 'Weekly') {
+            const periodTypeWeekDaysNames = task?.data?.task?.periodTypeWeekDays?.map(
+                (day: string) => {
+                    return t(periodTypeWeekDaysArray[parseInt(day) - 1]);
+                }
+            );
+            periodText = t('Weekly on {weekDays} at {time}', {
+                weekDays: periodTypeWeekDaysNames.join(', '),
+                time: task?.data?.task?.periodTypeTime
+            });
+        } else if (task?.data?.task?.periodType === 'Monthly') {
+            periodText = t('Every month on {days} at {time}', {
+                days: task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') + t('th'),
+                time: task?.data?.task?.periodTypeTime
+            });
+        } else if (task?.data?.task?.periodType === 'Yearly' || task?.data?.task?.periodType === 'Once') {
+            const periodTypeMonthsNames = task?.data?.task?.periodTypeMonths?.map(
+                (month: string) => {
+                    return t(periodTypeMonthsArray[parseInt(month) - 1]);
+                }
+            );
+            const periodTextYearText = task?.data?.task?.periodType === 'Yearly'
+                ? 'Yearly each {days} of {months} at {time}'
+                : 'Once on {days} of {months} at {time}';
+            periodText = t(periodTextYearText, {
+                days: task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') + t('th'),
+                months: periodTypeMonthsNames.join(', '),
+                time: task?.data?.task?.periodTypeTime
+            });
+        }
+        return periodText;
     }
+
     return (
         <>
             <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray}/>
@@ -192,8 +202,7 @@ export default function TaskView() {
                                 </span>
                             </div>
                             <div className="mb-3">
-                                {t('Period')}: {periodText} {t('at')}{' '}
-                                {task?.data?.task?.periodTypeTime}
+                                {t('Period')}: {getPeriodText()}
                             </div>
                             <div className="mb-3">
                                 {t('Is active')}:{' '}

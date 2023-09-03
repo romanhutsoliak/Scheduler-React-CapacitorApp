@@ -16,7 +16,7 @@ a, .btn-link {
 	background-color: #0eadd2;
 	border-color: #0eadd2;
 }
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover, .btn-primary:focus, .btn-primary.disabled, .btn-primary:disabled {
 	color: #fff;
 	background-color: #00b5df;
 	border-color: #00b5df;
@@ -202,7 +202,7 @@ h1 {
     opacity: 0.3;
 }
 .tasksIsNotActive {
-    opacity: 0.5;
+    opacity: 0.3;
 }
 .modal-header {
     border-bottom: none;
@@ -233,12 +233,12 @@ h1 {
     background-color: #fff;
     border-color: #0eadd24f;
     outline: 0;
-    box-shadow: 0px 0px 4px .25rem #0eadd21a;
+    box-shadow: 0 0 4px .25rem #0eadd21a;
 }
 .form-select:focus {
     border-color: #0eadd24f;
     outline: 0;
-    box-shadow: 0px 0px 4px .25rem #0eadd21a;
+    box-shadow: 0 0 4px .25rem #0eadd21a;
 }
 
 @media (max-width: 991px) {

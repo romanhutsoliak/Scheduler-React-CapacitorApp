@@ -21,31 +21,41 @@ export function useLanguage() {
         }
     });
 
-    return (text: string) => {
+    return (text: string, substitutes: object = {}) => {
+        let translated = '';
         if (translations[text]) {
             // if value is stored as multiline html text as array in language json file. For example: homePagePart1 text
             if (Array.isArray(translations[text])) {
-                return translations[text].join('\n');
+                translated = translations[text].join('\n');
+            } else {
+                translated = translations[text];
             }
-            return translations[text];
+        } else {
+            translated = text;
+
+            // don't send rus/ukr words, integer values
+            if (
+                language !== 'en' &&
+                text &&
+                text.match(/\w+/) &&
+                text !== parseInt(text).toString()
+            ) {
+                createMissedLanguage({
+                    variables: {
+                        language: language,
+                        text: text,
+                        url: routeUrlPattern,
+                    },
+                });
+            }
         }
 
-        // don't send rus/ukr words, integer values
-        if (
-            language !== 'en' &&
-            text &&
-            text.match(/\w+/) &&
-            text !== parseInt(text).toString()
-        ) {
-            createMissedLanguage({
-                variables: {
-                    language: language,
-                    text: text,
-                    url: routeUrlPattern,
-                },
-            });
+        if (substitutes) {
+            for (const [key, value] of Object.entries(substitutes)) {
+                translated = translated.replace('{' + key + '}', value);
+            }
         }
 
-        return text;
+        return translated;
     };
 }
