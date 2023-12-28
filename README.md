@@ -5,3 +5,6 @@ npm install
 
 ## Run locally
 npm run
+
+## compile app Android
+npm run build:a

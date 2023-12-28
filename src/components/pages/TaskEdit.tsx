@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {useLazyQuery, useMutation} from '@apollo/client';
 import {useNavigate, useParams} from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
@@ -11,6 +11,9 @@ import {useLanguage} from '../../languages';
 import Modal from '../layoutParts/Modal';
 import LoadingError from '../layoutParts/LoadingError';
 import Error404 from '../layoutParts/Error404';
+// @ts-ignore
+import {Tooltip} from 'bootstrap/dist/js/bootstrap.esm.js';
+import {DateTime} from "luxon";
 
 type TaskFormValuesType = {
     name: string;
@@ -32,9 +35,9 @@ type TaskFormValuesType = {
 };
 
 function SaveButton({
-                        buttonLoading,
-                        showRemoveBtn,
-                    }: {
+    buttonLoading,
+    showRemoveBtn,
+}: {
     buttonLoading: boolean;
     showRemoveBtn: boolean;
 }) {
@@ -92,6 +95,10 @@ export default function TaskEdit() {
     const {taskId} = useParams();
     const t = useLanguage();
     const categoryNameOptions = useRef([]);
+    const tooltipObjectsList = useRef<any[]>([]);
+    const [periodTypeTimeHours, setPeriodTypeTimeHours] = useState('');
+    const [periodTypeTimeMinutes, setPeriodTypeTimeMinutes] = useState('');
+    const [periodTypeTimeAmPm, setPeriodTypeTimeAmPm] = useState('');
     const [loadTask, loadingTask] = useLazyQuery(QUERY_TASK, {
         variables: {id: taskId},
         onCompleted: (data) => {
@@ -125,6 +132,13 @@ export default function TaskEdit() {
                 ) {
                     setPeriodTypeState(data.task.periodType);
                 }
+
+                const periodTypeTimeObject = DateTime.fromFormat(data.task.periodTypeTime, 'HH:mm');
+                parseAndSetPeriodTypeTime(periodTypeTimeObject);
+
+                setTextAreaAutoHeight(document.getElementById('inputDescription'));
+
+                createTooltips();
             }
         }
     });
@@ -147,13 +161,102 @@ export default function TaskEdit() {
             loadTask();
         } else {
             setValue('isActive', true);
+            createTooltips();
+        }
+
+        return () => {
+            tooltipObjectsList.current.map(t => t.dispose())
         }
     }, []);
+
+    // combine separated time fields to one time value
+    useEffect(() => {
+        const periodTypeTimeString = periodTypeTimeHours
+            + ':'
+            + periodTypeTimeMinutes
+            + (periodTypeTimeAmPm ? ' ' + periodTypeTimeAmPm : '');
+        const periodTypeTimeFormat = periodTypeTimeAmPm ? 'h:mm a' : 'H:mm';
+        const periodTypeTime24 = DateTime.fromFormat(periodTypeTimeString, periodTypeTimeFormat)
+            .toFormat('HH:mm');
+
+        if (periodTypeTime24) {
+            setValue(
+                'periodTypeTime',
+                periodTypeTime24
+            );
+        }
+    }, [periodTypeTimeHours, periodTypeTimeMinutes, periodTypeTimeAmPm]);
+
     const breadCrumbsPathArray = updateBreadCrumbsPathArray(
         1,
         {name: loadingTask.data?.task?.name ?? t('Create')},
         useMakePathArray()
     );
+
+    const createTooltips = useCallback(() => {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        // @ts-ignore
+        tooltipObjectsList.current = [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
+    }, []);
+
+    const setTextAreaAutoHeight = useCallback((target: any) => {
+        // @ts-ignore
+        target.style.height = "";
+        // @ts-ignore
+        target.style.height = (target.scrollHeight + 3) + "px";
+    }, []);
+
+    const parseAndSetPeriodTypeTime = useCallback((periodTypeTimeObject: DateTime) => {
+        const timeSimple = periodTypeTimeObject.toLocaleString(DateTime.TIME_SIMPLE);
+        const timeSimpleArray = timeSimple.match(/^(\d+)\:(\d+) (am|pm)$/i);
+        if (timeSimpleArray) {
+            setPeriodTypeTimeHours(timeSimpleArray[1]);
+            setPeriodTypeTimeMinutes(timeSimpleArray[2]);
+            setPeriodTypeTimeAmPm(timeSimpleArray[3].toUpperCase());
+        }
+    }, []);
+
+    const validatePeriodTypeTimeOnChange = useCallback((timeString: string, max: number = 59, min: number = 0, prependZero: boolean = true) => {
+        // 5 -> 05
+        if (prependZero && timeString.length == 1) {
+            return '0' + timeString;
+        }
+
+        // 05 -> 5
+        if (!prependZero && timeString.substring(0, 1) === '0' && timeString.length > 1) {
+            return timeString.substring(1);
+        }
+
+        // when you have 02, after you type 8 -> 28
+        if (
+            timeString.length == (max.toString().length + 1) && timeString.substring(0, 1) === '0'
+            || timeString.length > max.toString().length && parseInt(timeString) > max
+        ) {
+            let substringPlus1 = timeString.substring(1, max.toString().length + 1);
+            // when you have 08, after you type 8 -> 08, because max is 59
+            if (parseInt(substringPlus1) > max) {
+                return max.toString();
+            }
+            // when you have 02, after you type 8 -> 28
+            return substringPlus1;
+        }
+
+        // 123 -> 12 - only 2 digit allowed
+        if (timeString.length > max.toString().length) {
+            return timeString.substring(0, max.toString().length);
+        }
+
+        // fill empty string with zero
+        if (timeString.length == 0) {
+            if (prependZero) {
+                return '00';
+            } else {
+                return '0';
+            }
+        }
+
+        return timeString;
+    }, []);
 
     if (loadingTask.loading) {
         return <Loading/>;
@@ -245,43 +348,6 @@ export default function TaskEdit() {
     let periodTypeMonthDaysArray = [];
     for (let i = 1; i <= 31; i++) periodTypeMonthDaysArray.push(i.toString());
 
-    // format 24:00 input
-    function periodTypeTimeInputFormat(
-        currentValue: string,
-        prevValue: string
-    ): string | null {
-        let periodTypeTimeRes = currentValue.replace(/[^\d:]+/, '');
-        if (periodTypeTimeRes !== currentValue) {
-            return periodTypeTimeRes;
-        }
-
-        periodTypeTimeRes = periodTypeTimeRes.replace(
-            /^(\d{2}):?(\d{0,2})$/,
-            '$1:$2'
-        );
-        const matchArray = /^(\d+):(\d+)$/.exec(periodTypeTimeRes);
-        if (matchArray && matchArray[1] && matchArray[2]) {
-            matchArray[1] = matchArray[1].slice(0, 2);
-            matchArray[2] = matchArray[2].slice(0, 2);
-            if (parseInt(matchArray[1]) > 24) {
-                matchArray[1] = '24';
-            }
-            if (parseInt(matchArray[2]) > 59) {
-                matchArray[2] = '59';
-            }
-            periodTypeTimeRes = matchArray[1] + ':' + matchArray[2];
-        }
-        if (
-            !(
-                prevValue === periodTypeTimeRes &&
-                periodTypeTimeRes.slice(-1) === ':'
-            )
-        ) {
-            return periodTypeTimeRes;
-        }
-        return null;
-    }
-
     return (
         <>
             <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray}/>
@@ -293,6 +359,9 @@ export default function TaskEdit() {
                             <label
                                 htmlFor="inputName"
                                 className="htmlForm-label"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title="Give a name for you task"
                             >
                                 {t('Name')}
                             </label>
@@ -327,6 +396,7 @@ export default function TaskEdit() {
                                 id="inputDescription"
                                 placeholder={t('Shopping list')}
                                 rows={3}
+                                onInput={(event) => setTextAreaAutoHeight(event.target)}
                                 {...register('description')}
                             ></textarea>
                             <p className="invalid-feedback">
@@ -364,7 +434,7 @@ export default function TaskEdit() {
                                 htmlFor="inputCategoryName"
                                 className="htmlForm-label"
                             >
-                                {t('Category name (optional)')}
+                                {t('Category')} <span>({t('Optional').toLowerCase()})</span>
                             </label>
                             <input
                                 type="text"
@@ -443,51 +513,56 @@ export default function TaskEdit() {
                                 >
                                     {t('Time')}
                                 </label>
-                                <input
-                                    type="text"
-                                    className={
-                                        'form-control ' +
-                                        (errors.periodTypeTime
-                                            ? 'is-invalid'
-                                            : '')
-                                    }
-                                    id="inputPeriodType"
-                                    {...register('periodTypeTime', {
-                                        required: 'Time is required.',
-                                        pattern: {
-                                            value: /^\d{2}:\d{2}$/i,
-                                            message: t(
-                                                'Invalid time (example 15:30)'
-                                            ),
-                                        },
-                                    })}
-                                    onChange={(e) => {
-                                        const prevValue =
-                                            getValues('periodTypeTime');
+                                <div className="row mb-3 g-3">
+                                    <div className="col">
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="Hour"
+                                            aria-label="Hour"
+                                            min="0"
+                                            max={periodTypeTimeAmPm ? 12 : 24}
+                                            value={periodTypeTimeHours}
+                                            onChange={(e) => {
+                                                setPeriodTypeTimeHours(validatePeriodTypeTimeOnChange(e.target.value, periodTypeTimeAmPm ? 12 : 24, 0, false));
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="col">
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="Minute"
+                                            aria-label="Minute"
+                                            min="0"
+                                            max="59"
+                                            value={periodTypeTimeMinutes}
+                                            onChange={(e) => {
+                                                setPeriodTypeTimeMinutes(validatePeriodTypeTimeOnChange(e.target.value));
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="col">
+                                        <select
+                                            className="form-select"
+                                            aria-label="Default select example"
+                                            value={periodTypeTimeAmPm}
+                                            onChange={(e) => {
+                                                setPeriodTypeTimeAmPm(e.target.value);
+                                            }}
+                                        >
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
 
-                                        const periodTypeTimeValue =
-                                            periodTypeTimeInputFormat(
-                                                e.target.value,
-                                                prevValue
-                                            );
-
-                                        if (periodTypeTimeValue !== null) {
-                                            setValue(
-                                                'periodTypeTime',
-                                                periodTypeTimeValue
-                                            );
-                                        }
-                                    }}
-                                    placeholder="24:00"
-                                />
-                                <p className="invalid-feedback">
-                                    {errors?.periodTypeTime &&
-                                        t(
-                                            errors?.periodTypeTime
-                                                ?.message as string
-                                        )}
-                                </p>
+                                    <p className="invalid-feedback">
+                                        {errors?.periodTypeTime
+                                            && t(errors?.periodTypeTime?.message as string)}
+                                    </p>
+                                </div>
                             </div>
+
                             {periodTypeState === 'Weekly' ? (
                                 <div
                                     className={
