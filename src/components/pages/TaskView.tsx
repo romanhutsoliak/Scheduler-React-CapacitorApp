@@ -2,7 +2,7 @@ import {useMutation, useQuery} from '@apollo/client';
 import {useNavigate, useParams} from 'react-router-dom';
 import Loading from '../layoutParts/Loading';
 import {COMPLETE_TASK, QUERY_TASK_WITH_HISTORY} from '../../graphql/queries';
-import {DateFormateUtils, periodTypeMonthsArray, periodTypeWeekDaysArray, TimeToEventUtils,} from '../../utils';
+import {DateFormatUtils, periodTypeMonthsArray, periodTypeWeekDaysArray, TimeToEventUtils,} from '../../utils';
 import BreadCrumbs, {updateBreadCrumbsPathArray, useMakePathArray,} from '../layoutParts/BreadCrumbs';
 import {useLanguage} from '../../languages';
 import Modal from '../layoutParts/Modal';
@@ -10,6 +10,7 @@ import {useRef} from 'react';
 import Nl2br from '../layoutParts/Nl2br';
 import LoadingError from '../layoutParts/LoadingError';
 import Error404 from '../layoutParts/Error404';
+import {DateTime} from "luxon";
 
 type TaskHistory = {
     created_at: string;
@@ -46,9 +47,10 @@ export default function TaskView() {
 
     function getPeriodText() {
         let periodText = '';
+        const taskPeriodTypeTime = DateTime.fromFormat(task?.data?.task?.periodTypeTime, 'HH:mm').toLocaleString(DateTime.TIME_SIMPLE);
         if (task?.data?.task?.periodType === 'Daily') {
             periodText = t('Daily at {time}', {
-                time: task?.data?.task?.periodTypeTime
+                time: taskPeriodTypeTime
             });
         } else if (task?.data?.task?.periodType === 'Weekly') {
             const periodTypeWeekDaysNames = task?.data?.task?.periodTypeWeekDays?.map(
@@ -58,12 +60,12 @@ export default function TaskView() {
             );
             periodText = t('Weekly on {weekDays} at {time}', {
                 weekDays: periodTypeWeekDaysNames.join(', '),
-                time: task?.data?.task?.periodTypeTime
+                time: taskPeriodTypeTime
             });
         } else if (task?.data?.task?.periodType === 'Monthly') {
             periodText = t('Every month on {days} at {time}', {
                 days: task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') + t('th'),
-                time: task?.data?.task?.periodTypeTime
+                time: taskPeriodTypeTime
             });
         } else if (task?.data?.task?.periodType === 'Yearly' || task?.data?.task?.periodType === 'Once') {
             const periodTypeMonthsNames = task?.data?.task?.periodTypeMonths?.map(
@@ -77,7 +79,7 @@ export default function TaskView() {
             periodText = t(periodTextYearText, {
                 days: task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') + t('th'),
                 months: periodTypeMonthsNames.join(', '),
-                time: task?.data?.task?.periodTypeTime
+                time: taskPeriodTypeTime
             });
         }
         return periodText;
@@ -189,7 +191,7 @@ export default function TaskView() {
                                             : ''
                                     }
                                 >
-                                    {DateFormateUtils(
+                                    {DateFormatUtils(
                                         task?.data?.task?.nextRunDateTime,
                                         false
                                     )}{' '}
@@ -224,7 +226,7 @@ export default function TaskView() {
                                         >
                                             <div className="row">
                                                 <div className="col-sm-4">
-                                                    {DateFormateUtils(
+                                                    {DateFormatUtils(
                                                         history.created_at
                                                     )}
                                                 </div>

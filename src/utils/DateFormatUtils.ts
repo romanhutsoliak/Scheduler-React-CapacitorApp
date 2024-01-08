@@ -1,4 +1,4 @@
-export default function DateFormateUtils(
+export default function DateFormatUtils(
     timeFromDB: string,
     withTimeOffset = true
 ) {

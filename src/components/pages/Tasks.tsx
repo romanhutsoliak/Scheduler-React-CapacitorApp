@@ -5,7 +5,7 @@ import {COMPLETE_TASK, GET_TASKS, TASK_CATEGORIES_WITH_TASKS} from '../../graphq
 import Loading from '../layoutParts/Loading';
 import Pagination from '../layoutParts/Pagination';
 import Modal from '../layoutParts/Modal';
-import {DateFormateUtils, TimeToEventUtils} from '../../utils';
+import {DateFormatUtils, TimeToEventUtils} from '../../utils';
 import {useLanguage} from '../../languages';
 import LoadingError from '../layoutParts/LoadingError';
 
@@ -310,7 +310,7 @@ export default function Tasks() {
                                                     onClickDetailHandler(event, id)
                                                 }
                                             >
-                                                {DateFormateUtils(
+                                                {DateFormatUtils(
                                                     nextRunDateTime,
                                                     false
                                                 )}{' '}
