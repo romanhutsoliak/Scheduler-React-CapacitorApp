@@ -99,6 +99,7 @@ export default function TaskEdit() {
     const [periodTypeTimeHours, setPeriodTypeTimeHours] = useState('');
     const [periodTypeTimeMinutes, setPeriodTypeTimeMinutes] = useState('');
     const [periodTypeTimeAmPm, setPeriodTypeTimeAmPm] = useState('');
+    const [periodTypeTimeHasAmPm, setPeriodTypeTimeHasAmPm] = useState(false);
     const [loadTask, loadingTask] = useLazyQuery(QUERY_TASK, {
         variables: {id: taskId},
         onCompleted: (data) => {
@@ -133,8 +134,7 @@ export default function TaskEdit() {
                     setPeriodTypeState(data.task.periodType);
                 }
 
-                const periodTypeTimeObject = DateTime.fromFormat(data.task.periodTypeTime, 'HH:mm');
-                parseAndSetPeriodTypeTime(periodTypeTimeObject);
+                parseAndSetPeriodTypeTime(data.task.periodTypeTime);
 
                 setTextAreaAutoHeight(document.getElementById('inputDescription'));
 
@@ -161,6 +161,7 @@ export default function TaskEdit() {
             loadTask();
         } else {
             setValue('isActive', true);
+            parseAndSetPeriodTypeTime('10:00');
             createTooltips();
         }
 
@@ -174,8 +175,8 @@ export default function TaskEdit() {
         const periodTypeTimeString = periodTypeTimeHours
             + ':'
             + periodTypeTimeMinutes
-            + (periodTypeTimeAmPm ? ' ' + periodTypeTimeAmPm : '');
-        const periodTypeTimeFormat = periodTypeTimeAmPm ? 'h:mm a' : 'H:mm';
+            + (periodTypeTimeHasAmPm ? ' ' + periodTypeTimeAmPm : '');
+        const periodTypeTimeFormat = periodTypeTimeHasAmPm ? 'h:mm a' : 'H:mm';
         const periodTypeTime24 = DateTime.fromFormat(periodTypeTimeString, periodTypeTimeFormat)
             .toFormat('HH:mm');
 
@@ -206,13 +207,15 @@ export default function TaskEdit() {
         target.style.height = (target.scrollHeight + 3) + "px";
     }, []);
 
-    const parseAndSetPeriodTypeTime = useCallback((periodTypeTimeObject: DateTime) => {
+    const parseAndSetPeriodTypeTime = useCallback((taskPeriodTypeTime: string) => {
+        const periodTypeTimeObject = DateTime.fromFormat(taskPeriodTypeTime, 'HH:mm');
         const timeSimple = periodTypeTimeObject.toLocaleString(DateTime.TIME_SIMPLE);
-        const timeSimpleArray = timeSimple.match(/^(\d+)\:(\d+) (am|pm)$/i);
+        const timeSimpleArray = timeSimple.match(/^(\d+)\:(\d+)(?: ?(am|pm))?$/i);
         if (timeSimpleArray) {
             setPeriodTypeTimeHours(timeSimpleArray[1]);
             setPeriodTypeTimeMinutes(timeSimpleArray[2]);
-            setPeriodTypeTimeAmPm(timeSimpleArray[3].toUpperCase());
+            setPeriodTypeTimeAmPm(timeSimpleArray[3]?.toUpperCase());
+            setPeriodTypeTimeHasAmPm(!!timeSimpleArray[3]);
         }
     }, []);
 
@@ -346,7 +349,9 @@ export default function TaskEdit() {
 
     // render variables
     let periodTypeMonthDaysArray = [];
-    for (let i = 1; i <= 31; i++) periodTypeMonthDaysArray.push(i.toString());
+    for (let i = 1; i <= 31; i++) {
+        periodTypeMonthDaysArray.push(i.toString());
+    }
 
     return (
         <>
@@ -513,25 +518,31 @@ export default function TaskEdit() {
                                 >
                                     {t('Time')}
                                 </label>
-                                <div className="row mb-3 g-3">
-                                    <div className="col">
+                                <div className="mb-3 g-3">
+                                    <div className="d-inline-block mx-1">
                                         <input
                                             type="number"
                                             className="form-control"
+                                            style={{maxWidth: '80px'}}
                                             placeholder="Hour"
                                             aria-label="Hour"
                                             min="0"
-                                            max={periodTypeTimeAmPm ? 12 : 24}
+                                            max={periodTypeTimeHasAmPm ? 12 : 24}
                                             value={periodTypeTimeHours}
                                             onChange={(e) => {
-                                                setPeriodTypeTimeHours(validatePeriodTypeTimeOnChange(e.target.value, periodTypeTimeAmPm ? 12 : 24, 0, false));
+                                                let hoursValue = e.target.value;
+                                                if (periodTypeTimeHasAmPm && e.target.value.length === 0) {
+                                                    hoursValue = '12';
+                                                }
+                                                setPeriodTypeTimeHours(validatePeriodTypeTimeOnChange(hoursValue, periodTypeTimeHasAmPm ? 12 : 24, 0, false));
                                             }}
                                         />
                                     </div>
-                                    <div className="col">
+                                    <div className="d-inline-block mx-1">
                                         <input
                                             type="number"
                                             className="form-control"
+                                            style={{maxWidth: '80px'}}
                                             placeholder="Minute"
                                             aria-label="Minute"
                                             min="0"
@@ -542,24 +553,22 @@ export default function TaskEdit() {
                                             }}
                                         />
                                     </div>
-                                    <div className="col">
-                                        <select
-                                            className="form-select"
-                                            aria-label="Default select example"
-                                            value={periodTypeTimeAmPm}
-                                            onChange={(e) => {
-                                                setPeriodTypeTimeAmPm(e.target.value);
-                                            }}
-                                        >
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                        </select>
-                                    </div>
-
-                                    <p className="invalid-feedback">
-                                        {errors?.periodTypeTime
-                                            && t(errors?.periodTypeTime?.message as string)}
-                                    </p>
+                                    {periodTypeTimeHasAmPm && (
+                                        <div className="d-inline-block mx-1">
+                                            <select
+                                                className="form-control form-select"
+                                                style={{maxWidth: '90px'}}
+                                                aria-label="Default select example"
+                                                value={periodTypeTimeAmPm}
+                                                onChange={(e) => {
+                                                    setPeriodTypeTimeAmPm(e.target.value);
+                                                }}
+                                            >
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -570,6 +579,7 @@ export default function TaskEdit() {
                                         (periodTypeState !== 'Weekly' ? ' d-none' : '')
                                     }
                                 >
+                                    <label className="htmlForm-label">{t('Day of week')}</label>
                                     <div className="mb-3">
                                         {periodTypeWeekDaysArray.map(
                                             (weekDay, i) => {
@@ -686,6 +696,7 @@ export default function TaskEdit() {
                             )}
                             {periodTypeState === 'Yearly' ? (
                                 <div className="periodTypeDiv4">
+                                    <label className="htmlForm-label">{t('Month')}</label>
                                     <div className="mb-3">
                                         {periodTypeMonthsArray.map(
                                             (month, i) => {
@@ -797,6 +808,7 @@ export default function TaskEdit() {
                                         </div>
                                     </div>
                                     <div className="periodTypeDiv4">
+                                        <label className="htmlForm-label">{t('Month')}</label>
                                         <div className="mb-3">
                                             {periodTypeMonthsArray.map(
                                                 (month, i) => {
