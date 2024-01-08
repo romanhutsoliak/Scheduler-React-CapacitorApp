@@ -15,7 +15,6 @@ export default function Logout() {
     const [logout] = useMutation(LOGOUT, {
         onError: () => {},
         onCompleted: (data) => {
-            console.log(data);
             if (data?.logout) {
                 localStorage.removeItem(
                     process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'token'
