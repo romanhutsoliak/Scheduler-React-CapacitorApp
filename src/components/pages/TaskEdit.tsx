@@ -12,7 +12,7 @@ import Modal from '../layoutParts/Modal';
 import LoadingError from '../layoutParts/LoadingError';
 import Error404 from '../layoutParts/Error404';
 // @ts-ignore
-import {Tooltip} from 'bootstrap/dist/js/bootstrap.esm.js';
+import {default as Tooltip} from 'bootstrap/js/src/tooltip.js';
 import {DateTime} from "luxon";
 
 type TaskFormValuesType = {
@@ -33,53 +33,6 @@ type TaskFormValuesType = {
     periodTypeMonthDaysCheckbox?: number[] | null;
     periodTypeMonthsCheckbox?: number[] | null;
 };
-
-function SaveButton({
-    buttonLoading,
-    showRemoveBtn,
-}: {
-    buttonLoading: boolean;
-    showRemoveBtn: boolean;
-}) {
-    const t = useLanguage();
-    return (
-        <div className="d-flex justify-content-between">
-            <button
-                type="submit"
-                className="btn btn-primary mb-3"
-                disabled={buttonLoading}
-            >
-                {buttonLoading ? (
-                    <>
-                        <span
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                        ></span>
-                        &nbsp; {t('Saving')}...
-                    </>
-                ) : (
-                    t('Save')
-                )}
-            </button>
-            {showRemoveBtn ? (
-                <button
-                    type="button"
-                    className="btn btn-link mb-3 text-danger taskEditRemoveBtn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#globalModal"
-                    onClick={(e) => {
-                        e.preventDefault();
-                    }}
-                >
-                    {t('Remove')}
-                </button>
-            ) : (
-                ''
-            )}
-        </div>
-    );
-}
 
 export default function TaskEdit() {
     const {
@@ -219,7 +172,39 @@ export default function TaskEdit() {
         }
     }, []);
 
-    const validatePeriodTypeTimeOnChange = useCallback((timeString: string, max: number = 59, min: number = 0, prependZero: boolean = true) => {
+    const validatePeriodTypeTimeOnChange = useCallback((timeString: string, max: number = 59, min: number = 0, prependZero: boolean = true): string => {
+        // when you have 22, after you type 3 -> 03, after you type 8 -> 38
+        if (timeString.length == (max.toString().length + 1)) {
+            if (timeString.substring(0, 1) === '0') {
+                let substringPlus1 = timeString.substring(1, max.toString().length + 1);
+
+                // when you have 08, after you type 8 -> 08, because max is 59
+                if (parseInt(substringPlus1) > max) {
+                    return max.toString();
+                }
+
+                // when you have 02, after you type 8 -> 28
+                timeString = substringPlus1;
+            } else {
+                timeString = timeString.substring(max.toString().length, max.toString().length + 1);
+            }
+        }
+
+        // if you have max 12, if you have 6, after you type 9, you have 9
+        // if you have max 12, if you have 1, after you type 1, you have 11
+        // if you have max 12, if you have 9, after you type 5, you have 5
+        if (parseInt(timeString) > max) {
+            timeString = timeString.substring(1, max.toString().length + 1);
+        }
+
+        if (timeString && parseInt(timeString) > max) {
+            return max.toString();
+        }
+
+        if (!timeString || parseInt(timeString) < min) {
+            return min.toString();
+        }
+
         // 5 -> 05
         if (prependZero && timeString.length == 1) {
             return '0' + timeString;
@@ -230,32 +215,9 @@ export default function TaskEdit() {
             return timeString.substring(1);
         }
 
-        // when you have 02, after you type 8 -> 28
-        if (
-            timeString.length == (max.toString().length + 1) && timeString.substring(0, 1) === '0'
-            || timeString.length > max.toString().length && parseInt(timeString) > max
-        ) {
-            let substringPlus1 = timeString.substring(1, max.toString().length + 1);
-            // when you have 08, after you type 8 -> 08, because max is 59
-            if (parseInt(substringPlus1) > max) {
-                return max.toString();
-            }
-            // when you have 02, after you type 8 -> 28
-            return substringPlus1;
-        }
-
         // 123 -> 12 - only 2 digit allowed
         if (timeString.length > max.toString().length) {
             return timeString.substring(0, max.toString().length);
-        }
-
-        // fill empty string with zero
-        if (timeString.length == 0) {
-            if (prependZero) {
-                return '00';
-            } else {
-                return '0';
-            }
         }
 
         return timeString;
@@ -358,7 +320,7 @@ export default function TaskEdit() {
             <BreadCrumbs breadCrumbsPathArray={breadCrumbsPathArray}/>
             <form method="POST" onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-sm-12">
                         <h2>{t('Task details')}</h2>
                         <div className="mb-3">
                             <label
@@ -434,49 +396,7 @@ export default function TaskEdit() {
                                 {t(errors?.isActive?.message as string)}
                             </p>
                         </div>
-                        <div className="mb-3">
-                            <label
-                                htmlFor="inputCategoryName"
-                                className="htmlForm-label"
-                            >
-                                {t('Category')} <span>({t('Optional').toLowerCase()})</span>
-                            </label>
-                            <input
-                                type="text"
-                                className={
-                                    'form-control ' +
-                                    (errors.categoryName ? 'is-invalid' : '')
-                                }
-                                id="inputCategoryName"
-                                list="inputCategoryNameOptions"
-                                placeholder={t('No category')}
-                                autoComplete="off"
-                                {...register('categoryName')}
-                                onChange={(e) => {
-                                    const prevValue = getValues('categoryName');
-                                    setValue(
-                                        'categoryName',
-                                        e.target.value
-                                    );
-                                    if (e.target.value.length > 2 && e.target.value !== prevValue) {
-                                        loadCategoryNameOptions({variables: {name: '%' + e.target.value + '%'}});
-                                    }
-                                }}
-                            />
-                            <datalist id="inputCategoryNameOptions">
-                                {categoryNameOptions.current.map((option: any) => {
-                                    return (<option key={option?.slug} value={option?.name}/>);
-                                })}
-                            </datalist>
-                        </div>
-                        <div className="text-start d-none d-md-block">
-                            <SaveButton
-                                buttonLoading={buttonLoading}
-                                showRemoveBtn={!!taskId}
-                            />
-                        </div>
-                    </div>
-                    <div className="col-md-6">
+
                         <h2>{t('Schedule')}</h2>
                         <div className="mb-3">
                             <label
@@ -510,6 +430,7 @@ export default function TaskEdit() {
                                     t(errors?.periodType?.message as string)}
                             </p>
                         </div>
+
                         <div className="periodTypeContainer">
                             <div className="periodTypeTimeC mb-3">
                                 <label
@@ -523,18 +444,18 @@ export default function TaskEdit() {
                                         <input
                                             type="number"
                                             className="form-control"
-                                            style={{maxWidth: '80px'}}
+                                            style={{maxWidth: '80px', caretColor: 'transparent'}}
                                             placeholder="Hour"
                                             aria-label="Hour"
                                             min="0"
-                                            max={periodTypeTimeHasAmPm ? 12 : 24}
+                                            max={periodTypeTimeHasAmPm ? 12 : 23}
                                             value={periodTypeTimeHours}
                                             onChange={(e) => {
-                                                let hoursValue = e.target.value;
-                                                if (periodTypeTimeHasAmPm && e.target.value.length === 0) {
-                                                    hoursValue = '12';
+                                                if (parseInt(e.target.value) && !Number(e.target.value)) {
+                                                    return;
                                                 }
-                                                setPeriodTypeTimeHours(validatePeriodTypeTimeOnChange(hoursValue, periodTypeTimeHasAmPm ? 12 : 24, 0, false));
+
+                                                setPeriodTypeTimeHours(validatePeriodTypeTimeOnChange(e.target.value, periodTypeTimeHasAmPm ? 12 : 23, periodTypeTimeHasAmPm ? 1 : 0, false));
                                             }}
                                         />
                                     </div>
@@ -542,13 +463,17 @@ export default function TaskEdit() {
                                         <input
                                             type="number"
                                             className="form-control"
-                                            style={{maxWidth: '80px'}}
+                                            style={{maxWidth: '80px', caretColor: 'transparent'}}
                                             placeholder="Minute"
                                             aria-label="Minute"
                                             min="0"
                                             max="59"
                                             value={periodTypeTimeMinutes}
                                             onChange={(e) => {
+                                                if (parseInt(e.target.value) && !Number(e.target.value)) {
+                                                    return;
+                                                }
+
                                                 setPeriodTypeTimeMinutes(validatePeriodTypeTimeOnChange(e.target.value));
                                             }}
                                         />
@@ -860,12 +785,81 @@ export default function TaskEdit() {
                                 ''
                             )}
                         </div>
+
+                        <div className="mb-3">
+                            <label
+                                htmlFor="inputCategoryName"
+                                className="htmlForm-label"
+                            >
+                                {t('Category')} <span>({t('Optional').toLowerCase()})</span>
+                            </label>
+                            <input
+                                type="text"
+                                className={
+                                    'form-control ' +
+                                    (errors.categoryName ? 'is-invalid' : '')
+                                }
+                                id="inputCategoryName"
+                                list="inputCategoryNameOptions"
+                                placeholder={t('No category')}
+                                autoComplete="off"
+                                {...register('categoryName')}
+                                onChange={(e) => {
+                                    const prevValue = getValues('categoryName');
+                                    setValue(
+                                        'categoryName',
+                                        e.target.value
+                                    );
+                                    if (e.target.value.length > 2 && e.target.value !== prevValue) {
+                                        loadCategoryNameOptions({variables: {name: '%' + e.target.value + '%'}});
+                                    }
+                                }}
+                            />
+                            <datalist id="inputCategoryNameOptions">
+                                {categoryNameOptions.current.map((option: any) => {
+                                    return (<option key={option?.slug} value={option?.name}/>);
+                                })}
+                            </datalist>
+                        </div>
                     </div>
-                    <div className="text-start d-md-none">
-                        <SaveButton
-                            buttonLoading={buttonLoading}
-                            showRemoveBtn={!!taskId}
-                        />
+
+                    <div className="text-start">
+                        <div className="d-flex justify-content-between">
+                            <button
+                                type="submit"
+                                className="btn btn-primary mb-3"
+                                disabled={buttonLoading}
+                            >
+                                {buttonLoading ? (
+                                    <>
+                                        <span
+                                            className="spinner-border spinner-border-sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        ></span>
+                                        &nbsp; {t('Saving')}...
+                                    </>
+                                ) : (
+                                    t('Save')
+                                )}
+                            </button>
+
+                            {!!taskId ? (
+                                <button
+                                    type="button"
+                                    className="btn btn-link mb-3 text-danger taskEditRemoveBtn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#globalModal"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                    }}
+                                >
+                                    {t('Remove')}
+                                </button>
+                            ) : (
+                                ''
+                            )}
+                        </div>
                     </div>
                 </div>
             </form>

@@ -5,22 +5,23 @@
     "PreviousPage": "Previous",
     "NextPage": "Next",
     "HomePagePart1": [
-        "<h1>App introduction</h1>",
+        "<h1>About application</h1>",
         "<p>This application will help you to memorize and do not skip important events which you perform periodically.</p>",
         "<ul>",
             "<li>To pay for services</li>",
             "<li>Taxes</li>",
             "<li>Visits to a dentist</li>",
-            "<li>ets ...</li>",
-        "</ul>"
+            "<li>etc ...</li>",
+        "</ul>",
+        "<p>You will receive an app notification.</p>"
     ],
     "HomePagePart2": [
-        "<h2>Which is the difference from calendar ?</h2>",
-        "<p>You see only days and events you have. All the information in one list. ",
-        "You don't need to search calendar to find your event walking by months.</p>"
+        "<h2>The difference from a calendar</h2>",
+        "<p>You see only the days and events you have. All the information is displayed in one list. ",
+        "You don't have to search the calendar to find your next event.</p>"
     ],
     "TasksListEmpty": [
-        "<p>Schedule your activities. To save your first record you need to make up a name and ",
-        "set time it has to be repeated (once, daily, monthly, ets).</p>"
+        "<p>Schedule your activities. It is easy to create a first task. You need to make up a name and ",
+        "set the recurrence time (once, daily, monthly, etc).</p>"
     ]
 }

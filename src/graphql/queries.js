@@ -221,14 +221,15 @@ export const CREATE_USER_DEVICE = gql`
 `;
 
 export const CREATE_USER_FROM_DEVICE = gql`
-    mutation CreateUserFromDevice($deviceId: String!, $timezoneOffset: Int) {
+    mutation CreateUserFromDevice($deviceId: String!, $manufacturer: String!, $model: String!, $timezoneOffset: Int) {
         createUserFromDevice(
             deviceId: $deviceId
+            manufacturer: $manufacturer
+            model: $model
             timezoneOffset: $timezoneOffset
         ) {
             user {
                 name
-                email
             }
             token
         }
@@ -240,7 +241,6 @@ export const LOGIN = gql`
         login(email: $email, password: $password) {
             user {
                 name
-                email
                 timezoneOffset
             }
             token
@@ -262,7 +262,6 @@ export const USER_REGISTRATION = gql`
         ) {
             user {
                 name
-                email
                 timezoneOffset
             }
             token
@@ -282,7 +281,6 @@ export const CURRENT_USER = gql`
     query CurrentUser {
         currentUser {
             name
-            email
             timezoneOffset
         }
     }
@@ -290,19 +288,12 @@ export const CURRENT_USER = gql`
 
 export const UPDATE_PROFILE = gql`
     mutation UpdateProfile(
-        $email: String!
         $name: String
-        $password: String
-        $password_confirmation: String
     ) {
         updateProfile(
-            email: $email
             name: $name
-            password: $password
-            password_confirmation: $password_confirmation
         ) {
             name
-            email
             timezoneOffset
         }
     }
@@ -311,7 +302,6 @@ export const UPDATE_USER_TIMEZONE = gql`
     mutation UpdateUserTimezone($timezoneOffset: Int!) {
         updateUserTimezone(timezoneOffset: $timezoneOffset) {
             name
-            email
             timezoneOffset
         }
     }

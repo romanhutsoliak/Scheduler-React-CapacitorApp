@@ -9,7 +9,7 @@ export default function PrivateRoute() {
 
     useEffect(() => {
         if (!currentUser) {
-            navigate('/login', {
+            navigate('/401', {
                 replace: true,
                 state: { referer: prevLocation },
             });

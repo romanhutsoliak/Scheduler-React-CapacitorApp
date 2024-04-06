@@ -10,5 +10,5 @@ export default function DateFormatUtils(
     return date.toLocaleString(navigator.language, {
         dateStyle: 'short',
         timeStyle: 'short',
-    });
+    }).toLowerCase();
 }

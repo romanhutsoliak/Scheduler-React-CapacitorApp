@@ -38,9 +38,8 @@ a, .btn-link {
 .form-control::placeholder {
 	color: #c4c4c4;
 }
-
 #navbarTogglerDemo02 .nav-link {
-	color: inherit;
+	color: #fff;
 }
 .mini-footer {
     background: #f0f0f0;
@@ -240,6 +239,15 @@ h1 {
     outline: 0;
     box-shadow: 0 0 4px .25rem #0eadd21a;
 }
+.navbar {
+    max-height: 60px;
+    background-color: #0eadd2;
+    margin-bottom: 20px;
+    z-index: 100;
+}
+.headerMenuToggle, .topUserMenuDropdown_span > .bi {
+    color: #fff;
+}
 
 @media (max-width: 991px) {
     .tasksTableCont .taskViewListDiv {
@@ -294,9 +302,6 @@ h1 {
     }
     .addTaskButtonCFixed .addTaskButtonSpan {
         display: none;
-    }
-    .headerMenuToggle, .topUserMenuDropdown_span > .bi {
-	    color: #fff;
     }
     .navbar-toggler:focus {
         box-shadow: 0 0 0 .15rem #fff;

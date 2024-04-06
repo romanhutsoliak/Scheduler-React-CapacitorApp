@@ -211,7 +211,7 @@ export default function Tasks() {
                 <div className="input-group input-group-md mb-3">
                     <input
                         ref={searchBarRef}
-                        type="text" className="form-control" placeholder="Search your task"
+                        type="text" className="form-control" placeholder={t('Search your task')}
                         aria-describedby="searchBar-input-group-text"
                         onChange={(e) => {
                             if (searchBarTimeoutId.current) {

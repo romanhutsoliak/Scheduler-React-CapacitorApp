@@ -8,7 +8,7 @@ import TaskEdit from './components/pages/TaskEdit';
 import TaskView from './components/pages/TaskView';
 import PrivateRoute from './components/auth/PrivateRoute';
 import Home from './components/pages/Home';
-import Register from './components/auth/Register';
+import Error401 from './components/auth/Error401';
 import Loading from './components/layoutParts/Loading';
 
 type Prop = {
@@ -24,7 +24,7 @@ export default function MainRouter(props: Prop) {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
+                        <Route path="/401" element={<Error401 />} />
                         <Route path="/" element={<PrivateRoute />}>
                             <Route path="/tasks" element={<Tasks />} />
                             <Route path="/tasks/create" element={<TaskEdit />} />
@@ -38,7 +38,7 @@ export default function MainRouter(props: Prop) {
                         </Route>
                     </Routes>
                 )}
-                
+
             </MainLayout>
         </Router>
     );

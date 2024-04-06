@@ -48,6 +48,7 @@ export default function TaskView() {
     function getPeriodText() {
         let periodText = '';
         const taskPeriodTypeTime = DateTime.fromFormat(task?.data?.task?.periodTypeTime, 'HH:mm').toLocaleString(DateTime.TIME_SIMPLE);
+
         if (task?.data?.task?.periodType === 'Daily') {
             periodText = t('Daily at {time}', {
                 time: taskPeriodTypeTime
@@ -73,15 +74,18 @@ export default function TaskView() {
                     return t(periodTypeMonthsArray[parseInt(month) - 1]);
                 }
             );
+
             const periodTextYearText = task?.data?.task?.periodType === 'Yearly'
                 ? 'Yearly each {days} of {months} at {time}'
                 : 'Once on {days} of {months} at {time}';
+
             periodText = t(periodTextYearText, {
                 days: task?.data?.task?.periodTypeMonthDays.join(t('th') + ', ') + t('th'),
                 months: periodTypeMonthsNames.join(', '),
                 time: taskPeriodTypeTime
             });
         }
+
         return periodText;
     }
 
@@ -114,7 +118,7 @@ export default function TaskView() {
                 okButtonText={t('Complete')}
             />
             <div className="row">
-                <div className="col-md-6">
+                <div className="col-lg-6">
                     <div className="taskViewDetail">
                         <a
                             className="btn btn-link taskViewDetailBtn taskViewDetailBtnEdit"
@@ -213,7 +217,7 @@ export default function TaskView() {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-lg-6">
                     <div className="taskViewHistory">
                         <h2>{t('Event history')}</h2>
                         {task?.data?.taskHistory?.length ? (
@@ -230,11 +234,13 @@ export default function TaskView() {
                                                         history.created_at
                                                     )}
                                                 </div>
-                                                <div className="col-sm-8 taskViewHistoryDivText">
-                                                    <Nl2br
-                                                        text={history.notes}
-                                                    />
-                                                </div>
+                                                {history.notes &&
+                                                    <div className="col-sm-8 taskViewHistoryDivText">
+                                                        <Nl2br
+                                                            text={history.notes}
+                                                        />
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                     );

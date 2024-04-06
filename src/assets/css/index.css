@@ -75,12 +75,6 @@
     .addTaskButtonCFixed .addTaskButtonSpan {
         display: none;
     }
-    .navbar {
-        max-height: 60px;
-        background-color: #0eadd2;
-        margin-bottom: 20px;
-        z-index: 100;
-    }
     #navbarTogglerDemo02 {
         background-color: #fff;
         border-bottom: 1px solid #eee;

@@ -167,7 +167,9 @@ export default function App() {
             await createUserFromDevice({
                 variables: {
                     deviceId: userDevice?.deviceId,
-                    timezoneOffset: userTimezoneOffset,
+                    manufacturer: userDevice?.manufacturer,
+                    model: userDevice?.model,
+                    timezoneOffset: userTimezoneOffset
                 },
                 onCompleted: (data) => {
                     if (data.createUserFromDevice.token) {

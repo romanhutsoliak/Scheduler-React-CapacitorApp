@@ -41,9 +41,9 @@ export default function Header() {
                         className="btn btn-link btn-link-topUser"
                         type="button"
                         onClick={(e) => {
-                            let navigateTo = '/register';
-                            if (currentUser) navigateTo = '/profile';
-                            navigate(navigateTo);
+                            if (currentUser) {
+                                navigate('/profile');
+                            }
                         }}
                     >
                         <span className="topUserMenuDropdown_span">
