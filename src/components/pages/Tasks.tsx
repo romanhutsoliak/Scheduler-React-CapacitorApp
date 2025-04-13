@@ -30,9 +30,9 @@ export default function Tasks() {
         searchParamsPage ? parseInt(searchParamsPage) : 1
     );
     const [recordsPerPage] = useState(10); // , setRecordsPerPage
-    const completeTaskId = useRef<number | undefined>();
+    const completeTaskId = useRef<number | undefined>(undefined);
     const completeNotesRef = useRef<HTMLTextAreaElement>(null);
-    const searchBarTimeoutId = useRef<NodeJS.Timeout>();
+    const searchBarTimeoutId = useRef<NodeJS.Timeout>(null);
     const searchBarRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
     const t = useLanguage();
@@ -41,15 +41,6 @@ export default function Tasks() {
     const [searchBarValue, setSearchBarValue] = useState('');
     const [filterBarCategoryValue, setFilterBarCategoryValue] = useState('');
 
-    const [completeTask] = useMutation(COMPLETE_TASK, {
-        onError: () => null,
-        onCompleted: () => {
-            loadTasks();
-        },
-    });
-    const userHasTasksLocalStorage = localStorage.getItem(
-        process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
-    );
     const [loadTasks, {loading, error, data}] = useLazyQuery(GET_TASKS, {
         variables: {
             search: searchBarValue, // || null,
@@ -75,6 +66,18 @@ export default function Tasks() {
             }
         },
     });
+
+    const [completeTask] = useMutation(COMPLETE_TASK, {
+        onError: () => null,
+        onCompleted: () => {
+            loadTasks();
+        },
+    });
+
+    const userHasTasksLocalStorage = localStorage.getItem(
+        process.env.REACT_APP_LOCAL_STORAGE_PREFIX + 'userHasTasks'
+    );
+
     const [loadTaskCategories] = useLazyQuery(TASK_CATEGORIES_WITH_TASKS, {
         onCompleted: (data) => {
             setTaskCategories(data.taskCategoriesWithTasks);
@@ -130,11 +133,11 @@ export default function Tasks() {
             document.addEventListener('touchstart', touchstartEventHandler);
             document.addEventListener('touchend', touchendEventHandler);
         };
-    }, []);
+    }, [loadTasks]);
 
     useEffect(() => {
         loadTasks();
-    }, [searchBarValue, filterBarCategoryValue]);
+    }, [searchBarValue, filterBarCategoryValue, loadTasks]);
 
     const onClickDetailHandler = (
         event: React.MouseEvent<HTMLElement>,
