@@ -24,5 +24,13 @@ For Windows it will be
 },
 ```
 
-## compile app Android
+## Compile app Android
 npm run build:a
+
+
+## Capacitor version upgrade
+https://capacitorjs.com/docs/updating/7-0
+
+## Update app version
+ - Android - android/app/build.gradle (you're looking for the versionName variable)
+ - iOS - ios/App/App/Info.plist *(you're looking for the CFBundleShortVersionString key)
